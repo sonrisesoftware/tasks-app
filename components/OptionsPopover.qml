@@ -32,13 +32,21 @@ Popover {
             top: parent.top
         }
 
-        ValueSelector {
-            text: i18n.tr("Sort By")
-            values: [
-                "Due Date",
-                "Relevence",
-                "Importance"
-            ]
+        Standard {
+            text: i18n.tr("Show Completed Tasks")
+            control: CheckBox {
+                checked: showCompletedTasks
+                onCheckedChanged: saveSetting("showCompletedTasks", checked ? "true" : "false")
+            }
         }
+
+//        ValueSelector {
+//            text: i18n.tr("Sort By")
+//            values: [
+//                "Due Date",
+//                "Relevence",
+//                "Importance"
+//            ]
+//        }
     }
 }

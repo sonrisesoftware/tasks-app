@@ -137,12 +137,24 @@ MainView {
 
     function filteredTasks(func) {
         var list = []
-        for (var i = 0; i < tasksModel.length; i++) {
-            if (func(tasksModel[i])) list.push(tasksModel[i])
+        for (var i = 0; i < tasksModel.count; i++) {
+            if (func(tasksModel.get(i).modelData)) list.push(tasksModel.get(i).modelData)
         }
         print("List count:", list.length)
         return list
     }
+
+    function modelLength(model) {
+        if (model.hasOwnProperty("count")) {
+            return model.count
+        } else {
+            return model.length
+        }
+    }
+
+    /* SETTINGS */
+
+    property bool showCompletedTasks
 
     /* SETTINGS STORAGE */
 
@@ -159,7 +171,7 @@ MainView {
         create: true
 
         defaults: {
-
+            showCompletedTasks: false
         }
     }
 
@@ -188,6 +200,8 @@ MainView {
     function reloadSettings() {
         //showVerse = getSetting("showVerse") === "true" ? true : false
         //print("showVerse <=", showVerse)
+
+        showCompletedTasks = getSetting("showCompletedTasks") === "true" ? true : false
     }
 
     Component.onCompleted: {

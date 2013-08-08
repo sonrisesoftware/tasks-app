@@ -26,5 +26,6 @@ Day 2 - 8/8/2013
  * Marking a task as completed
  * Editing a task
  * Deleted a task
- * Storage of tasks and settings (for when I add settings) in U1db
+ * Storage of tasks and settings in U1db
  * Color coded labels
+ * Hiding of completed tasks

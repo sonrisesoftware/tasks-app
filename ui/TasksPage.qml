@@ -31,7 +31,9 @@ Page {
     title: i18n.tr("Tasks")
 
     property string noneMessage: i18n.tr("No tasks!")
-    property var model: tasksModel
+    property var model: showCompletedTasks
+                        ? tasksModel
+                        : filteredTasks(function(task) { return !task.completed })
 
     actions: [
         Action {
@@ -81,7 +83,7 @@ Page {
 
         anchors.centerIn: parent
 
-        visible: root.model.count === 0
+        visible: modelLength(root.model) === 0
         fontSize: "large"
 
         text: root.noneMessage
