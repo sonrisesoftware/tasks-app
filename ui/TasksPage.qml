@@ -55,7 +55,7 @@ Page {
 
         model: root.model
 
-        delegate: TaskListViewDelegate {
+        delegate: TaskListItem {
             objectName: "task" + index
 
             task: modelData

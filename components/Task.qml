@@ -32,7 +32,7 @@ QtObject {
             creationDate: creationDate,
             completed: completed,
             completionDate: completionDate,
-            tag: tag
+            label: label
         }
     }
 
@@ -42,7 +42,7 @@ QtObject {
     property date creationDate
     property bool completed
     property date completionDate
-    property color tag: "transparent"
+    property color label: "blue" //"transparent"
 
     property bool flagged
     

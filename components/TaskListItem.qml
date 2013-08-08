@@ -60,6 +60,8 @@ Empty {
     }
 
     Rectangle {
+        id: label
+
         anchors {
             top: parent.top
             left: parent.left
@@ -68,7 +70,7 @@ Empty {
 
         width: units.gu(0.5)
 
-        color: task.tag
+        color: task.label
     }
 
 
