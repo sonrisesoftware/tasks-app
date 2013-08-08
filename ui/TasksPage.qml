@@ -115,4 +115,21 @@ Page {
 
         }
     }
+
+    Component {
+        id: taskActionsPopover
+
+        ActionSelectionPopover {
+            property var task
+
+            actions: ActionList {
+                Action {
+                    id: deleteAction
+
+                    text: i18n.tr("Delete")
+                    onTriggered: task.remove()
+                }
+            }
+        }
+    }
 }

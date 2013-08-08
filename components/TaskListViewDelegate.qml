@@ -22,6 +22,7 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
+import Ubuntu.Components.Popups 0.1
 import "../ui"
 
 Subtitled {
@@ -43,5 +44,11 @@ Subtitled {
         pageStack.push(taskViewPage, {
                            task: root.task
                        })
+    }
+
+    onPressAndHold: {
+        PopupUtils.open(taskActionsPopover, root, {
+                            task: root.task
+                        })
     }
 }

@@ -103,6 +103,16 @@ MainView {
         }
     }
 
+    function removeTask(task) {
+        for (var i = 0; i < tasksModel.count; i++) {
+            var item = tasksModel.get(i).modelData
+            if (item === task) {
+                tasksModel.remove(i)
+                return
+            }
+        }
+    }
+
     Component {
         id: taskComponent
 

@@ -84,4 +84,8 @@ QtObject {
                 dueDate.getMonth() === today.getMonth() &&
                 dueDate.getDate() === today.getDate()
     }
+
+    function remove() {
+        removeTask(task)
+    }
 }
