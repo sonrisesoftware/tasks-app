@@ -61,6 +61,18 @@ Page {
             task: modelData
             //text: title
         }
+
+//        header: Subtitled {
+//            text: "Blah"
+//            subText: "Due Today"
+//        }
+
+//        footer: Standard {
+//            text: "Control"
+//            control: CheckBox {
+
+//            }
+//        }
     }
 
     Label {

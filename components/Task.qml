@@ -31,7 +31,8 @@ QtObject {
             dueDate: dueDate,
             creationDate: creationDate,
             completed: completed,
-            completionDate: completionDate
+            completionDate: completionDate,
+            tag: tag
         }
     }
 
@@ -41,6 +42,7 @@ QtObject {
     property date creationDate
     property bool completed
     property date completionDate
+    property color tag: "transparent"
 
     property bool flagged
     
@@ -76,6 +78,12 @@ QtObject {
                 dueDate.getFullYear() === today.getFullYear() && dueDate.getMonth() === today.getMonth()
                         && dueDate.getDate() < today.getDate()
     }
+
+    property string dueDateInfo: task.completed
+                                 ? i18n.tr("Completed %1").arg(formattedDate(task.completionDate))
+                                 : task.overdue
+                                   ? i18n.tr("Overdue (due %1)").arg(formattedDate(task.dueDate))
+                                   : i18n.tr("Due %1").arg(formattedDate(task.dueDate))
 
     function isToday() {
         var today = new Date()

@@ -128,11 +128,7 @@ Column {
             }
             visible: !editing && task.dueDate != null
             font.italic: true
-            text: task.completed
-                  ? i18n.tr("Completed %1").arg(formattedDate(task.completionDate))
-                  : task.overdue
-                    ? i18n.tr("Overdue (due %1)").arg(formattedDate(task.dueDate))
-                    : i18n.tr("Due %1").arg(formattedDate(task.dueDate))
+            text: task.dueDateInfo
         }
 
         TextField {

@@ -25,20 +25,67 @@ import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
 import "../ui"
 
-Subtitled {
+Empty {
+
     id: root
 
     property Task task
 
-    text: task.title
-    subText: i18n.tr("Due %1").arg(formattedDate(task.dueDate))
+    Label {
+        id: titleLabel
+        anchors {
+            top: parent.top
+            topMargin: units.gu(0.7)
+            left: parent.left
+            leftMargin: units.gu(2)
+        }
 
-//    control: CheckBox {
-//        id: doneCheckBox
+        text: task.title
+        color: Theme.palette.selected.backgroundText
+    }
 
-//        checked: task.done
-//        onCheckedChanged: task.done = checked
-//    }
+    Label {
+        anchors {
+            top: titleLabel.bottom
+            topMargin: units.gu(0.2)
+            left: parent.left
+            leftMargin: units.gu(2)
+        }
+
+        //color: UbuntuColors.warmGrey
+        color: Theme.palette.normal.backgroundText
+        fontSize: "small"
+        font.italic: true
+        text: task.dueDateInfo
+    }
+
+    Rectangle {
+        anchors {
+            top: parent.top
+            left: parent.left
+            bottom: parent.bottom
+        }
+
+        width: units.gu(0.5)
+
+        color: task.tag
+    }
+
+
+
+
+    CheckBox {
+        id: doneCheckBox
+
+        anchors {
+            verticalCenter: parent.verticalCenter
+            right: parent.right
+            rightMargin: units.gu(2)
+        }
+
+        checked: task.completed
+        onCheckedChanged: task.completed = checked
+    }
 
     onClicked: {
         pageStack.push(taskViewPage, {
