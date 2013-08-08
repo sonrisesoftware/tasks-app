@@ -20,10 +20,11 @@ Day 1 - 8/7/2013
 
 Day 2 - 8/8/2013
 
- * Added tasks
+ * Adding tasks
  * Deleting tasks
  * Assigning a due date
  * Marking a task as completed
  * Editing a task
  * Deleted a task
  * Storage of tasks and settings (for when I add settings) in U1db
+ * Color coded labels
