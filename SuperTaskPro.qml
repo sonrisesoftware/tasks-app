@@ -94,13 +94,22 @@ MainView {
         }
     }
 
+    function addTask(task) {
+        tasksModel.append({"modelData": task})
+    }
+
+    function createTask() {
+        return taskComponent.createObject()
+    }
+
     function newTaskObject(args) {
         var task = taskComponent.createObject(tasksModel, args)
-        tasksModel.append({"modelData": task})
 
         if (task === null) {
             console.log("Unable to create task object!")
         }
+
+        tasksModel.append({"modelData": task})
     }
 
     function removeTask(task) {
@@ -108,6 +117,7 @@ MainView {
             var item = tasksModel.get(i).modelData
             if (item === task) {
                 tasksModel.remove(i)
+                item.destroy()
                 return
             }
         }

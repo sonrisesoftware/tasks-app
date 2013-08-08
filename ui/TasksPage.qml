@@ -69,7 +69,7 @@ Page {
 
         anchors.centerIn: parent
 
-        visible: root.model.length === 0
+        visible: root.model.count === 0
         fontSize: "large"
 
         text: root.noneMessage

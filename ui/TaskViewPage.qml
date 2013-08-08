@@ -28,77 +28,34 @@ import "../components"
 Page {
     id: root
 
-    title: i18n.tr("View Task")
+    title: taskItem.editing ? i18n.tr("Edit Task") : i18n.tr("View Task")
 
     property Task task
 
-    Column {
+    TaskItem {
+        id: taskItem
+        task: root.task
         anchors.fill: parent
         anchors.margins: units.gu(2)
-        spacing: units.gu(2)
-
-        Item {
-            anchors {
-                left: parent.left
-                right: parent.right
-            }
-
-            height: childrenRect.height
-
-            Label {
-                anchors {
-                    left: parent.left
-                    right: completedCheckBox.left
-                    rightMargin: units.gu(2)
-                    verticalCenter: parent.verticalCenter
-                }
-
-                fontSize: "large"
-                font.bold: true
-                text: task.title
-                elide: Text.ElideRight
-            }
-
-            CheckBox {
-                id: completedCheckBox
-                anchors {
-                    verticalCenter: parent.verticalCenter
-                    right: parent.right
-                }
-
-                checked: task.completed
-                onCheckedChanged: task.completed = checked
-            }
-        }
-
-        Label {
-            visible: task.dueDate != null
-            font.italic: true
-            text: task.completed
-                  ? i18n.tr("Completed %1").arg(formattedDate(task.completionDate))
-                  : task.overdue
-                    ? i18n.tr("Overdue (due %1)").arg(formattedDate(task.dueDate))
-                    : i18n.tr("Due %1").arg(formattedDate(task.dueDate))
-        }
-
-        TextArea {
-            anchors {
-                left: parent.left
-                right: parent.right
-            }
-
-            autoSize: true
-            maximumLineCount: 23
-
-            text: task.contents
-            placeholderText: "No content."
-        }
     }
 
     tools: ToolbarItems {
         ToolbarButton {
+            text: i18n.tr("Edit")
+            iconSource: icon("edit")
+            visible: !taskItem.editing
+            onTriggered: {
+                taskItem.editing = true
+            }
+        }
+
+        ToolbarButton {
             text: i18n.tr("Delete")
             iconSource: icon("delete")
+            onTriggered: {
+                pageStack.pop()
+                task.remove()
+            }
         }
     }
 }

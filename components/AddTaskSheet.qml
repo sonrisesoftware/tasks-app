@@ -29,73 +29,28 @@ ComposerSheet {
 
     title: i18n.tr("Add Task")
 
-    Flickable {
+    TaskItem {
+        id: taskItem
+        task: createTask()
         anchors.fill: parent
-        contentHeight: contents.height
-        contentWidth: contents.width
 
-        clip: true
+        editing: true
+        creating: true
+    }
 
-        Column {
-            id: contents
-            width: root.width - units.gu(2)
-
-
-            Empty {
-                TextField {
-                    id: titleTextField
-                    anchors.fill: parent
-                    anchors.margins: units.gu(1)
-
-                    placeholderText: "Title"
-                    font.bold: true
-                }
-            }
-
-            Empty {
-                height: textField.height + units.gu(2)
-                anchors.bottomMargin: units.gu(1)
-
-                TextArea {
-                    id: contentsTextField
-                    anchors {
-                        top: parent.top
-                        left: parent.left
-                        right: parent.right
-                        margins: units.gu(1)
-                    }
-
-                    autoSize: true
-                    placeholderText: "Contents"
-                }
-            }
-
-            Empty {
-                TextField {
-                    id: dueDateTextField
-                    anchors.fill: parent
-                    anchors.margins: units.gu(1)
-
-                    placeholderText: "Due Date"
-                }
-            }
-
-            Standard {
-                text: i18n.tr("Important")
-                control: CheckBox {
-                    id: importantCheckBox
-                }
-            }
-        }
+    onCancelClicked: {
+        taskItem.task.destroy()
     }
 
     onConfirmClicked: {
-        newTaskObject({
-                          title: titleTextField.text,
-                          contents: contentsTextField.text,
-                          dueDate: dueDateTextField.text,
-                          creationDate: new Date(),
-                          flagged: importantCheckBox.checked
-                      })
+        taskItem.save()
+        addTask(taskItem.task)
+//        newTaskObject({
+//                          title: titleTextField.text,
+//                          contents: contentsTextField.text,
+//                          dueDate: dueDateTextField.text,
+//                          creationDate: new Date(),
+//                          flagged: importantCheckBox.checked
+//                      })
     }
 }
