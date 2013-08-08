@@ -43,7 +43,6 @@ ComposerSheet {
     }
 
     onConfirmClicked: {
-        taskItem.save()
         addTask(taskItem.task)
 //        newTaskObject({
 //                          title: titleTextField.text,

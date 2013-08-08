@@ -33,18 +33,6 @@ Column {
     property bool editing: false
     property bool creating: false
 
-    onEditingChanged: {
-        if (!editing) {
-            save()
-        }
-    }
-
-    function save() {
-        task.title = titleTextField.text
-        task.dueDate = dueDateTextField.text
-        task.contents = notesTextArea.text
-    }
-
     spacing: units.gu(2)
 
     Item {
@@ -99,6 +87,8 @@ Column {
                 text: task.title
                 font.bold: true
                 visible: editing
+
+                onTextChanged: task.title = text
             }
         }
 
@@ -156,6 +146,8 @@ Column {
             visible: editing
             placeholderText: "Due Date"
             text: task.dueDate
+
+            onTextChanged: task.dueDate = text
         }
     }
 
@@ -169,9 +161,10 @@ Column {
         autoSize: true
         maximumLineCount: 23
 
-        readOnly: !editing
         text: task.contents
         placeholderText: i18n.tr("Notes")
+
+        onTextChanged: task.contents = text
     }
 
     Button {

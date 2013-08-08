@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=SuperTask Pro
+Name=Tasks
 Comment=My project description
 Exec=/usr/bin/qmlscene $@ /usr/share/SuperTaskPro/SuperTaskPro.qml
 Icon=qmlscene
