@@ -1,0 +1,17 @@
+{
+    "framework": "ubuntu-sdk-13.10",
+    "maintainer": "Michael Spencer",
+    "name": "com.ubuntu.developer.mdspencer.SuperTaskPro",
+    "security": {
+        "profiles": {
+            "SuperTaskPro": {
+                "policy_groups": [
+                    "networking"
+                ],
+                "policy_version": 1
+            }
+        }
+    },
+    "title": "SuperTask Pro",
+    "version": "0.1"
+}
