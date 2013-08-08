@@ -43,6 +43,7 @@ ComposerSheet {
 
             Empty {
                 TextField {
+                    id: titleTextField
                     anchors.fill: parent
                     anchors.margins: units.gu(1)
 
@@ -56,7 +57,7 @@ ComposerSheet {
                 anchors.bottomMargin: units.gu(1)
 
                 TextArea {
-                    id: textField
+                    id: contentsTextField
                     anchors {
                         top: parent.top
                         left: parent.left
@@ -71,6 +72,7 @@ ComposerSheet {
 
             Empty {
                 TextField {
+                    id: dueDateTextField
                     anchors.fill: parent
                     anchors.margins: units.gu(1)
 
@@ -78,10 +80,22 @@ ComposerSheet {
                 }
             }
 
-            ValueSelector {
-                text: i18n.tr("Importance")
-                values: ["Low", "Medium", "High"]
+            Standard {
+                text: i18n.tr("Important")
+                control: CheckBox {
+                    id: importantCheckBox
+                }
             }
         }
+    }
+
+    onConfirmClicked: {
+        newTaskObject({
+                          title: titleTextField.text,
+                          contents: contentsTextField.text,
+                          dueDate: dueDateTextField.text,
+                          creationDate: new Date(),
+                          flagged: importantCheckBox.checked
+                      })
     }
 }

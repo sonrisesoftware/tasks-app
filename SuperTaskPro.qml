@@ -66,25 +66,38 @@ MainView {
         create: true
 
         defaults: {
-
+            tasks: [{}]
         }
     }
 
     function saveTasks() {
+        print("Saving TASKS...")
 
+        var tasks = []
+
+        for (var i = 0; i < tasksModel.count; i++) {
+            var task = tasksModel.get(i).modelData
+            tasks.push(task.toJSON())
+        }
+
+        var tempContents = {}
+        tempContents = tasksDatebase.contents
+        tempContents.tasks = JSON.stringify(tasks)
+        tasksDatebase.contents = tempContents
     }
 
     function loadTasks() {
-        newTaskObject({
-                          title: "Test",
-                          dueDate: "2013-09-15"
-                      })
+        var tasks = JSON.parse(tasksDatebase.contents.tasks)
+
+        for (var i = 0; i < tasks.length; i++) {
+            newTaskObject(tasks[i])
+        }
     }
 
     function newTaskObject(args) {
         var task = taskComponent.createObject(tasksModel, args)
         tasksModel.append({"modelData": task})
-        //tasksModel.push(task)
+
         if (task === null) {
             console.log("Unable to create task object!")
         }

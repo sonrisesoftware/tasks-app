@@ -24,6 +24,17 @@ import QtQuick 2.0
 QtObject {
     id: task
 
+    function toJSON() {
+        return {
+            title: title,
+            contents: contents,
+            dueDate: dueDate,
+            creationDate: creationDate,
+            completed: completed,
+            completionDate: completionDate
+        }
+    }
+
     property string title
     property string contents
     property date dueDate
