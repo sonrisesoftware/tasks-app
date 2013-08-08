@@ -124,11 +124,13 @@ Column {
             anchors {
                 verticalCenter: parent.verticalCenter
                 left: parent.left
-                right: parent.right
+                right: labelButton.left
+                rightMargin: units.gu(2)
             }
             visible: !editing && task.dueDate != null
             font.italic: true
             text: task.dueDateInfo
+            elide: Text.ElideRight
         }
 
         TextField {
@@ -136,7 +138,8 @@ Column {
             anchors {
                 verticalCenter: parent.verticalCenter
                 left: parent.left
-                right: parent.right
+                right: labelButton.left
+                rightMargin: units.gu(2)
             }
 
             visible: editing
@@ -144,6 +147,23 @@ Column {
             text: task.dueDate
 
             onTextChanged: task.dueDate = text
+        }
+
+        Button {
+            id: labelButton
+
+            anchors {
+                verticalCenter: parent.verticalCenter
+                right: parent.right
+            }
+
+            height: dueDateTextField.visible ? dueDateTextField.height : units.gu(3.5)
+
+            text: labelName(task.label)
+
+            color: labelColor(task.label)
+
+            onClicked: PopupUtils.open(labelPopover, labelButton)
         }
     }
 
@@ -174,6 +194,37 @@ Column {
         text: i18n.tr("Done")
         onClicked: {
             editing = false
+        }
+    }
+
+    Component {
+        id: labelPopover
+
+        Popover {
+            id: labelPopoverItem
+            Column {
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: parent.top
+                }
+
+                Header {
+                    text: i18n.tr("Priority")
+                }
+
+                Repeater {
+                    model: labels
+
+                    delegate: Standard {
+                        text: labelName(modelData)
+                        onClicked: {
+                            PopupUtils.close(labelPopoverItem)
+                            task.label = modelData
+                        }
+                    }
+                }
+            }
         }
     }
 }

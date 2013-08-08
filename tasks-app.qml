@@ -199,6 +199,26 @@ MainView {
         saveTasks()
     }
 
+    /* LABEL MANAGEMENT */
+
+    property var labels: ["green", "yellow", "red"]
+
+    function labelName(label) {
+        if (label === "green") {
+            return "Low"
+        } else if (label === "yellow") {
+            return "Medium"
+        } else if (label === "red") {
+            return "High"
+        } else {
+            return "????"
+        }
+    }
+
+    function labelColor(label) {
+        return label
+    }
+
     /* HELPER FUNCTIONS */
 
     function icon(name) {

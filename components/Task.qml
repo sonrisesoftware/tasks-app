@@ -42,7 +42,7 @@ QtObject {
     property date creationDate
     property bool completed
     property date completionDate
-    property color label: "blue" //"transparent"
+    property string label: "green" //"transparent"
 
     property bool flagged
     
