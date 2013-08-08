@@ -1,9 +1,6 @@
 Tasks for Ubuntu Touch
 ======================
 
-Task management for Ubuntu Touch
---------------------------------
-
 ### Installation ###
 
 **Dependencies:**
