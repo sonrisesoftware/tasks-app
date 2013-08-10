@@ -23,89 +23,84 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
-import "../ui"
 
-Empty {
-
+Item {
     id: root
+
+    height: childrenRect.height
 
     property Task task
 
-    Label {
-        id: titleLabel
+    property var items: [
+        {completed: true, text: "Test Item"},
+        {completed: false, text: "ABC"}
+    ]
+
+    Column {
+        id: contents
         anchors {
-            top: parent.top
-            topMargin: units.gu(0.7)
             left: parent.left
-            leftMargin: units.gu(2)
-        }
-
-        text: task.title
-        color: Theme.palette.selected.backgroundText
-    }
-
-    Label {
-        anchors {
-            top: titleLabel.bottom
-            topMargin: units.gu(0.2)
-            left: parent.left
-            leftMargin: units.gu(2)
-        }
-
-        //color: UbuntuColors.warmGrey
-        color: Theme.palette.normal.backgroundText
-        fontSize: "small"
-        font.italic: true
-        text: task.dueDateInfo
-    }
-
-    Rectangle {
-        id: label
-
-        anchors {
-            top: parent.top
-            left: parent.left
-            bottom: parent.bottom
-            topMargin: units.gu(1)
-            bottomMargin: units.gu(1)
-            leftMargin: units.gu(0.5)
-        }
-
-        radius: units.gu(0.4)
-        smooth: true
-
-        width: units.gu(0.8)
-
-        color: task.label
-    }
-
-
-    CheckBox {
-        id: doneCheckBox
-
-        anchors {
-            verticalCenter: parent.verticalCenter
             right: parent.right
-            rightMargin: units.gu(2)
         }
 
-        Connections {
-            target: task
-            onCompletedChanged: doneCheckBox.checked = task.completed
+        spacing: units.gu(1)
+
+        Row {
+            spacing: units.gu(2)
+
+            width: parent.width
+
+            Label {
+                id: checklistLabel
+                text: i18n.tr("Checklist")
+                font.bold: true
+
+                anchors.verticalCenter: parent.verticalCenter
+            }
+
+            ProgressBar {
+                id: progressBar
+
+                anchors.verticalCenter: parent.verticalCenter
+
+                width: parent.width - checklistLabel.width - parent.spacing
+
+                height: units.gu(3)
+
+                value: 0
+                minimumValue: 0
+                maximumValue: root.items.length
+
+                onValueChanged: {
+                    if (value === maximumValue) {
+                        task.completed = true
+                    } else {
+                        task.completed = false
+                    }
+                }
+            }
         }
 
-        onCheckedChanged: task.completed = checked
-    }
 
-    onClicked: {
-        pageStack.push(taskViewPage, {
-                           task: root.task
-                       })
-    }
+        Repeater {
+            model: root.items
 
-    onPressAndHold: {
-        PopupUtils.open(taskActionsPopover, root, {
-                            task: root.task
-                        })
+            delegate: ChecklistItem {
+                listItem: modelData
+
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                }
+
+                onCompletedChanged: {
+                    if (completed) {
+                        progressBar.value += 1
+                    } else {
+                        progressBar.value -= 1
+                    }
+                }
+            }
+        }
     }
 }

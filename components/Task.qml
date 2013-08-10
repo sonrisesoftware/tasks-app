@@ -43,6 +43,7 @@ QtObject {
     property bool completed
     property date completionDate
     property string label: "green" //"transparent"
+    property bool hasChecklist: false
 
     property bool flagged
     
@@ -81,9 +82,11 @@ QtObject {
 
     property string dueDateInfo: task.completed
                                  ? i18n.tr("Completed %1").arg(formattedDate(task.completionDate))
-                                 : task.overdue
-                                   ? i18n.tr("Overdue (due %1)").arg(formattedDate(task.dueDate))
-                                   : i18n.tr("Due %1").arg(formattedDate(task.dueDate))
+                                 : Qt.formatDate(task.dueDate) === ""
+                                   ? i18n.tr("No Due Date")
+                                   : task.overdue
+                                     ? i18n.tr("Overdue (due %1)").arg(formattedDate(task.dueDate))
+                                     : i18n.tr("Due %1").arg(formattedDate(task.dueDate))
 
     function isToday() {
         var today = new Date()

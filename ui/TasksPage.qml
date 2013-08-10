@@ -143,6 +143,18 @@ Page {
                     text: i18n.tr("Delete")
                     onTriggered: task.remove()
                 }
+
+                Action {
+                    id: editAction
+
+                    text: i18n.tr("Edit")
+                    onTriggered: {
+                        pageStack.push(taskViewPage, {
+                                           task: task,
+                                           editing: true
+                                       })
+                    }
+                }
             }
         }
     }

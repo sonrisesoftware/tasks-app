@@ -23,89 +23,70 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
-import "../ui"
 
-Empty {
-
+Item {
     id: root
 
-    property Task task
+    property string labelText: text
+    property alias text: textField.text
+    property bool editing
+
+    height: childrenRect.height
+
+    property alias fontSize: label.fontSize
+    property alias placeholderText: textField.placeholderText
+    property bool bold
+
+//    Connections {
+//        target: root.parent
+//        onEditingChanged: {
+//            root.editing = editing
+//        }
+//    }
 
     Label {
-        id: titleLabel
-        anchors {
-            top: parent.top
-            topMargin: units.gu(0.7)
-            left: parent.left
-            leftMargin: units.gu(2)
-        }
-
-        text: task.title
-        color: Theme.palette.selected.backgroundText
-    }
-
-    Label {
-        anchors {
-            top: titleLabel.bottom
-            topMargin: units.gu(0.2)
-            left: parent.left
-            leftMargin: units.gu(2)
-        }
-
-        //color: UbuntuColors.warmGrey
-        color: Theme.palette.normal.backgroundText
-        fontSize: "small"
-        font.italic: true
-        text: task.dueDateInfo
-    }
-
-    Rectangle {
         id: label
 
         anchors {
-            top: parent.top
             left: parent.left
-            bottom: parent.bottom
-            topMargin: units.gu(1)
-            bottomMargin: units.gu(1)
-            leftMargin: units.gu(0.5)
+            right: parent.right
+            verticalCenter: parent.verticalCenter
         }
 
-        radius: units.gu(0.4)
-        smooth: true
-
-        width: units.gu(0.8)
-
-        color: task.label
+        font.bold: root.labelText != "" ? root.bold : false
+        font.italic: root.labelText === ""
+        elide: Text.ElideRight
+        visible: !editing
+        text: root.labelText != "" ? root.labelText : root.placeholderText
     }
 
+    MouseArea {
+        anchors.fill: parent
 
-    CheckBox {
-        id: doneCheckBox
+        onClicked: {
+            editing = true
+            textField.focus = true
+        }
+    }
+
+    TextField {
+        id: textField
 
         anchors {
-            verticalCenter: parent.verticalCenter
+            left: parent.left
             right: parent.right
-            rightMargin: units.gu(2)
+            verticalCenter: parent.verticalCenter
         }
 
-        Connections {
-            target: task
-            onCompletedChanged: doneCheckBox.checked = task.completed
+        font.bold: root.bold
+        visible: editing
+
+        onFocusChanged:  {
+            if (focus === false) {
+                root.editing = false
+            }
         }
 
-        onCheckedChanged: task.completed = checked
-    }
-
-    onClicked: {
-        pageStack.push(taskViewPage, {
-                           task: root.task
-                       })
-    }
-
-    onPressAndHold: {
-        PopupUtils.open(taskActionsPopover, root, {
-                            task: root.task
-                        })
+        onAccepted: editing = false
     }
 }

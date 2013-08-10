@@ -32,6 +32,8 @@ Page {
 
     property Task task
 
+    property alias editing: taskItem.editing
+
     TaskItem {
         id: taskItem
         task: root.task

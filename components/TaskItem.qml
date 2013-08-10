@@ -42,56 +42,26 @@ Column {
         }
 
         height: completedCheckBox.visible
-                ? Math.max(titleItem.height, completedCheckBox.height)
-                : titleItem.height
+                ? Math.max(titleLabel.height, completedCheckBox.height)
+                : titleLabel.height
 
-        Item {
-            id: titleItem
+        EditableLabel {
+            id: titleLabel
+
+            anchors.verticalCenter: parent.verticalCenter
             anchors {
                 left: parent.left
                 right: completedCheckBox.left
                 rightMargin: units.gu(2)
-                verticalCenter: parent.verticalCenter
             }
 
-            height: Math.max(
-                            titleLabel.visible ? titleLabel.height : 0,
-                            titleTextField.visible ? titleTextField.height : 0
-                        )
+            fontSize: "large"
+            bold: true
+            text: task.title
+            placeholderText: i18n.tr("Title")
 
-            Label {
-                id: titleLabel
-                anchors {
-                    verticalCenter: parent.verticalCenter
-                    left: parent.left
-                    right: parent.right
-                }
-
-                fontSize: "large"
-                font.bold: true
-                text: task.title
-                elide: Text.ElideRight
-                visible: !editing
-            }
-
-            TextField {
-                id: titleTextField
-
-                anchors {
-                    verticalCenter: parent.verticalCenter
-                    left: parent.left
-                    right: parent.right
-                }
-
-                placeholderText: "Title"
-                text: task.title
-                font.bold: true
-                visible: editing
-
-                onTextChanged: task.title = text
-            }
+            onTextChanged: task.title = text
         }
-
 
         CheckBox {
             id: completedCheckBox
@@ -115,9 +85,12 @@ Column {
         }
 
         height: Math.max(
+                    labelButton.visible ? labelButton.height : 0,
+                    Math.max(
                         dueDateLabel.visible ? dueDateLabel.height : 0,
-                        dueDateTextField.visible ? dueDateTextField.height : 0
+                        dueDateField.visible ? dueDateField.height : 0
                     )
+                )
 
         Label {
             id: dueDateLabel
@@ -127,14 +100,15 @@ Column {
                 right: labelButton.left
                 rightMargin: units.gu(2)
             }
-            visible: !editing && task.dueDate != null
+
+            visible: task.completed
             font.italic: true
             text: task.dueDateInfo
             elide: Text.ElideRight
         }
 
-        TextField {
-            id: dueDateTextField
+        Button {
+            id: dueDateField
             anchors {
                 verticalCenter: parent.verticalCenter
                 left: parent.left
@@ -142,11 +116,14 @@ Column {
                 rightMargin: units.gu(2)
             }
 
-            visible: editing
-            placeholderText: "Due Date"
-            text: task.dueDate
+            height: units.gu(4)
 
-            onTextChanged: task.dueDate = text
+            visible: !task.completed
+            text: task.dueDateInfo
+
+            onClicked: PopupUtils.open(Qt.resolvedUrl("DatePicker.qml"), dueDateField, {
+                                           task: task
+                                       })
         }
 
         Button {
@@ -157,7 +134,7 @@ Column {
                 right: parent.right
             }
 
-            height: dueDateTextField.visible ? dueDateTextField.height : units.gu(3.5)
+            height: dueDateField.visible ? dueDateField.height : units.gu(4)
 
             text: labelName(task.label)
 
@@ -181,21 +158,25 @@ Column {
         placeholderText: i18n.tr("Notes")
 
         onTextChanged: task.contents = text
+        readOnly: true
     }
 
-    Button {
-        anchors {
-            left: parent.left
-            right: parent.right
-        }
-
-        visible: editing && !creating
-
-        text: i18n.tr("Done")
-        onClicked: {
-            editing = false
-        }
+    Item {
+        width: parent.width
+        height: units.gu(1)
     }
+
+//    Checklist {
+//        id: checklist
+
+//        task: root.task
+//        visible: task.hasChecklist
+
+//        anchors {
+//            left: parent.left
+//            right: parent.right
+//        }
+//    }
 
     Component {
         id: labelPopover

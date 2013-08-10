@@ -23,89 +23,80 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
-import "../ui"
 
-Empty {
-
+Dialog {
     id: root
+
+    title: i18n.tr("Select Date")
+
+    text: i18n.tr("Please select a due date for '%1'").arg(task.title)
 
     property Task task
 
-    Label {
-        id: titleLabel
-        anchors {
-            top: parent.top
-            topMargin: units.gu(0.7)
-            left: parent.left
-            leftMargin: units.gu(2)
-        }
+    TextField {
+        id: dateField
 
-        text: task.title
-        color: Theme.palette.selected.backgroundText
+        text: Qt.formatDate(task.dueDate)
+
+        placeholderText: i18n.tr("Date")
+
+        onAccepted: okButton.clicked()
     }
 
-    Label {
-        anchors {
-            top: titleLabel.bottom
-            topMargin: units.gu(0.2)
-            left: parent.left
-            leftMargin: units.gu(2)
-        }
+    Button {
+        id: okButton
+        objectName: "okButton"
 
-        //color: UbuntuColors.warmGrey
-        color: Theme.palette.normal.backgroundText
-        fontSize: "small"
-        font.italic: true
-        text: task.dueDateInfo
+//        gradient: Gradient {
+//            GradientStop {
+//                position: 0
+//                color: "green"//Qt.rgba(0,0.7,0,1)
+//            }
+
+//            GradientStop {
+//                position: 1
+//                color: Qt.rgba(0.3,0.7,0.3,1)
+//            }
+//        }
+
+        text: i18n.tr("Ok")
+        enabled: dateField.acceptableInput
+
+        onClicked: {
+            print("User selected date:", dateField.text)
+
+            if (dateField.text.toLowerCase() === i18n.tr("Today").toLowerCase()) {
+                var today = new Date()
+                today.setHours(0)
+                today.setMinutes(0)
+                today.setSeconds(0)
+                task.dueDate = today
+            } else {
+                task.dueDate = new Date(dateField.text)
+            }
+
+            PopupUtils.close(root)
+        }
     }
 
-    Rectangle {
-        id: label
+    Button {
+        objectName: "cancelButton"
+        text: i18n.tr("Cancel")
 
-        anchors {
-            top: parent.top
-            left: parent.left
-            bottom: parent.bottom
-            topMargin: units.gu(1)
-            bottomMargin: units.gu(1)
-            leftMargin: units.gu(0.5)
+        gradient: Gradient {
+            GradientStop {
+                position: 0
+                color: "gray"
+            }
+
+            GradientStop {
+                position: 1
+                color: "lightgray"
+            }
         }
 
-        radius: units.gu(0.4)
-        smooth: true
-
-        width: units.gu(0.8)
-
-        color: task.label
-    }
-
-
-    CheckBox {
-        id: doneCheckBox
-
-        anchors {
-            verticalCenter: parent.verticalCenter
-            right: parent.right
-            rightMargin: units.gu(2)
+        onClicked: {
+            PopupUtils.close(root)
         }
-
-        Connections {
-            target: task
-            onCompletedChanged: doneCheckBox.checked = task.completed
-        }
-
-        onCheckedChanged: task.completed = checked
-    }
-
-    onClicked: {
-        pageStack.push(taskViewPage, {
-                           task: root.task
-                       })
-    }
-
-    onPressAndHold: {
-        PopupUtils.open(taskActionsPopover, root, {
-                            task: root.task
-                        })
     }
 }
