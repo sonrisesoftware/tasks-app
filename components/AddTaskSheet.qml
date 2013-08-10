@@ -31,7 +31,7 @@ ComposerSheet {
 
     TaskItem {
         id: taskItem
-        task: createTask()
+        task: newTask()
         anchors.fill: parent
 
         editing: true

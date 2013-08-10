@@ -28,7 +28,7 @@ import "../components"
 Page {
     id: root
 
-    title: i18n.tr("View Task")
+    title: task.category
 
     property Task task
 

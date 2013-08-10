@@ -28,12 +28,13 @@ import "../components"
 Page {
     id: root
 
-    title: taskList.title
-
-    property TaskList taskList
+    title: category
 
     property string noneMessage: i18n.tr("No tasks!")
-    property var model: taskList.tasks
+    property var model: filteredTasks(function(task) {
+        return (category === "" || task.category === root.category) && (showCompletedTasks || !task.completed)
+    })
+    property string category
 
     actions: [
         Action {
@@ -49,6 +50,16 @@ Page {
 
     ]
 
+    function length() {
+        if (model.hasOwnProperty("count")) {
+            print(model.count)
+            return model.count
+        } else {
+            print(model.length)
+            return model.length
+        }
+    }
+
     ListView {
         id: taskListView
         objectName: "taskListView"
@@ -62,7 +73,7 @@ Page {
 
         clip: true
 
-        model: taskList.tasks
+        model: root.model
 
         delegate: TaskListItem {
             objectName: "task" + index
@@ -117,7 +128,7 @@ Page {
             placeholderText: i18n.tr("Add New Task")
 
             onAccepted: {
-                taskList.addTask({title: addField.text})
+                addTask({title: addField.text})
                 addField.text = ""
             }
         }
@@ -129,20 +140,17 @@ Page {
 
         anchors.centerIn: parent
 
-        visible: taskList.length(root.model) === 0
+        visible: length() === 0
+        onVisibleChanged: {
+            print("Visible?", visible, length())
+        }
+
         fontSize: "large"
 
         text: root.noneMessage
     }
 
     tools: ToolbarItems {
-        back: ToolbarButton {
-            text: "Actions"
-            iconSource: icon("edit")
-            onTriggered: {
-                PopupUtils.open(listActionsPopover, caller)
-            }
-        }
 
 
         ToolbarButton {
@@ -199,34 +207,6 @@ Page {
                     onTriggered: task.remove()
                 }
             }
-        }
-    }
-
-    Component {
-        id: listActionsPopover
-
-        ActionSelectionPopover {
-            property var list
-
-            actions: ActionList {
-                Action {
-                    text: i18n.tr("Delete List")
-                    onTriggered: taskList.remove()
-                }
-
-                Action {
-                    text: i18n.tr("New List")
-                    onTriggered: PopupUtils.open(addTaskListDialog, caller)
-                }
-            }
-        }
-    }
-
-    Component {
-        id: addTaskListDialog
-
-        AddTaskListDialog {
-
         }
     }
 }

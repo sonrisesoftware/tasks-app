@@ -63,13 +63,21 @@ MainView {
         Tabs {
             id: tabs
 
+            Tab {
+                title: page.title
+                page: TasksPage {
+                    title: i18n.tr("All Tasks")
+                    category: ""
+                }
+            }
+
             Repeater {
-                model: taskListsModel
+                model: categories
 
                 delegate: Tab {
                     title: page.title
                     page: TasksPage {
-                        taskList: modelData
+                        category: modelData
                     }
                 }
             }
@@ -90,100 +98,106 @@ MainView {
         create: true
 
         defaults: {
-            taskLists: [
-            {
-                title: "Todo",
-                tasks: [
-                    {
-                               title: "Blah"
-                    }
-                ]
-            }
-            ]
+            tasks: []
         }
     }
 
     ListModel {
-        id: taskListsModel
+        id: taskListModel
     }
 
-    function removeTaskList(taskList) {
-        for (var i = 0; i < taskListsModel.count; i++) {
-            if (taskListsModel.get(i).modelData === taskList) {
-                taskListsModel.remove(i)
-                break
+    function addTask(args) {
+        print("ADDING TASK:", args)
+        var task = taskComponent.createObject(root, args)
+
+        if (task === null) {
+            console.log("Unable to create task!")
+        }
+
+        taskListModel.append({"modelData": task})
+    }
+
+    function newTask() {
+        return taskComponent.createObject(root)
+    }
+
+    function removeTask(task) {
+        for (var i = 0; i < taskListModel.count; i++) {
+            if (taskListModel.get(i).modelData === task) {
+                taskListModel.remove(i)
+                return
+            }
+        }
+    }
+
+    property var categories: {
+        var categories = []
+
+        print("Updating Categories...")
+
+        for (var i = 0; i < taskListModel.count; i++) {
+            var task = taskListModel.get(i).modelData
+            if (task.category !== "" && categories.indexOf(task.category) == -1) {
+                print(task.category)
+                categories.push(task.category)
             }
         }
 
-        if (taskListsModel.count === 0) {
-            newTaskListObject({
-                                  title: i18n.tr("Tasks")
-                              })
-        }
+        print(categories)
+        return categories
     }
 
-    function saveTaskLists() {
-        print("Saving Task lists...")
+    function saveTasks() {
+        print("Saving Tasks...")
 
-        var lists = []
+        var tasks = []
 
-        for (var i = 0; i < taskListsModel.count; i++) {
-            var list = taskListsModel.get(i).modelData
-            print("Saving List:", list.title)
-            lists.push(list.toJSON())
+        for (var i = 0; i < taskListModel.count; i++) {
+            var task = taskListModel.get(i).modelData
+            print("Saving task:", task.title)
+            tasks.push(task.toJSON())
         }
-        print("Lists:", lists)
 
         var tempContents = {}
         tempContents = tasksDatebase.contents
-        tempContents.taskLists = JSON.stringify(lists)
+        tempContents.tasks = JSON.stringify(tasks)
+        print(tempContents.tasks)
         tasksDatebase.contents = tempContents
     }
 
-    function loadTaskLists() {
-        print("Loading lists...")
-        var taskLists = JSON.parse(tasksDatebase.contents.taskLists)
-        print(taskLists)
+    function filteredTasks(filter) {
+        //print("Filtering...")
+        var tasks = []
 
-        for (var i = 0; i < taskLists.length; i++) {
-            newTaskListObject(taskLists[i])
+        //print("Filtered:", tasks)
+        for (var i = 0; i < taskListModel.count; i++) {
+            var task = taskListModel.get(i).modelData
+            if (filter(task))
+                tasks.push(task)
         }
 
-        if (taskListsModel.count === 0) {
-            newTaskListObject({
-                                  title: i18n.tr("Tasks")
-                              })
-        }
+        //print("Filtered:", tasks)
+
+        return tasks
     }
 
-    function newTaskListObject(args) {
-        print("Creating new list: ", args)
-        var taskList = taskListComponent.createObject(root)
-        taskList.loadJSON(args)
+    function loadTasks() {
+        print("Loading lists...")
+        var tasks = JSON.parse(tasksDatebase.contents.tasks)
+        print(tasks)
 
-        if (taskList === null) {
-            console.log("Unable to create task object!")
+        for (var i = 0; i < tasks.length; i++) {
+            addTask(tasks[i])
         }
-
-        taskListsModel.append({modelData: taskList})
-        tabs.selectedTabIndex = taskListsModel.count - 1
     }
 
     Component {
-        id: taskListComponent
-
-        TaskList {
-
-        }
-    }
-
-    /*Component {
         id: taskComponent
 
         Task {
 
         }
-    }*/
+    }
 
     /* SETTINGS */
 
@@ -239,12 +253,12 @@ MainView {
 
     Component.onCompleted: {
         reloadSettings()
-        loadTaskLists()
+        loadTasks()
         tabs.selectedTabIndex = 0
     }
 
     Component.onDestruction: {
-        saveTaskLists()
+        saveTasks()
     }
 
     /* LABEL MANAGEMENT */
