@@ -159,7 +159,6 @@ Column {
         placeholderText: i18n.tr("Notes")
 
         onTextChanged: task.contents = text
-        readOnly: true
     }
 
     Item {

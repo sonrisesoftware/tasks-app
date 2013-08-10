@@ -32,11 +32,13 @@ QtObject {
             creationDate: task.creationDate,
             completed: task.completed,
             completionDate: task.completionDate,
-            label: task.label
+            label: task.label,
+            category: task.category
         }
     }
 
     property string title
+    property string category
     property string contents
     property date dueDate
     property date creationDate

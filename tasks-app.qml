@@ -122,7 +122,7 @@ MainView {
         }
     }
 
-    function saveTasks() {
+    function saveTaskLists() {
         print("Saving Task lists...")
 
         var lists = []
@@ -140,8 +140,7 @@ MainView {
         tasksDatebase.contents = tempContents
     }
 
-    function loadTasks() {
-
+    function loadTaskLists() {
         print("Loading lists...")
         var taskLists = JSON.parse(tasksDatebase.contents.taskLists)
         print(taskLists)
@@ -167,6 +166,7 @@ MainView {
         }
 
         taskListsModel.append({modelData: taskList})
+        tabs.selectedTabIndex = taskListsModel.count - 1
     }
 
     Component {
@@ -239,11 +239,12 @@ MainView {
 
     Component.onCompleted: {
         reloadSettings()
-        loadTasks()
+        loadTaskLists()
+        tabs.selectedTabIndex = 0
     }
 
     Component.onDestruction: {
-        saveTasks()
+        saveTaskLists()
     }
 
     /* LABEL MANAGEMENT */
