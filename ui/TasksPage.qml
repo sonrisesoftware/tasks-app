@@ -82,14 +82,15 @@ Page {
 //        }
     }
 
-    Item {
+    Rectangle {
         id: addBar
         anchors {
-            top: addBarDivider.top
             left: parent.left
             right: parent.right
             bottom: parent.bottom
         }
+
+        height: addField.height + addBarDivider.height + units.gu(2)
 
         ThinDivider {
             id: addBarDivider
