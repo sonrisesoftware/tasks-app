@@ -18,4 +18,4 @@ check:
 	qmltestrunner -input tests/unit
 
 run:
-	/usr/bin/qmlscene $@ SuperTaskPro.qml
+	/usr/bin/qmlscene $@ tasks-app.qml

@@ -36,3 +36,7 @@ Day 3 - 8/9/2013
  * Initial custom date picker
  * Concepts for checklists
  * Completing a task from the task list
+
+Day 4 - 8/10/2013
+
+ * Quick add task field in tasks list

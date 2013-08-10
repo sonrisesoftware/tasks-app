@@ -53,7 +53,12 @@ Page {
         id: tasksListView
         objectName: "tasksListView"
 
-        anchors.fill: parent
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+            bottom: addBar.top
+        }
 
         model: root.model
 
@@ -75,6 +80,46 @@ Page {
 
 //            }
 //        }
+    }
+
+    Item {
+        id: addBar
+        anchors {
+            top: addBarDivider.top
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+        }
+
+        ThinDivider {
+            id: addBarDivider
+
+            anchors {
+                left: parent.left
+                right: parent.right
+                bottom: addField.top
+                bottomMargin: units.gu(1)
+            }
+        }
+
+        TextField {
+            id: addField
+            anchors {
+                left: parent.left
+                right: parent.right
+                bottom: parent.bottom
+                margins: units.gu(1)
+            }
+
+            placeholderText: i18n.tr("Add New Task")
+
+            onAccepted: {
+                newTaskObject({
+                                  title: addField.text
+                              })
+                addField.text = ""
+            }
+        }
     }
 
     Label {
