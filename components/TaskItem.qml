@@ -59,6 +59,7 @@ Column {
             bold: true
             text: task.title
             placeholderText: i18n.tr("Title")
+            parentEditing: root.editing
 
             onTextChanged: task.title = text
         }

@@ -31,18 +31,20 @@ Item {
     property alias text: textField.text
     property bool editing
 
+    onEditingChanged: {
+        if (editing)
+            textField.focus = true
+    }
+
+    property bool parentEditing
+
+    onParentEditingChanged: editing = parentEditing
+
     height: childrenRect.height
 
     property alias fontSize: label.fontSize
     property alias placeholderText: textField.placeholderText
     property bool bold
-
-//    Connections {
-//        target: root.parent
-//        onEditingChanged: {
-//            root.editing = editing
-//        }
-//    }
 
     Label {
         id: label
@@ -56,7 +58,7 @@ Item {
         font.bold: root.labelText != "" ? root.bold : false
         font.italic: root.labelText === ""
         elide: Text.ElideRight
-        visible: !editing
+        visible: !(editing || parentEditing)
         text: root.labelText != "" ? root.labelText : root.placeholderText
     }
 
@@ -65,7 +67,6 @@ Item {
 
         onClicked: {
             editing = true
-            textField.focus = true
         }
     }
 
@@ -79,7 +80,7 @@ Item {
         }
 
         font.bold: root.bold
-        visible: editing
+        visible: editing || parentEditing
 
         onFocusChanged:  {
             if (focus === false) {

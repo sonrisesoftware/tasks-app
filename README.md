@@ -29,3 +29,8 @@ Day 2 - 8/8/2013
  * Storage of tasks and settings in U1db
  * Color coded labels
  * Hiding of completed tasks
+
+Day 3 - 8/9/2013
+
+ * Improved editing of tasks
+ * Worked on initial custom date picker

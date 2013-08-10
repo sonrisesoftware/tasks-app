@@ -28,7 +28,7 @@ import "../components"
 Page {
     id: root
 
-    title: taskItem.editing ? i18n.tr("Edit Task") : i18n.tr("View Task")
+    title: i18n.tr("View Task")
 
     property Task task
 
@@ -42,14 +42,6 @@ Page {
     }
 
     tools: ToolbarItems {
-        ToolbarButton {
-            text: i18n.tr("Edit")
-            iconSource: icon("edit")
-            visible: !taskItem.editing
-            onTriggered: {
-                taskItem.editing = true
-            }
-        }
 
         ToolbarButton {
             text: i18n.tr("Delete")
