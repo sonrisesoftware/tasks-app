@@ -29,9 +29,11 @@ ComposerSheet {
 
     title: i18n.tr("Add Task")
 
+    property string category
+
     TaskItem {
         id: taskItem
-        task: newTask()
+        task: newTask({category: root.category})
         anchors.fill: parent
 
         editing: true

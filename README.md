@@ -40,4 +40,5 @@ Day 3 - 8/9/2013
 Day 4 - 8/10/2013
 
  * Quick add task field in tasks list
- * Multiple lists
+ * Multiple lists (categories)
+

@@ -1,6 +1,6 @@
 /***************************************************************************
  * Whatsoever ye do in word or deed, do all in the name of the             *
- * Lord Jesus, giving thanks to God and the Father by him.                 *
+ * Lord Jesus, giving thanks to okd and the Father by him.                 *
  * - Colossians 3:17                                                       *
  *                                                                         *
  * SuperTask Pro - A task management system for Ubuntu Touch               *
@@ -23,42 +23,66 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
-import "../components"
 
-Page {
+Dialog {
     id: root
 
-    title: task.category
+    signal accepted
+    signal rejected
 
-    property Task task
+    property alias value: textField.text
+    property alias placeholderText: textField.placeholderText
 
-    property alias editing: taskItem.editing
+    TextField {
+        id: textField
 
-    TaskItem {
-        id: taskItem
-        task: root.task
-        anchors.fill: parent
-        anchors.margins: units.gu(2)
+        onAccepted: okButton.clicked()
     }
 
-    tools: ToolbarItems {
-        ToolbarButton {
-            text: i18n.tr("Move")
-            iconSource: icon("location")
-            onTriggered: {
-                PopupUtils.open(moveTaskDialog, caller, {
-                                    task: root.task
-                                })
+    Button {
+        id: okButton
+        objectName: "okButton"
+
+//        gradient: Gradient {
+//            GradientStop {
+//                position: 0
+//                color: "green"//Qt.rgba(0,0.7,0,1)
+//            }
+
+//            GradientStop {
+//                position: 1
+//                color: Qt.rgba(0.3,0.7,0.3,1)
+//            }
+//        }
+
+        text: i18n.tr("Ok")
+        enabled: textField.acceptableInput
+
+        onClicked: {
+            PopupUtils.close(root)
+            accepted()
+        }
+    }
+
+    Button {
+        objectName: "cancelButton"
+        text: i18n.tr("Cancel")
+
+        gradient: Gradient {
+            GradientStop {
+                position: 0
+                color: "gray"
+            }
+
+            GradientStop {
+                position: 1
+                color: "lightgray"
             }
         }
 
-        ToolbarButton {
-            text: i18n.tr("Delete")
-            iconSource: icon("delete")
-            onTriggered: {
-                pageStack.pop()
-                task.remove()
-            }
+        onClicked: {
+            PopupUtils.close(root)
+            rejected()
         }
     }
 }

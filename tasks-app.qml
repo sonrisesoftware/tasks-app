@@ -117,8 +117,8 @@ MainView {
         taskListModel.append({"modelData": task})
     }
 
-    function newTask() {
-        return taskComponent.createObject(root)
+    function newTask(args) {
+        return taskComponent.createObject(root, args)
     }
 
     function removeTask(task) {

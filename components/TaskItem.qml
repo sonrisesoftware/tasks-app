@@ -35,6 +35,22 @@ Column {
 
     spacing: units.gu(2)
 
+    TextField {
+        id: categoryField
+
+        anchors {
+            left: parent.left
+            right: parent.right
+        }
+
+        font.bold: true
+        text: task.category
+        placeholderText: i18n.tr("Category")
+
+        visible: editing
+        onTextChanged: task.category = text
+    }
+
     Item {
         anchors {
             left: parent.left

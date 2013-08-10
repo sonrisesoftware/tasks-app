@@ -44,7 +44,7 @@ Page {
             text: i18n.tr("Add")
 
             onTriggered: {
-                PopupUtils.open(addTaskSheet, root)
+                PopupUtils.open(addTaskSheet, root, { category: root.category })
             }
         }
 
@@ -128,7 +128,7 @@ Page {
             placeholderText: i18n.tr("Add New Task")
 
             onAccepted: {
-                addTask({title: addField.text})
+                addTask({title: addField.text, category: root.category})
                 addField.text = ""
             }
         }
@@ -206,6 +206,23 @@ Page {
                     text: i18n.tr("Delete")
                     onTriggered: task.remove()
                 }
+            }
+        }
+    }
+
+    Component {
+        id: moveTaskDialog
+
+        InputDialog {
+            property var task
+
+            title: i18n.tr("Move Task")
+
+            value: task.category
+            placeholderText: i18n.tr("Category")
+
+            onAccepted: {
+                task.category = value
             }
         }
     }
