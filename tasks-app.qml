@@ -46,6 +46,17 @@ MainView {
     width: units.gu(50)
     height: units.gu(75)
 
+    // Colors from Calculator app
+//    headerColor: "#323A5D"
+//    backgroundColor: "#6A6AA1"
+//    footerColor: "#6899D7"
+
+    //backgroundColor: "#FCFF95"
+    //backgroundColor: "#FFFFBB"
+    //footerColor: "#FFFCD7"
+
+    property var pageStack: pageStack
+
     PageStack {
         id: pageStack
 
@@ -58,15 +69,16 @@ MainView {
                 delegate: Tab {
                     title: page.title
                     page: TasksPage {
-                        tasksList: modelData
+                        taskList: modelData
                     }
                 }
             }
+
+            visible: false
         }
 
-        //Component.onCompleted: pageStack.push(tabs)
+        Component.onCompleted: pageStack.push(tabs)
     }
-
 
     /* TASK MANAGEMENT */
 
@@ -95,6 +107,21 @@ MainView {
         id: taskListsModel
     }
 
+    function removeTaskList(taskList) {
+        for (var i = 0; i < taskListsModel.count; i++) {
+            if (taskListsModel.get(i).modelData === taskList) {
+                taskListsModel.remove(i)
+                break
+            }
+        }
+
+        if (taskListsModel.count === 0) {
+            newTaskListObject({
+                                  title: i18n.tr("Tasks")
+                              })
+        }
+    }
+
     function saveTasks() {
         print("Saving Task lists...")
 
@@ -102,8 +129,10 @@ MainView {
 
         for (var i = 0; i < taskListsModel.count; i++) {
             var list = taskListsModel.get(i).modelData
+            print("Saving List:", list.title)
             lists.push(list.toJSON())
         }
+        print("Lists:", lists)
 
         var tempContents = {}
         tempContents = tasksDatebase.contents
@@ -112,24 +141,25 @@ MainView {
     }
 
     function loadTasks() {
+
         print("Loading lists...")
         var taskLists = JSON.parse(tasksDatebase.contents.taskLists)
-        newTaskListObject({
-                              title: "Test",
-                              tasks: [{
-                                      title: "Blah"
-                              }]
-                          })
+        print(taskLists)
 
         for (var i = 0; i < taskLists.length; i++) {
             newTaskListObject(taskLists[i])
+        }
+
+        if (taskListsModel.count === 0) {
+            newTaskListObject({
+                                  title: i18n.tr("Tasks")
+                              })
         }
     }
 
     function newTaskListObject(args) {
         print("Creating new list: ", args)
         var taskList = taskListComponent.createObject(root)
-        taskList.app = root
         taskList.loadJSON(args)
 
         if (taskList === null) {
@@ -147,13 +177,13 @@ MainView {
         }
     }
 
-    Component {
+    /*Component {
         id: taskComponent
 
         Task {
 
         }
-    }
+    }*/
 
     /* SETTINGS */
 
@@ -233,7 +263,11 @@ MainView {
     }
 
     function labelColor(label) {
-        return label
+        if (label === "green") {
+            return "#59B159"
+        } else {
+            return label
+        }
     }
 
     /* HELPER FUNCTIONS */

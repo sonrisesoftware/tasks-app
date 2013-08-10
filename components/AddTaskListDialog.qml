@@ -20,82 +20,71 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.    *
  ***************************************************************************/
 import QtQuick 2.0
+import Ubuntu.Components 0.1
+import Ubuntu.Components.ListItems 0.1
+import Ubuntu.Components.Popups 0.1
 
-Item {
+Dialog {
     id: root
 
-    property string title
+    title: i18n.tr("New Task List")
 
-    property var tasks: taskListModel
+    text: i18n.tr("Enter a title:")
 
+    TextField {
+        id: titleField
 
-    ListModel {
-        id: taskListModel
+        placeholderText: i18n.tr("Title")
+
+        onAccepted: okButton.clicked()
     }
 
-    function loadJSON(json) {
-        title = json.title
+    Button {
+        id: okButton
+        objectName: "okButton"
 
-        if (json.hasOwnProperty("tasks")) {
-            for (var i = 0; i < json.tasks.length; i++) {
-                addTask(json.tasks[i])
+//        gradient: Gradient {
+//            GradientStop {
+//                position: 0
+//                color: "green"//Qt.rgba(0,0.7,0,1)
+//            }
+
+//            GradientStop {
+//                position: 1
+//                color: Qt.rgba(0.3,0.7,0.3,1)
+//            }
+//        }
+
+        text: i18n.tr("Ok")
+        enabled: titleField.acceptableInput
+
+        onClicked: {
+            newTaskListObject({
+                                  title: titleField.text
+                              })
+
+            PopupUtils.close(root)
+        }
+    }
+
+    Button {
+        objectName: "cancelButton"
+        text: i18n.tr("Cancel")
+
+        gradient: Gradient {
+            GradientStop {
+                position: 0
+                color: "gray"
+            }
+
+            GradientStop {
+                position: 1
+                color: "lightgray"
             }
         }
-    }
 
-    function toJSON() {
-        var json = {}
-
-        json.title = title
-        json.tasks = []
-
-        for (var i = 0; i < taskListModel.count; i++) {
-            json.tasks.push(taskListModel.get(i).modelData)
-        }
-
-        return json
-    }
-
-    function length() {
-        if (tasks.hasOwnProperty("count")) {
-            return tasks.count
-        } else {
-            return tasks.length
-        }
-    }
-
-    function addTask(args) {
-        var task = taskComponent.createObject(root, args)
-
-        if (task === null) {
-            console.log("Unable to create task!")
-        }
-
-        taskListModel.append({"modelData": task})
-    }
-
-    function newTask() {
-        return taskComponent.createObject(root)
-    }
-
-    function removeTask(task) {
-        for (var i = 0; i < taskListModel.count; i++) {
-            if (taskListModel.get(i).modelData === task) {
-                taskListModel.remove(i)
-                return
-            }
-        }
-    }
-
-    function remove() {
-        removeTaskList(root)
-    }
-
-    Component {
-        id: taskComponent
-
-        Task {
-
+        onClicked: {
+            PopupUtils.close(root)
         }
     }
 }

@@ -28,14 +28,12 @@ import "../components"
 Page {
     id: root
 
-    title: tasksList.title
+    title: taskList.title
 
-    property TaskList tasksList
+    property TaskList taskList
 
     property string noneMessage: i18n.tr("No tasks!")
-    property var model: showCompletedTasks
-                        ? tasksList.model
-                        : tasksList.filteredTasks(function(task) { return !task.completed })
+    property var model: taskList.tasks
 
     actions: [
         Action {
@@ -52,8 +50,8 @@ Page {
     ]
 
     ListView {
-        id: tasksListView
-        objectName: "tasksListView"
+        id: taskListView
+        objectName: "taskListView"
 
         anchors {
             top: parent.top
@@ -64,30 +62,30 @@ Page {
 
         clip: true
 
-        model: root.model
+        model: taskList.tasks
 
         delegate: TaskListItem {
             objectName: "task" + index
 
             task: modelData
-            //text: title
         }
-
-//        header: Subtitled {
-//            text: "Blah"
-//            subText: "Due Today"
-//        }
-
-//        footer: Standard {
-//            text: "Control"
-//            control: CheckBox {
-
-//            }
-//        }
     }
 
     Rectangle {
         id: addBar
+
+//        gradient: Gradient {
+//            GradientStop {
+//                position: 0
+//                color: "darkgray"
+//            }
+
+//            GradientStop {
+//                position: 1
+//                color: "gray"
+//            }
+//        }
+
         anchors {
             left: parent.left
             right: parent.right
@@ -119,9 +117,7 @@ Page {
             placeholderText: i18n.tr("Add New Task")
 
             onAccepted: {
-                tasksList.newTaskObject({
-                                  title: addField.text
-                              })
+                taskList.addTask({title: addField.text})
                 addField.text = ""
             }
         }
@@ -133,13 +129,22 @@ Page {
 
         anchors.centerIn: parent
 
-        visible: tasksList.length(root.model) === 0
+        visible: taskList.length(root.model) === 0
         fontSize: "large"
 
         text: root.noneMessage
     }
 
     tools: ToolbarItems {
+        back: ToolbarButton {
+            text: "Actions"
+            iconSource: icon("edit")
+            onTriggered: {
+                PopupUtils.open(listActionsPopover, caller)
+            }
+        }
+
+
         ToolbarButton {
             action: addAction
         }
@@ -194,6 +199,34 @@ Page {
                     onTriggered: task.remove()
                 }
             }
+        }
+    }
+
+    Component {
+        id: listActionsPopover
+
+        ActionSelectionPopover {
+            property var list
+
+            actions: ActionList {
+                Action {
+                    text: i18n.tr("Delete List")
+                    onTriggered: taskList.remove()
+                }
+
+                Action {
+                    text: i18n.tr("New List")
+                    onTriggered: PopupUtils.open(addTaskListDialog, caller)
+                }
+            }
+        }
+    }
+
+    Component {
+        id: addTaskListDialog
+
+        AddTaskListDialog {
+
         }
     }
 }

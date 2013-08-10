@@ -76,7 +76,19 @@ Empty {
 
         width: units.gu(0.8)
 
-        color: task.label
+        color: labelColor(task.label)
+
+//        gradient: Gradient {
+//            GradientStop {
+//                position: 0
+//                color: Qt.lighter(task.label, 1.2)
+//            }
+
+//            GradientStop {
+//                position: 1
+//                color: Qt.darker(task.label, 1.2)
+//            }
+//        }
     }
 
 
@@ -95,7 +107,7 @@ Empty {
     }
 
     onClicked: {
-        app.pageStack.push(taskViewPage, {
+        pageStack.push(taskViewPage, {
                            task: root.task
                        })
     }
