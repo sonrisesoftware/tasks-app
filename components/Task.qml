@@ -26,13 +26,13 @@ QtObject {
 
     function toJSON() {
         return {
-            title: title,
-            contents: contents,
-            dueDate: dueDate,
-            creationDate: creationDate,
-            completed: completed,
-            completionDate: completionDate,
-            label: label
+            title: task.title,
+            contents: task.contents,
+            dueDate: task.dueDate,
+            creationDate: task.creationDate,
+            completed: task.completed,
+            completionDate: task.completionDate,
+            label: task.label
         }
     }
 

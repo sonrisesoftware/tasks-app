@@ -95,7 +95,7 @@ Empty {
     }
 
     onClicked: {
-        pageStack.push(taskViewPage, {
+        app.pageStack.push(taskViewPage, {
                            task: root.task
                        })
     }

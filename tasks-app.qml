@@ -27,6 +27,8 @@ import "ui"
 import "components"
 
 MainView {
+    id: root
+
     // objectName for functional testing purposes (autopilot-qt5)
     objectName: "mainView"
     
@@ -38,6 +40,8 @@ MainView {
      when the device is rotated. The default is false.
     */
     automaticOrientation: true
+
+    anchorToKeyboard: true
     
     width: units.gu(50)
     height: units.gu(75)
@@ -45,14 +49,22 @@ MainView {
     PageStack {
         id: pageStack
 
-        TasksPage {
-            id: tasksPage
-            objectName: "tasksPage"
+        Tabs {
+            id: tabs
 
-            visible: false
+            Repeater {
+                model: taskListsModel
+
+                delegate: Tab {
+                    title: page.title
+                    page: TasksPage {
+                        tasksList: modelData
+                    }
+                }
+            }
         }
 
-        Component.onCompleted: pageStack.push(tasksPage)
+        //Component.onCompleted: pageStack.push(tabs)
     }
 
 
@@ -66,60 +78,72 @@ MainView {
         create: true
 
         defaults: {
-            tasks: [{}]
+            taskLists: [
+            {
+                title: "Todo",
+                tasks: [
+                    {
+                               title: "Blah"
+                    }
+                ]
+            }
+            ]
         }
     }
 
+    ListModel {
+        id: taskListsModel
+    }
+
     function saveTasks() {
-        print("Saving TASKS...")
+        print("Saving Task lists...")
 
-        var tasks = []
+        var lists = []
 
-        for (var i = 0; i < tasksModel.count; i++) {
-            var task = tasksModel.get(i).modelData
-            tasks.push(task.toJSON())
+        for (var i = 0; i < taskListsModel.count; i++) {
+            var list = taskListsModel.get(i).modelData
+            lists.push(list.toJSON())
         }
 
         var tempContents = {}
         tempContents = tasksDatebase.contents
-        tempContents.tasks = JSON.stringify(tasks)
+        tempContents.taskLists = JSON.stringify(lists)
         tasksDatebase.contents = tempContents
     }
 
     function loadTasks() {
-        var tasks = JSON.parse(tasksDatebase.contents.tasks)
+        print("Loading lists...")
+        var taskLists = JSON.parse(tasksDatebase.contents.taskLists)
+        newTaskListObject({
+                              title: "Test",
+                              tasks: [{
+                                      title: "Blah"
+                              }]
+                          })
 
-        for (var i = 0; i < tasks.length; i++) {
-            newTaskObject(tasks[i])
+        for (var i = 0; i < taskLists.length; i++) {
+            newTaskListObject(taskLists[i])
         }
     }
 
-    function addTask(task) {
-        tasksModel.append({"modelData": task})
-    }
+    function newTaskListObject(args) {
+        print("Creating new list: ", args)
+        var taskList = taskListComponent.createObject(root)
+        taskList.app = root
+        taskList.loadJSON(args)
 
-    function createTask() {
-        return taskComponent.createObject()
-    }
-
-    function newTaskObject(args) {
-        var task = taskComponent.createObject(tasksModel, args)
-
-        if (task === null) {
+        if (taskList === null) {
             console.log("Unable to create task object!")
         }
 
-        tasksModel.append({"modelData": task})
+        taskListsModel.append({modelData: taskList})
     }
 
-    function removeTask(task) {
-        for (var i = 0; i < tasksModel.count; i++) {
-            var item = tasksModel.get(i).modelData
-            if (item === task) {
-                tasksModel.remove(i)
-                item.destroy()
-                return
-            }
+    Component {
+        id: taskListComponent
+
+        TaskList {
+
         }
     }
 
@@ -131,27 +155,6 @@ MainView {
         }
     }
 
-    ListModel {
-        id: tasksModel
-    }
-
-    function filteredTasks(func) {
-        var list = []
-        for (var i = 0; i < tasksModel.count; i++) {
-            if (func(tasksModel.get(i).modelData)) list.push(tasksModel.get(i).modelData)
-        }
-        print("List count:", list.length)
-        return list
-    }
-
-    function modelLength(model) {
-        if (model.hasOwnProperty("count")) {
-            return model.count
-        } else {
-            return model.length
-        }
-    }
-
     /* SETTINGS */
 
     property bool showCompletedTasks
@@ -160,7 +163,7 @@ MainView {
 
     U1db.Database {
         id: storage
-        path: "supertaskpro"
+        path: "tasks-app"
     }
 
     U1db.Document {

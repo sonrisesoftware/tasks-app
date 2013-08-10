@@ -28,12 +28,14 @@ import "../components"
 Page {
     id: root
 
-    title: i18n.tr("Tasks")
+    title: tasksList.title
+
+    property TaskList tasksList
 
     property string noneMessage: i18n.tr("No tasks!")
     property var model: showCompletedTasks
-                        ? tasksModel
-                        : filteredTasks(function(task) { return !task.completed })
+                        ? tasksList.model
+                        : tasksList.filteredTasks(function(task) { return !task.completed })
 
     actions: [
         Action {
@@ -59,6 +61,8 @@ Page {
             right: parent.right
             bottom: addBar.top
         }
+
+        clip: true
 
         model: root.model
 
@@ -115,7 +119,7 @@ Page {
             placeholderText: i18n.tr("Add New Task")
 
             onAccepted: {
-                newTaskObject({
+                tasksList.newTaskObject({
                                   title: addField.text
                               })
                 addField.text = ""
@@ -129,7 +133,7 @@ Page {
 
         anchors.centerIn: parent
 
-        visible: modelLength(root.model) === 0
+        visible: tasksList.length(root.model) === 0
         fontSize: "large"
 
         text: root.noneMessage
