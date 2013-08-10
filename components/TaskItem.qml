@@ -200,6 +200,7 @@ Column {
 
                     delegate: Standard {
                         text: labelName(modelData)
+                        selected: task.label == modelData
                         onClicked: {
                             PopupUtils.close(labelPopoverItem)
                             task.label = modelData

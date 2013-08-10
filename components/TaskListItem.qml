@@ -89,10 +89,7 @@ Empty {
             rightMargin: units.gu(2)
         }
 
-        Connections {
-            target: task
-            onCompletedChanged: doneCheckBox.checked = task.completed
-        }
+        checked: task.completed
 
         onCheckedChanged: task.completed = checked
     }

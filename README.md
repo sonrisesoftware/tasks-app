@@ -33,4 +33,6 @@ Day 2 - 8/8/2013
 Day 3 - 8/9/2013
 
  * Improved editing of tasks
- * Worked on initial custom date picker
+ * Initial custom date picker
+ * Concepts for checklists
+ * Completing a task from the task list
