@@ -162,7 +162,10 @@ Page {
     }
 
     tools: ToolbarItems {
-
+        back: ToolbarButton {
+            iconSource: icon("properties")
+            text: i18n.tr("Categories")
+        }
 
         ToolbarButton {
             action: addAction
