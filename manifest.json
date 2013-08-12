@@ -1,7 +1,7 @@
 {
     "framework": "ubuntu-sdk-13.10",
     "maintainer": "Michel Spencer <spencers1993@gmail.com>",
-    "name": "com.ubuntu.developer.mdspencer.tasks-app",
+    "name": "com.ubuntu.developer.mdspencer.tasks",
     "security": {
         "profiles": {
             "tasks-app": {

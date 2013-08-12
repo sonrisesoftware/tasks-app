@@ -165,6 +165,10 @@ Page {
         back: ToolbarButton {
             iconSource: icon("properties")
             text: i18n.tr("Categories")
+
+            onTriggered: {
+                PopupUtils.open(categoriesPopover, caller)
+            }
         }
 
         ToolbarButton {
@@ -236,6 +240,52 @@ Page {
     }
 
     Component {
+        id: categoriesPopover
+
+        ActionSelectionPopover {
+            id: categoriesPopoverItem
+
+            actions: ActionList {
+                Action {
+                    id: newCategoryAction
+
+                    text: i18n.tr("New Category")
+                    onTriggered: {
+                        PopupUtils.open(newCategoryDialog, caller)
+                    }
+                }
+
+                Action {
+                    id: deleteCategoryAction
+
+                    text: i18n.tr("Delete '%1' Category").arg(category)
+                    enabled: category != "" && false //TODO: Enable
+                }
+            }
+
+            delegate: Empty {
+                id: listItem
+                Label {
+                    text: listItem.text
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        horizontalCenter: parent.horizontalCenter
+                    }
+                    wrapMode: Text.Wrap
+                    color: Theme.palette.normal.overlayText
+                }
+
+                /*! \internal */
+                onTriggered: categoriesPopoverItem.hide()
+                visible: listItem.enabled
+                height: visible ? implicitHeight : 0
+            }
+
+            grabDismissAreaEvents: true
+        }
+    }
+
+    Component {
         id: newCategoryDialog
 
         InputDialog {
@@ -246,7 +296,10 @@ Page {
             placeholderText: i18n.tr("Category")
 
             onAccepted: {
-                task.category = value
+                addCategory(value)
+
+                if (task !== undefined)
+                    task.category = value
             }
         }
     }

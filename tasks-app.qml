@@ -116,6 +116,15 @@ MainView {
             console.log("Unable to create task!")
         }
 
+        addExistingTask(task)
+    }
+
+    function addExistingTask(task) {
+        if (task.category != "" && categories.indexOf(task.category) === -1) {
+            console.log("WARNING: Task has new category:", task.category)
+            addCategory(task.category)
+        }
+
         taskListModel.append({"modelData": task})
     }
 
@@ -132,21 +141,24 @@ MainView {
         }
     }
 
-    property var categories: {
-        var categories = []
+    property var categories: []
 
-        //print("Updating Categories...")
+    function addCategory(category) {
+        var list = categories
+        list.push(category)
+        categories = list
+        print(categories)
+    }
 
-        for (var i = 0; i < taskListModel.count; i++) {
-            var task = taskListModel.get(i).modelData
-            if (task.category !== "" && categories.indexOf(task.category) == -1) {
-                //print(task.category)
-                categories.push(task.category)
-            }
-        }
+    function loadCategories() {
+        categories = JSON.parse(tasksDatebase.contents.categories)
+    }
 
-        //print(categories)
-        return categories
+    function saveCategories() {
+        var tempContents = {}
+        tempContents = tasksDatebase.contents
+        tempContents.categories = JSON.stringify(categories)
+        tasksDatebase.contents = tempContents
     }
 
     function saveTasks() {
@@ -255,12 +267,14 @@ MainView {
 
     Component.onCompleted: {
         reloadSettings()
+        loadCategories()
         loadTasks()
         tabs.selectedTabIndex = 0
     }
 
     Component.onDestruction: {
         saveTasks()
+        saveCategories()
     }
 
     /* LABEL MANAGEMENT */
