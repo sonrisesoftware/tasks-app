@@ -26,7 +26,7 @@ Project {
         filter: "*"
     }
     Files {
-        directory: "img/"
+        directory: "icons/"
         filter: "*"
     }
     Files {
@@ -46,6 +46,10 @@ Project {
     }
     Files {
         filter: "README.md"
+    }
+
+    Files {
+        filter: "*.qrc"
     }
 
     /* List of plugin directories passed to QML runtime */

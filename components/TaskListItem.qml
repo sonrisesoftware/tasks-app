@@ -31,6 +31,8 @@ Empty {
 
     property Task task
 
+    clip: true
+
     Label {
         id: titleLabel
         anchors {
@@ -103,7 +105,18 @@ Empty {
 
         checked: task.completed
 
-        onCheckedChanged: task.completed = checked
+        onCheckedChanged: showCompletedTasks ? task.completed = checked : hideAnimation.start()
+
+        SequentialAnimation {
+            id: hideAnimation
+
+
+            NumberAnimation { target: root; property: "opacity"; to: 0; duration: 500 }
+            NumberAnimation { target: root; property: "height"; to: 0; duration: 250 }
+            PropertyAnimation {
+                target: root.task; property: "completed"; to: true
+            }
+        }
     }
 
     onClicked: {

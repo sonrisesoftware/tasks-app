@@ -80,6 +80,14 @@ Page {
 
             task: modelData
         }
+
+        remove: Transition {
+            NumberAnimation { property: "opacity"; to: 0; duration: 1000 }
+        }
+    }
+
+    Scrollbar {
+        flickableItem: taskListView
     }
 
     Rectangle {

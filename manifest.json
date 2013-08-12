@@ -1,10 +1,10 @@
 {
-    "framework": "ubuntu-sdk",
-    "maintainer": "Michael Spencer",
-    "name": "com.ubuntu.developer.mdspencer.tasks",
+    "framework": "ubuntu-sdk-13.10",
+    "maintainer": "Michel Spencer <spencers1993@gmail.com>",
+    "name": "com.ubuntu.developer.mdspencer.tasks-app",
     "security": {
         "profiles": {
-            "tasks": {
+            "tasks-app": {
                 "policy_groups": [
                     "networking"
                 ],

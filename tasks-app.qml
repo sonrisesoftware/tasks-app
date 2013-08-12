@@ -290,7 +290,9 @@ MainView {
     /* HELPER FUNCTIONS */
 
     function icon(name) {
-        return "/usr/share/icons/ubuntu-mobile/actions/scalable/" + name + ".svg"
+        //return "/usr/share/icons/ubuntu-mobile/actions/scalable/" + name + ".svg"
+        return "../icons/" + name + ".png"
+        //return "qrc:///icons/" + name + ".png"
     }
 
     function formattedDate(date) {

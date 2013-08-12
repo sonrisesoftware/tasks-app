@@ -43,4 +43,9 @@ Day 4 - 8/10/2013
  * Multiple lists (categories)
 
 Day 5 - 8/11/2013
+
  * Initial Suru theme (from Calculator app)
+
+Day 6 - 8/12/2013
+
+ * Animation on completing a task in the list
