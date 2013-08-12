@@ -34,6 +34,8 @@ QtObject {
             completionDate: task.completionDate,
             label: task.label,
             category: task.category
+            //checklist: task.checklist,
+            //hasChecklist: task.hasChecklist
         }
     }
 
@@ -45,7 +47,8 @@ QtObject {
     property bool completed
     property date completionDate
     property string label: "green" //"transparent"
-    property bool hasChecklist: false
+    //property var checklist: []
+    //property bool hasChecklist: true
 
     property bool flagged
     

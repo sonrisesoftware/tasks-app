@@ -24,23 +24,42 @@ import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
 
-Item {
+Row {
     id: root
 
     property var listItem
-    height: checkBox.height
+    spacing: units.gu(2)
 
     property alias completed: checkBox.checked
 
     CheckBox {
         id: checkBox
 
+        //width: units.gu(3)
+        //height: width
+        anchors.verticalCenter: parent.verticalCenter
+
         checked: listItem.completed
         onCheckedChanged: listItem.completed = checked
     }
 
     EditableLabel {
+        id: label
+        anchors.verticalCenter: parent.verticalCenter
+        width: editing ? parent.width - checkBox.width - deleteButton.width - parent.spacing * 2 : parent.width - checkBox.width - parent.spacing
+
         text: listItem.text
         onTextChanged: listItem.text = text
+    }
+
+    Button {
+        id: deleteButton
+        visible: label.editing
+        text: "Delete"
+        color: "red"
+        height: label.height
+        onClicked: {
+            task.checklist.splice(0,1)
+        }
     }
 }

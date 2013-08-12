@@ -31,10 +31,9 @@ Item {
 
     property Task task
 
-    property var items: [
-        {completed: true, text: "Test Item"},
-        {completed: false, text: "ABC"}
-    ]
+    property var items: tasks.checklist
+
+    onItemsChanged: progressBar.value = 0
 
     Column {
         id: contents
@@ -83,6 +82,7 @@ Item {
 
 
         Repeater {
+            id: repeater
             model: root.items
 
             delegate: ChecklistItem {
@@ -99,6 +99,28 @@ Item {
                     } else {
                         progressBar.value -= 1
                     }
+                }
+            }
+        }
+
+        Label {
+            anchors {
+                left: parent.left
+                right: parent.right
+            }
+
+            font.italic: true
+            text: i18n.tr("Add item...")
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    print("CLICKED!")
+                    task.checklist.push({completed: true, text: "New Item"})
+                    var list = task.checklist
+                    task.checklist = []
+                    task.checklist = list
+                    repeater.children.get(repeater.model.length - 1).editing = true
                 }
             }
         }

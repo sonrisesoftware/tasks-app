@@ -47,9 +47,9 @@ MainView {
     height: units.gu(75)
 
     // Colors from Calculator app
-//    headerColor: "#323A5D"
-//    backgroundColor: "#6A6AA1"
-//    footerColor: "#6899D7"
+    headerColor: "#323A5D"
+    backgroundColor: "#6A6AA1"
+    footerColor: "#6899D7"
 
     //backgroundColor: "#FCFF95"
     //backgroundColor: "#FFFFBB"

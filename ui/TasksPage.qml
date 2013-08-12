@@ -85,6 +85,8 @@ Page {
     Rectangle {
         id: addBar
 
+        color: Qt.rgba(0.5,0.5,0.5,0.8)
+
 //        gradient: Gradient {
 //            GradientStop {
 //                position: 0

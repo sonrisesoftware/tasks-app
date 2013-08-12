@@ -182,17 +182,7 @@ Column {
         height: units.gu(1)
     }
 
-//    Checklist {
-//        id: checklist
 
-//        task: root.task
-//        visible: task.hasChecklist
-
-//        anchors {
-//            left: parent.left
-//            right: parent.right
-//        }
-//    }
 
     Component {
         id: labelPopover
