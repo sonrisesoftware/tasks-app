@@ -42,3 +42,5 @@ Day 4 - 8/10/2013
  * Quick add task field in tasks list
  * Multiple lists (categories)
 
+Day 5 - 8/11/2013
+ * Initial Suru theme (from Calculator app)
