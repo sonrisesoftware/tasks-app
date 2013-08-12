@@ -3,7 +3,7 @@
  * Lord Jesus, giving thanks to God and the Father by him.                 *
  * - Colossians 3:17                                                       *
  *                                                                         *
- * SuperTask Pro - A task management system for Ubuntu Touch               *
+ * Ubuntu Tasks - A task management system for Ubuntu Touch                *
  * Copyright (C) 2013 Michael Spencer <spencers1993@gmail.com>             *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
@@ -43,7 +43,7 @@ QtObject {
     property string category
     property string contents
     property date dueDate
-    property date creationDate
+    property date creationDate: new Date()
     property bool completed
     property date completionDate
     property string label: "green" //"transparent"
@@ -73,16 +73,7 @@ QtObject {
     }
 
     property bool overdue: {
-        var today = new Date()
-        today.setHours(0)
-        today.setMinutes(0)
-        today.setSeconds(0)
-        print(today)
-        print(dueDate)
-        return dueDate.getFullYear() < today.getFullYear() ||
-                dueDate.getFullYear() === today.getFullYear() && dueDate.getMonth() < today.getMonth() ||
-                dueDate.getFullYear() === today.getFullYear() && dueDate.getMonth() === today.getMonth()
-                        && dueDate.getDate() < today.getDate()
+        return dateIsBefore(dueDate, new Date())
     }
 
     property string dueDateInfo: task.completed
@@ -92,6 +83,40 @@ QtObject {
                                    : task.overdue
                                      ? i18n.tr("Overdue (due %1)").arg(formattedDate(task.dueDate))
                                      : i18n.tr("Due %1").arg(formattedDate(task.dueDate))
+
+    function dateIsBefore(date1, date2) {
+        var ans = date1.getFullYear() < date2.getFullYear() ||
+                (date1.getFullYear() === date2.getFullYear() && date1.getMonth() < date2.getMonth()) ||
+                (date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth()
+                        && date1.getDate() < date2.getDate())
+        ans = date1 < date2
+        //print(Qt.formatDate(date1), "<", Qt.formatDate(date2))
+        return ans
+    }
+
+    function dateIsBeforeOrSame(date1, date2) {
+        var ans = date1.getFullYear() <= date2.getFullYear() ||
+                (date1.getFullYear() === date2.getFullYear() && date1.getMonth() <= date2.getMonth()) ||
+                (date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth()
+                        && date1.getDate() <= date2.getDate())
+        ans = date1 <= date2
+        //print(ans, "?", Qt.formatDate(date1), "<=", Qt.formatDate(date2))
+        return ans
+    }
+
+    function completedBy(date) {
+        //print("Completed? ", completed)
+        return (completed && dateIsBeforeOrSame(completionDate, date)) && existedBy(date)
+    }
+
+    function notCompletedBy(date) {
+        //print("Not completed? ", !completed)
+        return (!completed || dateIsBefore(date, completionDate)) && existedBy(date)
+    }
+
+    function existedBy(date) {
+        return dateIsBeforeOrSame(creationDate, date)
+    }
 
     function isToday() {
         var today = new Date()

@@ -3,7 +3,7 @@
  * Lord Jesus, giving thanks to God and the Father by him.                 *
  * - Colossians 3:17                                                       *
  *                                                                         *
- * SuperTask Pro - A task management system for Ubuntu Touch               *
+ * Ubuntu Tasks - A task management system for Ubuntu Touch                *
  * Copyright (C) 2013 Michael Spencer <spencers1993@gmail.com>             *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
@@ -89,6 +89,12 @@ Popover {
                 task.category = ""
                 PopupUtils.close(root)
             }
+
+            showDivider: false
+        }
+
+        Divider {
+
         }
 
         Standard {

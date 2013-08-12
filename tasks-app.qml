@@ -3,7 +3,7 @@
  * Lord Jesus, giving thanks to God and the Father by him.                 *
  * - Colossians 3:17                                                       *
  *                                                                         *
- * SuperTask Pro - A task management system for Ubuntu Touch               *
+ * Ubuntu Tasks - A task management system for Ubuntu Touch                *
  * Copyright (C) 2013 Michael Spencer <spencers1993@gmail.com>             *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
@@ -120,7 +120,7 @@ MainView {
     }
 
     function addExistingTask(task) {
-        if (task.category != "" && categories.indexOf(task.category) === -1) {
+        if (task.category !== "" && categories.indexOf(task.category) === -1) {
             console.log("WARNING: Task has new category:", task.category)
             addCategory(task.category)
         }
@@ -233,6 +233,19 @@ MainView {
         return tasks
     }
 
+    function countTasks(filter) {
+        var count = 0
+
+        for (var i = 0; i < taskListModel.count; i++) {
+            var task = taskListModel.get(i).modelData
+            if (filter(task))
+                count++
+        }
+
+        //print("Count:", count)
+        return count
+    }
+
     function loadTasks() {
         print("Loading lists...")
         var tasks = JSON.parse(tasksDatebase.contents.tasks)
@@ -334,6 +347,10 @@ MainView {
     function labelColor(label) {
         if (label === "green") {
             return "#59B159"
+        } else if (label === "yellow") {
+            return "#FFFF41"
+        } else if (label === "red") {
+            return "#FF4141"
         } else {
             return label
         }
@@ -361,5 +378,13 @@ MainView {
         return date.getFullYear() === today.getFullYear() &&
                 date.getMonth() === today.getMonth() &&
                 date.getDate() === today.getDate()
+    }
+
+    property var today: {
+        var today = new Date()
+        today.setHours(0)
+        today.setMinutes(0)
+        today.setSeconds(0)
+        return today
     }
 }
