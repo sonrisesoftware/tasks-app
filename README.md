@@ -51,3 +51,7 @@ Day 6 - 8/12/2013
  * Animation on completing a task in the list
  * Due date hidden if not set
  * Better category managment
+ * Categories independant of tasks
+ * Add categories
+ * Delete categories
+ * Rename categories

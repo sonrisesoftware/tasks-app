@@ -256,10 +256,25 @@ Page {
                 }
 
                 Action {
+                    id: renameCategoryAction
+
+                    text: i18n.tr("Rename '%1' Category").arg(category)
+                    enabled: category != ""
+                    onTriggered: {
+                        PopupUtils.open(renameCategoryDialog, caller, {
+                                            category: category
+                                        })
+                    }
+                }
+
+                Action {
                     id: deleteCategoryAction
 
                     text: i18n.tr("Delete '%1' Category").arg(category)
-                    enabled: category != "" && false //TODO: Enable
+                    enabled: category != ""
+                    onTriggered: {
+                        removeCategory(category)
+                    }
                 }
             }
 
@@ -300,6 +315,24 @@ Page {
 
                 if (task !== undefined)
                     task.category = value
+            }
+        }
+    }
+
+    Component {
+        id: renameCategoryDialog
+
+        InputDialog {
+            property string category
+
+            title: i18n.tr("Rename Category")
+
+            value: category
+            placeholderText: i18n.tr("Category")
+
+            onAccepted: {
+                if (value !== category)
+                    renameCategory(category, value)
             }
         }
     }

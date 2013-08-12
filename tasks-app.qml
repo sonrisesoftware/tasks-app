@@ -148,6 +148,44 @@ MainView {
         list.push(category)
         categories = list
         print(categories)
+
+        tabs.selectedTabIndex = categories.length
+    }
+
+    function removeCategory(category) {
+        //TODO: Add confirmation dialog
+
+        for (var i = 0; i < taskListModel.count; i++) {
+            var task = taskListModel.get(i).modelData
+            if (task.category === category) {
+                removeTask(task)
+            }
+        }
+
+        if (categories.indexOf(category) != -1) {
+            var list = categories
+            list.splice(list.indexOf(category), 1)
+            categories = list
+            print(categories)
+        }
+
+        tabs.selectedTabIndex = 0
+    }
+
+    function renameCategory(category, newCategory) {
+        var tab = tabs.selectedTab
+        var list = categories
+        list[categories.indexOf(category)] = newCategory
+        categories = list
+
+        for (var i = 0; i < taskListModel.count; i++) {
+            var task = taskListModel.get(i).modelData
+            if (task.category === category) {
+                task.category = newCategory
+            }
+        }
+
+        tabs.selectedTabIndex = tab
     }
 
     function loadCategories() {
