@@ -71,6 +71,8 @@ MainView {
                 }
             }
 
+            onVisibleChanged: tabBar.visible = visible
+
             Repeater {
                 model: categories
 

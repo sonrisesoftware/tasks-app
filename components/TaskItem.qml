@@ -197,14 +197,37 @@ Column {
                 }
 
                 Header {
-                    text: i18n.tr("Priority")
+                    //FIXME: Hack because of Suru theme!
+                    Label {
+                        anchors {
+                            verticalCenter: parent.verticalCenter
+                            left: parent.left
+                            margins: units.gu(1)
+                        }
+
+                        text: i18n.tr("Priority")
+                        fontSize: "medium"
+                        color: Theme.palette.normal.overlayText
+                    }
                 }
 
                 Repeater {
                     model: labels
 
                     delegate: Standard {
-                        text: labelName(modelData)
+                        //FIXME: Hack because of Suru theme!
+                        Label {
+                            anchors {
+                                verticalCenter: parent.verticalCenter
+                                left: parent.left
+                                margins: units.gu(2)
+                            }
+
+                            text: labelName(modelData)
+                            fontSize: "medium"
+                            color: selected ? UbuntuColors.orange : Theme.palette.normal.overlayText
+                        }
+
                         selected: task.label == modelData
                         onClicked: {
                             PopupUtils.close(labelPopoverItem)

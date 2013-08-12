@@ -86,6 +86,7 @@ Page {
         id: addBar
 
         color: Qt.rgba(0.5,0.5,0.5,0.8)
+        //color: Qt.rgba(0.3,0.3,0.3,1)
 
 //        gradient: Gradient {
 //            GradientStop {
