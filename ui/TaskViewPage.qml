@@ -46,7 +46,7 @@ Page {
             text: i18n.tr("Move")
             iconSource: icon("location")
             onTriggered: {
-                PopupUtils.open(moveTaskDialog, caller, {
+                PopupUtils.open(Qt.resolvedUrl("../components/CategoriesPopover.qml"), caller, {
                                     task: root.task
                                 })
             }

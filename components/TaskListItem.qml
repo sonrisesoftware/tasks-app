@@ -36,10 +36,11 @@ Empty {
     Label {
         id: titleLabel
         anchors {
-            top: parent.top
+            top: dueDateLabel.visible ? parent.top : undefined
             topMargin: units.gu(0.7)
             left: parent.left
             leftMargin: units.gu(2)
+            verticalCenter: dueDateLabel.visible ? undefined : parent.verticalCenter
         }
 
         text: task.title
@@ -47,9 +48,12 @@ Empty {
     }
 
     Label {
+        id: dueDateLabel
         anchors {
-            top: titleLabel.bottom
-            topMargin: units.gu(0.2)
+            //top: titleLabel.bottom
+            //topMargin: units.gu(0.2)
+            bottom: parent.bottom
+            bottomMargin: units.gu(0.7)
             left: parent.left
             leftMargin: units.gu(2)
         }
@@ -59,6 +63,7 @@ Empty {
         fontSize: "small"
         font.italic: true
         text: task.dueDateInfo
+        visible: Qt.formatDate(task.dueDate) != ""
     }
 
     Rectangle {
@@ -117,6 +122,8 @@ Empty {
                 target: root.task; property: "completed"; to: true
             }
         }
+
+
     }
 
     onClicked: {

@@ -35,20 +35,19 @@ Column {
 
     spacing: units.gu(2)
 
-    TextField {
-        id: categoryField
+    Button {
+        id: categoryButton
 
         anchors {
             left: parent.left
             right: parent.right
         }
 
-        font.bold: true
-        text: task.category
-        placeholderText: i18n.tr("Category")
-
+        text: task.category || i18n.tr("Uncategorized")
         visible: editing
-        onTextChanged: task.category = text
+        onClicked: PopupUtils.open(Qt.resolvedUrl("CategoriesPopover.qml"), categoryButton, {
+                                       task: root.task
+                                   })
     }
 
     Item {

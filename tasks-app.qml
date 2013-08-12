@@ -109,7 +109,7 @@ MainView {
     }
 
     function addTask(args) {
-        print("ADDING TASK:", args)
+        //print("ADDING TASK:", args)
         var task = taskComponent.createObject(root, args)
 
         if (task === null) {
@@ -135,35 +135,35 @@ MainView {
     property var categories: {
         var categories = []
 
-        print("Updating Categories...")
+        //print("Updating Categories...")
 
         for (var i = 0; i < taskListModel.count; i++) {
             var task = taskListModel.get(i).modelData
             if (task.category !== "" && categories.indexOf(task.category) == -1) {
-                print(task.category)
+                //print(task.category)
                 categories.push(task.category)
             }
         }
 
-        print(categories)
+        //print(categories)
         return categories
     }
 
     function saveTasks() {
-        print("Saving Tasks...")
+        //print("Saving Tasks...")
 
         var tasks = []
 
         for (var i = 0; i < taskListModel.count; i++) {
             var task = taskListModel.get(i).modelData
-            print("Saving task:", task.title)
+            //print("Saving task:", task.title)
             tasks.push(task.toJSON())
         }
 
         var tempContents = {}
         tempContents = tasksDatebase.contents
         tempContents.tasks = JSON.stringify(tasks)
-        print(tempContents.tasks)
+        //print(tempContents.tasks)
         tasksDatebase.contents = tempContents
     }
 

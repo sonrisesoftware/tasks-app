@@ -49,3 +49,5 @@ Day 5 - 8/11/2013
 Day 6 - 8/12/2013
 
  * Animation on completing a task in the list
+ * Due date hidden if not set
+ * Better category managment

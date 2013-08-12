@@ -212,6 +212,17 @@ Page {
 
             actions: ActionList {
                 Action {
+                    id: moveAction
+
+                    text: i18n.tr("Move")
+                    onTriggered: {
+                        PopupUtils.open(Qt.resolvedUrl("../components/CategoriesPopover.qml"), caller, {
+                                            task: task
+                                        })
+                    }
+                }
+
+                Action {
                     id: deleteAction
 
                     text: i18n.tr("Delete")
@@ -222,14 +233,13 @@ Page {
     }
 
     Component {
-        id: moveTaskDialog
+        id: newCategoryDialog
 
         InputDialog {
             property var task
 
-            title: i18n.tr("Move Task")
+            title: i18n.tr("New Category")
 
-            value: task.category
             placeholderText: i18n.tr("Category")
 
             onAccepted: {
