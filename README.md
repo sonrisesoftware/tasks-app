@@ -56,3 +56,6 @@ Day 6 - 8/12/2013
  * Delete categories
  * Rename categories
  * Initial statistics view
+
+Day 7 - 8/13/2013
+ * Converted Add Task sheet into a page
