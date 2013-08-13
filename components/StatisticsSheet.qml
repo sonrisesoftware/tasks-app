@@ -204,7 +204,7 @@ DefaultSheet {
                     }
 
                     width: parent.width
-                    height: countTasks(function(task) { return task.notCompletedBy(graphDate) }) * (graph.spacing)
+                    height: countTasks(function(task) { return task.notCompletedBy(graphDate) && !task.overdueBy(graphDate) }) * (graph.spacing)
                     color: labelColor("yellow")
                 }
 
