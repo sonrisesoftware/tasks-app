@@ -75,9 +75,10 @@ Item {
 
         anchors {
             left: parent.left
-            right: parent.right
             verticalCenter: parent.verticalCenter
         }
+
+        width: Math.min(parent.width, units.gu(50))
 
         font.bold: root.bold
         visible: editing || parentEditing

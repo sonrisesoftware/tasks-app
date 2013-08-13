@@ -24,7 +24,7 @@ import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
 
-ComposerSheet {
+Page {
     id: root
 
     title: i18n.tr("Add Task")
@@ -35,23 +35,34 @@ ComposerSheet {
         id: taskItem
         task: newTask({category: root.category})
         anchors.fill: parent
+        anchors.margins: units.gu(2)
 
         editing: true
         creating: true
     }
 
-    onCancelClicked: {
-        taskItem.task.destroy()
-    }
+    tools: ToolbarItems {
+        locked: true
+        opened: true
 
-    onConfirmClicked: {
-        addExistingTask(taskItem.task)
-//        newTaskObject({
-//                          title: titleTextField.text,
-//                          contents: contentsTextField.text,
-//                          dueDate: dueDateTextField.text,
-//                          creationDate: new Date(),
-//                          flagged: importantCheckBox.checked
-//                      })
+        back: ToolbarButton {
+            text: i18n.tr("Cancel")
+            iconSource: icon("back")
+
+            onTriggered: {
+                taskItem.task.destroy()
+                pageStack.pop()
+            }
+        }
+
+        ToolbarButton {
+            text: i18n.tr("Create")
+            iconSource: icon("add")
+
+            onTriggered: {
+                addExistingTask(taskItem.task)
+                pageStack.pop()
+            }
+        }
     }
 }

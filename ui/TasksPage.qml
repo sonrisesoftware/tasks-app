@@ -44,7 +44,7 @@ Page {
             text: i18n.tr("Add")
 
             onTriggered: {
-                PopupUtils.open(addTaskSheet, root, { category: root.category })
+                pageStack.push(addTaskPage, { category: root.category })
             }
         }
 
@@ -201,9 +201,9 @@ Page {
     }
 
     Component {
-        id: addTaskSheet
+        id: addTaskPage
 
-        AddTaskSheet {
+        AddTaskPage {
 
         }
     }
