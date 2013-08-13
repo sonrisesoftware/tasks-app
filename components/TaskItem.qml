@@ -128,9 +128,11 @@ Column {
             anchors {
                 verticalCenter: parent.verticalCenter
                 left: parent.left
-                right: labelButton.left
-                rightMargin: units.gu(2)
+                //right: labelButton.left
+                //rightMargin: units.gu(2)
             }
+
+            //width: Math.min(parent.width - labelButton.width - units.gu(2), units.gu(40))
 
             height: units.gu(4)
 
