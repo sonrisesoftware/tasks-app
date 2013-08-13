@@ -132,7 +132,7 @@ Column {
                 //rightMargin: units.gu(2)
             }
 
-            //width: Math.min(parent.width - labelButton.width - units.gu(2), units.gu(40))
+            width: Math.min(parent.width - labelButton.width - units.gu(2), units.gu(40))
 
             height: units.gu(4)
 
