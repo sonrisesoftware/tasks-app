@@ -55,3 +55,4 @@ Day 6 - 8/12/2013
  * Add categories
  * Delete categories
  * Rename categories
+ * Initial statistics view

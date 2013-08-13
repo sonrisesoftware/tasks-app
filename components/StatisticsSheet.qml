@@ -31,12 +31,68 @@ DefaultSheet {
 
     doneButton: false
 
-    property int graphBarCount: 7
-
     function totalCount(date) {
         return countTasks(function(task) {
             return task.existedBy(date)
         })
+    }
+
+    Row {
+        id: legendBar
+
+        anchors {
+            top: parent.top
+            //left: parent.left
+            horizontalCenter: parent.horizontalCenter
+            margins: units.gu(2)
+        }
+
+        spacing: units.gu(3)
+
+        Row {
+            spacing: units.gu(1)
+            UbuntuShape {
+                anchors.verticalCenter: parent.verticalCenter
+                width: units.gu(3)
+                height: width
+                color: labelColor("green")
+            }
+            Label {
+                anchors.verticalCenter: parent.verticalCenter
+                text: i18n.tr("Completed")
+                color: Theme.palette.normal.overlayText
+            }
+        }
+
+        Row {
+            spacing: units.gu(1)
+            UbuntuShape {
+                anchors.verticalCenter: parent.verticalCenter
+                width: units.gu(3)
+                height: width
+                color: labelColor("yellow")
+            }
+            Label {
+                anchors.verticalCenter: parent.verticalCenter
+                text: i18n.tr("Pending")
+                color: Theme.palette.normal.overlayText
+            }
+        }
+
+        Row {
+            spacing: units.gu(1)
+            UbuntuShape {
+                anchors.verticalCenter: parent.verticalCenter
+                width: units.gu(3)
+                height: width
+                color: labelColor("red")
+            }
+            Label {
+                anchors.verticalCenter: parent.verticalCenter
+                text: i18n.tr("Overdue")
+                color: Theme.palette.normal.overlayText
+            }
+        }
     }
 
     Rectangle {
@@ -46,9 +102,12 @@ DefaultSheet {
         property int spacing: height/count
 
         anchors {
-            fill: parent
+            top: legendBar.bottom
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
             margins: units.gu(2)
-            bottomMargin: units.gu(10)
+            bottomMargin: units.gu(9)
         }
 
         border.color: "darkgray"
@@ -80,15 +139,15 @@ DefaultSheet {
 
         Row {
             anchors {
-                left: parent.left
-                leftMargin: units.gu(2)
+                horizontalCenter: parent.horizontalCenter
                 bottom: parent.bottom
             }
 
             spacing: units.gu(3)
 
             Repeater {
-                model: root.graphBarCount
+                id: graphBars
+                model: Math.round((parent.parent.width + parent.spacing)/(units.gu(3) + parent.spacing), 0) - 1
                 delegate: graphBar
             }
         }
@@ -102,7 +161,7 @@ DefaultSheet {
 
                 property date graphDate: {
                     var day = new Date()
-                    day.setDate(day.getDate() - root.graphBarCount + index + 1)
+                    day.setDate(day.getDate() - graphBars.count + index + 1)
                     print("GRAPH DATE:", Qt.formatDate(day))
                     print("GRAPH TOTAL THEN: ", totalCount(day))
                     return day
@@ -116,7 +175,7 @@ DefaultSheet {
 
                 Item {
                     anchors.bottom: parent.bottom
-                    anchors.bottomMargin: units.gu(-5)
+                    anchors.bottomMargin: units.gu(-4)
                     anchors.left: parent.left
                     anchors.leftMargin: units.gu(-1.4)
                     Label {
@@ -134,7 +193,7 @@ DefaultSheet {
                     }
 
                     width: parent.width
-                    height: countTasks(function(task) { return  task.notCompletedBy(graphDate) }) * (graph.spacing)
+                    height: countTasks(function(task) { return  task.completedBy(graphDate) }) * (graph.spacing)
                     color: labelColor("green")
                 }
 
@@ -145,7 +204,18 @@ DefaultSheet {
                     }
 
                     width: parent.width
-                    height: countTasks(function(task) { return task.completedBy(graphDate) }) * (graph.spacing)
+                    height: countTasks(function(task) { return task.notCompletedBy(graphDate) }) * (graph.spacing)
+                    color: labelColor("yellow")
+                }
+
+                Rectangle {
+                    id: overDueRectangle
+                    anchors {
+                        bottom: notDoneRectangle.top
+                    }
+
+                    width: parent.width
+                    height: countTasks(function(task) { return task.overdueBy(graphDate) }) * (graph.spacing)
                     color: labelColor("red")
                 }
             }

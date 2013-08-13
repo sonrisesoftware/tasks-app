@@ -89,29 +89,27 @@ QtObject {
                 (date1.getFullYear() === date2.getFullYear() && date1.getMonth() < date2.getMonth()) ||
                 (date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth()
                         && date1.getDate() < date2.getDate())
-        ans = date1 < date2
-        //print(Qt.formatDate(date1), "<", Qt.formatDate(date2))
         return ans
     }
 
     function dateIsBeforeOrSame(date1, date2) {
-        var ans = date1.getFullYear() <= date2.getFullYear() ||
-                (date1.getFullYear() === date2.getFullYear() && date1.getMonth() <= date2.getMonth()) ||
+        var ans = date1.getFullYear() < date2.getFullYear() ||
+                (date1.getFullYear() === date2.getFullYear() && date1.getMonth() < date2.getMonth()) ||
                 (date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth()
                         && date1.getDate() <= date2.getDate())
-        ans = date1 <= date2
-        //print(ans, "?", Qt.formatDate(date1), "<=", Qt.formatDate(date2))
         return ans
     }
 
     function completedBy(date) {
-        //print("Completed? ", completed)
         return (completed && dateIsBeforeOrSame(completionDate, date)) && existedBy(date)
     }
 
     function notCompletedBy(date) {
-        //print("Not completed? ", !completed)
         return (!completed || dateIsBefore(date, completionDate)) && existedBy(date)
+    }
+
+    function overdueBy(date) {
+        return notCompletedBy(date) && dateIsBefore(dueDate, date)
     }
 
     function existedBy(date) {
