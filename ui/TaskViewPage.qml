@@ -34,23 +34,27 @@ Page {
 
     property alias editing: taskItem.editing
 
+//    property color headerColor: labelHeaderColor(task.label)
+//    property color backgroundColor: labelColor(task.label)
+//    property color footerColor: labelFooterColor(task.label)
+
     TaskItem {
         id: taskItem
         task: root.task
         anchors.fill: parent
-        anchors.margins: units.gu(2)
+        anchors.margins: units.gu(1)
     }
 
     tools: ToolbarItems {
-        ToolbarButton {
-            text: i18n.tr("Move")
-            iconSource: icon("location")
-            onTriggered: {
-                PopupUtils.open(Qt.resolvedUrl("../components/CategoriesPopover.qml"), caller, {
-                                    task: root.task
-                                })
-            }
-        }
+//        ToolbarButton {
+//            text: i18n.tr("Move")
+//            iconSource: icon("location")
+//            onTriggered: {
+//                PopupUtils.open(Qt.resolvedUrl("../components/CategoriesPopover.qml"), caller, {
+//                                    task: root.task
+//                                })
+//            }
+//        }
 
         ToolbarButton {
             text: i18n.tr("Delete")

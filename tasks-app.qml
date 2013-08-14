@@ -47,9 +47,9 @@ MainView {
     height: units.gu(75)
 
     // Colors from Calculator app
-    headerColor: "#323A5D"
-    backgroundColor: "#6A6AA1"
-    footerColor: "#6899D7"
+    headerColor: pageStack.currentPage.hasOwnProperty("headerColor") ? pageStack.currentPage.headerColor : "#323A5D"
+    backgroundColor: pageStack.currentPage.hasOwnProperty("backgroundColor") ? pageStack.currentPage.backgroundColor : "#6A6AA1"
+    footerColor: pageStack.currentPage.hasOwnProperty("footerColor") ? pageStack.currentPage.footerColor : "#6899D7"
 
     //backgroundColor: "#FCFF95"
     //backgroundColor: "#FFFFBB"
@@ -337,8 +337,10 @@ MainView {
             return "Low"
         } else if (label === "yellow") {
             return "Medium"
-        } else if (label === "red") {
+        } else if (label === "orange") {
             return "High"
+        } else if (label === "red") {
+            return "High" //"Critical"
         } else {
             return "????"
         }
@@ -349,10 +351,37 @@ MainView {
             return "#59B159"
         } else if (label === "yellow") {
             return "#FFFF41"
+        } else if (label === "orange") {
+            return "#FF8000" //UbuntuColors.orange
         } else if (label === "red") {
             return "#FF4141"
         } else {
             return label
+        }
+    }
+
+    function labelHeaderColor(label) {
+//        if (label === "green") {
+//            return "#59B159"
+//        } else if (label === "yellow") {
+//            return "#FFFF41"
+//        } else if (label === "red") {
+//            return "#FF4141"
+//        } else {
+            return Qt.darker(labelColor(label), 1.5)
+//        }
+    }
+
+    function labelFooterColor(label) {
+//        if (label === "green") {
+//            return "#59B159"
+//        } else if (label === "yellow") {
+//            return "#FFFF41"
+        if (label === "red") {
+//            return "#FF4141"
+            return Qt.lighter(labelColor(label), 1.1)
+        } else {
+            return Qt.lighter(labelColor(label), 1.4)
         }
     }
 

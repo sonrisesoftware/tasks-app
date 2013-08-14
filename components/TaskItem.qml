@@ -33,22 +33,7 @@ Column {
     property bool editing: false
     property bool creating: false
 
-    spacing: units.gu(2)
-
-    Button {
-        id: categoryButton
-
-        anchors {
-            left: parent.left
-            right: parent.right
-        }
-
-        text: task.category || i18n.tr("Uncategorized")
-        visible: editing
-        onClicked: PopupUtils.open(Qt.resolvedUrl("CategoriesPopover.qml"), categoryButton, {
-                                       task: root.task
-                                   })
-    }
+    spacing: units.gu(1)
 
     Item {
         anchors {
@@ -66,8 +51,8 @@ Column {
             anchors.verticalCenter: parent.verticalCenter
             anchors {
                 left: parent.left
-                right: completedCheckBox.left
-                rightMargin: units.gu(2)
+                right: completedCheckBox.visible ? completedCheckBox.left : parent.right
+                rightMargin: completedCheckBox.visible ? units.gu(2) : 0
             }
 
             fontSize: "large"
@@ -86,9 +71,102 @@ Column {
                 right: parent.right
             }
 
+            visible: !creating
+
             checked: task.completed
             onCheckedChanged: task.completed = checked
-            enabled: !creating
+        }
+    }
+
+    TextArea {
+        id: descriptionTextArea
+        anchors {
+            left: parent.left
+            right: parent.right
+        }
+
+        Component.onCompleted: __styleInstance.color = "white"
+
+        onFocusChanged: focus ? __styleInstance.color = Theme.palette.normal.overlayText : __styleInstance.color = "white"
+
+        //autoSize: true
+        //maximumLineCount: 23
+
+        text: task.contents
+        placeholderText: i18n.tr("Description")
+
+        onTextChanged: task.contents = text
+    }
+
+    ValueSelector {
+        id: prioritySelector
+
+//        text: i18n.tr("Priority")
+
+        Row {
+            spacing: units.gu(1)
+
+            anchors {
+                left: parent.left
+                leftMargin: units.gu(2)
+                top: parent.top
+                topMargin: units.gu(1.5)
+            }
+
+            UbuntuShape {
+                color: labelColor(task.label)
+                width: units.gu(3)
+                height: width
+                anchors.verticalCenter: parent.verticalCenter
+            }
+
+            Label {
+                anchors.verticalCenter: parent.verticalCenter
+                text: i18n.tr("Priority")
+            }
+        }
+
+        selectedIndex: values.indexOf(labelName(task.label))
+
+        property var priorities: labels
+        values: {
+            var values = []
+
+            for (var i = 0; i < priorities.length; i++) {
+                values.push(labelName(priorities[i]))
+            }
+
+            return values
+        }
+
+        onSelectedIndexChanged: {
+            task.label = priorities[selectedIndex]
+        }
+    }
+
+    ValueSelector {
+        id: categorySelector
+
+        text: i18n.tr("Category")
+        selectedIndex: values.indexOf(task.category)
+
+        values: {
+            var values = []
+            for (var i = 0; i < categories.length; i++) {
+                values.push(categories[i])
+            }
+            values.push(i18n.tr("<i>Create New Category</i>"))
+            return values
+        }
+
+        onSelectedIndexChanged: {
+            print(selectedIndex,values.length)
+            if (selectedIndex === values.length - 1) {
+                // Create a new category
+                PopupUtils.open(newCategoryDialog, root)
+            } else {
+                task.category = values[selectedIndex]
+            }
         }
     }
 
@@ -101,11 +179,8 @@ Column {
         }
 
         height: Math.max(
-                    labelButton.visible ? labelButton.height : 0,
-                    Math.max(
-                        dueDateLabel.visible ? dueDateLabel.height : 0,
-                        dueDateField.visible ? dueDateField.height : 0
-                    )
+                   dueDateLabel.visible ? dueDateLabel.height : 0,
+                    dueDateField.visible ? dueDateField.height : 0
                 )
 
         Label {
@@ -113,8 +188,7 @@ Column {
             anchors {
                 verticalCenter: parent.verticalCenter
                 left: parent.left
-                right: labelButton.left
-                rightMargin: units.gu(2)
+                right: parent.right
             }
 
             visible: task.completed
@@ -128,13 +202,12 @@ Column {
             anchors {
                 verticalCenter: parent.verticalCenter
                 left: parent.left
-                //right: labelButton.left
-                //rightMargin: units.gu(2)
+                right: parent.right
             }
 
-            width: Math.min(parent.width - labelButton.width - units.gu(2), units.gu(40))
+            //width: Math.min(parent.width, units.gu(40))
 
-            height: units.gu(4)
+            //height: units.gu(4)
 
             visible: !task.completed
             text: task.dueDateInfo
@@ -142,101 +215,6 @@ Column {
             onClicked: PopupUtils.open(Qt.resolvedUrl("DatePicker.qml"), dueDateField, {
                                            task: task
                                        })
-        }
-
-        Button {
-            id: labelButton
-
-            anchors {
-                verticalCenter: parent.verticalCenter
-                right: parent.right
-            }
-
-            height: dueDateField.visible ? dueDateField.height : units.gu(4)
-
-            text: labelName(task.label)
-
-            color: labelColor(task.label)
-
-            onClicked: PopupUtils.open(labelPopover, labelButton)
-        }
-    }
-
-    TextArea {
-        id: notesTextArea
-        anchors {
-            left: parent.left
-            right: parent.right
-        }
-
-        autoSize: true
-        maximumLineCount: 23
-
-        text: task.contents
-        placeholderText: i18n.tr("Notes")
-
-        onTextChanged: task.contents = text
-    }
-
-    Item {
-        width: parent.width
-        height: units.gu(1)
-    }
-
-
-
-    Component {
-        id: labelPopover
-
-        Popover {
-            id: labelPopoverItem
-            Column {
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    top: parent.top
-                }
-
-                Header {
-                    //FIXME: Hack because of Suru theme!
-                    Label {
-                        anchors {
-                            verticalCenter: parent.verticalCenter
-                            left: parent.left
-                            margins: units.gu(1)
-                        }
-
-                        text: i18n.tr("Priority")
-                        fontSize: "medium"
-                        color: Theme.palette.normal.overlayText
-                    }
-                }
-
-                Repeater {
-                    model: labels
-
-                    delegate: Standard {
-                        //FIXME: Hack because of Suru theme!
-                        Label {
-                            anchors {
-                                verticalCenter: parent.verticalCenter
-                                left: parent.left
-                                margins: units.gu(2)
-                            }
-
-                            text: labelName(modelData)
-                            fontSize: "medium"
-                            color: selected ? UbuntuColors.orange : Theme.palette.normal.overlayText
-                        }
-
-                        selected: task.label == modelData
-                        onClicked: {
-                            PopupUtils.close(labelPopoverItem)
-                            task.label = modelData
-                        }
-                    }
-                }
-            }
         }
     }
 }
