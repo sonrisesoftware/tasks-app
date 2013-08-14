@@ -24,12 +24,10 @@ import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
 
-DefaultSheet {
+Page {
     id: root
 
     title: i18n.tr("Statistics")
-
-    doneButton: false
 
     function totalCount(date) {
         return countTasks(function(task) {
@@ -60,7 +58,7 @@ DefaultSheet {
             Label {
                 anchors.verticalCenter: parent.verticalCenter
                 text: i18n.tr("Completed")
-                color: Theme.palette.normal.overlayText
+                //color: Theme.palette.normal.overlayText
             }
         }
 
@@ -75,7 +73,7 @@ DefaultSheet {
             Label {
                 anchors.verticalCenter: parent.verticalCenter
                 text: i18n.tr("Pending")
-                color: Theme.palette.normal.overlayText
+                //color: Theme.palette.normal.overlayText
             }
         }
 
@@ -90,12 +88,12 @@ DefaultSheet {
             Label {
                 anchors.verticalCenter: parent.verticalCenter
                 text: i18n.tr("Overdue")
-                color: Theme.palette.normal.overlayText
+                //color: Theme.palette.normal.overlayText
             }
         }
     }
 
-    Rectangle {
+    UbuntuShape {
         id: graph
 
         property int count: taskListModel.count + 1
@@ -110,7 +108,9 @@ DefaultSheet {
             bottomMargin: units.gu(9)
         }
 
-        border.color: "darkgray"
+        color: "white"
+        radius: "medium"
+        //border.color: "darkgray"
 
         Column {
             anchors {
@@ -181,7 +181,7 @@ DefaultSheet {
                     Label {
                         rotation: -90
                         text: formattedDate(graphDate)
-                        color: Theme.palette.normal.overlayText
+                        //color: Theme.palette.normal.overlayText
                     }
                 }
 

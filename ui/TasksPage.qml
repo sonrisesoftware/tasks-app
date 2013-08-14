@@ -176,7 +176,7 @@ Page {
             iconSource: icon("graphs")
             text: i18n.tr("Statistics")
             onTriggered: {
-                PopupUtils.open(statisticsSheet, caller)
+                pageStack.push(statisticsPage)
             }
         }
 
@@ -209,9 +209,9 @@ Page {
     }
 
     Component {
-        id: statisticsSheet
+        id: statisticsPage
 
-        StatisticsSheet {
+        StatisticsPage {
 
         }
     }
