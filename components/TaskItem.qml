@@ -148,13 +148,14 @@ Column {
         id: categorySelector
 
         text: i18n.tr("Category")
-        selectedIndex: values.indexOf(task.category)
+        selectedIndex: values.indexOf(task.category != "" ? task.category : "Uncategorized")
 
         values: {
             var values = []
             for (var i = 0; i < categories.length; i++) {
                 values.push(categories[i])
             }
+            values.push(i18n.tr("Uncategorized"))
             values.push(i18n.tr("<i>Create New Category</i>"))
             return values
         }
@@ -164,6 +165,9 @@ Column {
             if (selectedIndex === values.length - 1) {
                 // Create a new category
                 PopupUtils.open(newCategoryDialog, root)
+                selectedIndex = values.indexOf(task.category != "" ? task.category : "Uncategorized")
+            } else if (selectedIndex === values.length - 2) {
+                task.category = ""
             } else {
                 task.category = values[selectedIndex]
             }

@@ -1,0 +1,11 @@
+Package: tasks-app
+Version: 0.1
+Architecture: all
+Maintainer: Michael Spencer <spencers1993@gmail.com>
+Installed-Size: 3898
+Depends: qtdeclarative5-qtquick2-plugin, qtdeclarative5-test-plugin, qtdeclarative5-u1db1.0, qtdeclarative5-ubuntu-ui-toolkit-plugin | qt-components-ubuntu, qmlscene
+Section: unknown
+Priority: extra
+Homepage: <insert the upstream URL, if relevant>
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>

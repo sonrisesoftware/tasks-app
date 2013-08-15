@@ -96,7 +96,7 @@ Page {
     UbuntuShape {
         id: graph
 
-        property int count: taskListModel.count + 1
+        property int count: 11
         property int spacing: height/count
 
         anchors {
@@ -159,6 +159,18 @@ Page {
                 width: units.gu(3)
                 height: childrenRect.height//doneRectangle.height + notDoneRectangle.height
 
+                property int barCount: {
+                    var count = totalCount(graphDate)
+                    print("Count: ", count, formattedDate(graphDate), 10/count)
+                    return count
+                }
+
+                property real barScale: 10/barCount/*{
+                    var scale =
+                    print("Scale =", scale)
+                    return scale
+                }*/
+
                 property date graphDate: {
                     var day = new Date()
                     day.setDate(day.getDate() - graphBars.count + index + 1)
@@ -193,7 +205,7 @@ Page {
                     }
 
                     width: parent.width
-                    height: countTasks(function(task) { return  task.completedBy(graphDate) }) * (graph.spacing)
+                    height: scale * countTasks(function(task) { return  task.completedBy(graphDate) }) * (graph.spacing * barScale)
                     color: labelColor("green")
                 }
 
@@ -204,7 +216,7 @@ Page {
                     }
 
                     width: parent.width
-                    height: countTasks(function(task) { return task.notCompletedBy(graphDate) && !task.overdueBy(graphDate) }) * (graph.spacing)
+                    height: countTasks(function(task) { return task.notCompletedBy(graphDate) && !task.overdueBy(graphDate) }) * (graph.spacing * barScale)
                     color: labelColor("yellow")
                 }
 
@@ -215,7 +227,7 @@ Page {
                     }
 
                     width: parent.width
-                    height: countTasks(function(task) { return task.overdueBy(graphDate) }) * (graph.spacing)
+                    height: scale * countTasks(function(task) { return task.overdueBy(graphDate) }) * (graph.spacing * barScale)
                     color: labelColor("red")
                 }
             }
