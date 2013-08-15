@@ -108,33 +108,51 @@ Column {
 
     ThinDivider {}
 
+    Checklist {
+        visible: task.hasChecklist
+        task: root.task
+
+        width: parent.width
+    }
+
+    Header {
+        text: i18n.tr("Options")
+    }
+
+    Standard {
+        visible: !task.hasChecklist
+
+        text: i18n.tr("Add Checklist")
+        onClicked: task.hasChecklist = true
+    }
+
     ValueSelector {
         id: prioritySelector
 
-//        text: i18n.tr("Priority")
+        text: i18n.tr("Priority")
 
-        Row {
-            spacing: units.gu(1)
+//        Row {
+//            spacing: units.gu(1)
 
-            anchors {
-                left: parent.left
-                leftMargin: units.gu(2)
-                top: parent.top
-                topMargin: units.gu(1.5)
-            }
+//            anchors {
+//                left: parent.left
+//                leftMargin: units.gu(2)
+//                top: parent.top
+//                topMargin: units.gu(1.5)
+//            }
 
-            UbuntuShape {
-                color: labelColor(task.label)
-                width: units.gu(3)
-                height: width
-                anchors.verticalCenter: parent.verticalCenter
-            }
+//            UbuntuShape {
+//                color: labelColor(task.label)
+//                width: units.gu(3)
+//                height: width
+//                anchors.verticalCenter: parent.verticalCenter
+//            }
 
-            Label {
-                anchors.verticalCenter: parent.verticalCenter
-                text: i18n.tr("Priority")
-            }
-        }
+//            Label {
+//                anchors.verticalCenter: parent.verticalCenter
+//                text: i18n.tr("Priority")
+//            }
+//        }
 
         selectedIndex: values.indexOf(labelName(task.label))
 
@@ -196,11 +214,11 @@ Column {
                                    })
     }
 
-    MultiValue {
-        id: tagsSelector
+//    MultiValue {
+//        id: tagsSelector
 
-        text: i18n.tr("Tags")
+//        text: i18n.tr("Tags")
 
-        values: ["Whatever", "Whatever again"]
-    }
+//        values: ["Whatever", "Whatever again"]
+//    }
 }

@@ -24,42 +24,52 @@ import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
 
-Row {
+Empty {
     id: root
-
-    property var listItem
-    spacing: units.gu(2)
-
     property alias completed: checkBox.checked
+    property var listItem
 
-    CheckBox {
-        id: checkBox
+    Row {
+        anchors {
+            left: parent.left
+            right: parent.right
+            margins: units.gu(2)
+            verticalCenter: parent.verticalCenter
+        }
 
-        //width: units.gu(3)
-        //height: width
-        anchors.verticalCenter: parent.verticalCenter
+        spacing: units.gu(1)
 
-        checked: listItem.completed
-        onCheckedChanged: listItem.completed = checked
-    }
+        CheckBox {
+            id: checkBox
 
-    EditableLabel {
-        id: label
-        anchors.verticalCenter: parent.verticalCenter
-        width: editing ? parent.width - checkBox.width - deleteButton.width - parent.spacing * 2 : parent.width - checkBox.width - parent.spacing
+            //width: units.gu(3)
+            //height: width
+            anchors.verticalCenter: parent.verticalCenter
 
-        text: listItem.text
-        onTextChanged: listItem.text = text
-    }
+            checked: listItem.completed
+            onCheckedChanged: listItem.completed = checked
+        }
 
-    Button {
-        id: deleteButton
-        visible: label.editing
-        text: "Delete"
-        color: "red"
-        height: label.height
-        onClicked: {
-            task.checklist.splice(0,1)
+        EditableLabel {
+            id: label
+            anchors.verticalCenter: parent.verticalCenter
+            width: editing ? parent.width - checkBox.width - deleteButton.width - parent.spacing * 2
+                           : parent.width - checkBox.width - parent.spacing
+
+            text: listItem.text
+            onTextChanged: listItem.text = text
+        }
+
+        Button {
+            id: deleteButton
+            visible: label.editing
+            iconSource: icon("delete")
+            color: "red"
+            height: label.height
+            width: height
+            onClicked: {
+                task.checklist.splice(0,1)
+            }
         }
     }
 }
