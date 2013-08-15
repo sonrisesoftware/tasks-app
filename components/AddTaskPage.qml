@@ -39,7 +39,7 @@ Page {
         id: taskItem
         task: newTask({category: root.category})
         anchors.fill: parent
-        anchors.margins: units.gu(1)
+        //anchors.margins: units.gu(1)
 
         editing: true
         creating: true

@@ -79,10 +79,10 @@ QtObject {
     property string dueDateInfo: task.completed
                                  ? i18n.tr("Completed %1").arg(formattedDate(task.completionDate))
                                  : Qt.formatDate(task.dueDate) === ""
-                                   ? i18n.tr("No Due Date")
+                                   ? i18n.tr("None")
                                    : task.overdue
                                      ? i18n.tr("Overdue (due %1)").arg(formattedDate(task.dueDate))
-                                     : i18n.tr("Due %1").arg(formattedDate(task.dueDate))
+                                     : formattedDate(task.dueDate)
 
     function dateIsBefore(date1, date2) {
         var ans = date1.getFullYear() < date2.getFullYear() ||

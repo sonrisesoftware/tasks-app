@@ -33,70 +33,80 @@ Column {
     property bool editing: false
     property bool creating: false
 
-    spacing: units.gu(1)
-
     Item {
-        anchors {
-            left: parent.left
-            right: parent.right
-        }
+        height: headerItem.height + descriptionTextArea.height + units.gu(6)
+        width: parent.width
 
-        height: completedCheckBox.visible
-                ? Math.max(titleLabel.height, completedCheckBox.height)
-                : titleLabel.height
-
-        EditableLabel {
-            id: titleLabel
-
-            anchors.verticalCenter: parent.verticalCenter
+        Item {
+            id: headerItem
             anchors {
+                top: parent.top
                 left: parent.left
-                right: completedCheckBox.visible ? completedCheckBox.left : parent.right
-                rightMargin: completedCheckBox.visible ? units.gu(2) : 0
-            }
-
-            fontSize: "large"
-            bold: true
-            text: task.title
-            placeholderText: i18n.tr("Title")
-            parentEditing: root.editing
-
-            onTextChanged: task.title = text
-        }
-
-        CheckBox {
-            id: completedCheckBox
-            anchors {
-                verticalCenter: parent.verticalCenter
                 right: parent.right
+                margins: units.gu(2)
             }
 
-            visible: !creating
+            height: completedCheckBox.visible
+                    ? Math.max(titleLabel.height, completedCheckBox.height)
+                    : titleLabel.height
 
-            checked: task.completed
-            onCheckedChanged: task.completed = checked
+            EditableLabel {
+                id: titleLabel
+
+                anchors.verticalCenter: parent.verticalCenter
+                anchors {
+                    left: parent.left
+                    right: completedCheckBox.visible ? completedCheckBox.left : parent.right
+                    rightMargin: completedCheckBox.visible ? units.gu(2) : 0
+                }
+
+                fontSize: "large"
+                bold: true
+                text: task.title
+                placeholderText: i18n.tr("Title")
+                parentEditing: root.editing
+
+                onTextChanged: task.title = text
+            }
+
+            CheckBox {
+                id: completedCheckBox
+                anchors {
+                    verticalCenter: parent.verticalCenter
+                    right: parent.right
+                }
+
+                visible: !creating
+
+                checked: task.completed
+                onCheckedChanged: task.completed = checked
+            }
+        }
+
+        TextArea {
+            id: descriptionTextArea
+            anchors {
+                top: headerItem.bottom
+                left: parent.left
+                right: parent.right
+                margins: units.gu(2)
+            }
+
+            Component.onCompleted: __styleInstance.color = "white"
+
+            onFocusChanged: focus ? __styleInstance.color = Theme.palette.normal.overlayText : __styleInstance.color = "white"
+
+            //autoSize: true
+            //maximumLineCount: 23
+
+            text: task.contents
+            placeholderText: i18n.tr("Description")
+
+            onTextChanged: task.contents = text
         }
     }
 
-    TextArea {
-        id: descriptionTextArea
-        anchors {
-            left: parent.left
-            right: parent.right
-        }
-
-        Component.onCompleted: __styleInstance.color = "white"
-
-        onFocusChanged: focus ? __styleInstance.color = Theme.palette.normal.overlayText : __styleInstance.color = "white"
-
-        //autoSize: true
-        //maximumLineCount: 23
-
-        text: task.contents
-        placeholderText: i18n.tr("Description")
-
-        onTextChanged: task.contents = text
-    }
+    ThinDivider {}
 
     ValueSelector {
         id: prioritySelector
@@ -174,51 +184,23 @@ Column {
         }
     }
 
-    Item {
-        id: dueDateItem
+    SingleValue {
+        id: dueDateField
 
-        anchors {
-            left: parent.left
-            right: parent.right
-        }
+        text: i18n.tr("Due Date")
 
-        height: Math.max(
-                   dueDateLabel.visible ? dueDateLabel.height : 0,
-                    dueDateField.visible ? dueDateField.height : 0
-                )
+        value: task.dueDateInfo
 
-        Label {
-            id: dueDateLabel
-            anchors {
-                verticalCenter: parent.verticalCenter
-                left: parent.left
-                right: parent.right
-            }
+        onClicked: PopupUtils.open(Qt.resolvedUrl("DatePicker.qml"), dueDateField, {
+                                       task: task
+                                   })
+    }
 
-            visible: task.completed
-            font.italic: true
-            text: task.dueDateInfo
-            elide: Text.ElideRight
-        }
+    MultiValue {
+        id: tagsSelector
 
-        Button {
-            id: dueDateField
-            anchors {
-                verticalCenter: parent.verticalCenter
-                left: parent.left
-                right: parent.right
-            }
+        text: i18n.tr("Tags")
 
-            //width: Math.min(parent.width, units.gu(40))
-
-            //height: units.gu(4)
-
-            visible: !task.completed
-            text: task.dueDateInfo
-
-            onClicked: PopupUtils.open(Qt.resolvedUrl("DatePicker.qml"), dueDateField, {
-                                           task: task
-                                       })
-        }
+        values: ["Whatever", "Whatever again"]
     }
 }

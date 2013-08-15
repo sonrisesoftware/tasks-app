@@ -23,46 +23,77 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
-import "../components"
 
-Page {
+Empty {
     id: root
 
-    title: task.category
+    property alias text: textField.text
+    property bool editing
+    property bool bold
+    property alias fontSize: label.fontSize
 
-    property Task task
+    property var control
 
-    property alias editing: taskItem.editing
-
-//    property color headerColor: labelHeaderColor(task.label)
-//    property color backgroundColor: labelColor(task.label)
-//    property color footerColor: labelFooterColor(task.label)
-
-    TaskItem {
-        id: taskItem
-        task: root.task
-        anchors.fill: parent
-        //anchors.margins: units.gu(1)
+    onEditingChanged: {
+        if (editing)
+            textField.focus = true
     }
 
-    tools: ToolbarItems {
-//        ToolbarButton {
-//            text: i18n.tr("Move")
-//            iconSource: icon("location")
-//            onTriggered: {
-//                PopupUtils.open(Qt.resolvedUrl("../components/CategoriesPopover.qml"), caller, {
-//                                    task: root.task
-//                                })
-//            }
-//        }
+    property bool parentEditing
 
-        ToolbarButton {
-            text: i18n.tr("Delete")
-            iconSource: icon("delete")
-            onTriggered: {
-                pageStack.pop()
-                task.remove()
+    onParentEditingChanged: editing = parentEditing
+
+    property alias placeholderText: textField.placeholderText
+
+    onClicked: {
+        editing = true
+    }
+
+
+    Label {
+        id: label
+
+        anchors {
+            left: parent.left
+            leftMargin: units.gu(2)
+            right: control == null ? parent.right : control.left
+            rightMargin: control == null ? units.gu(2) : units.gu(1)
+            verticalCenter: parent.verticalCenter
+        }
+
+        font.bold: root.text != "" ? root.bold : false
+        font.italic: root.text === ""
+        elide: Text.ElideRight
+        visible: !(editing || parentEditing)
+        text: root.text != "" ? root.text : root.placeholderText
+    }
+
+    TextField {
+        id: textField
+
+        anchors {
+            left: parent.left
+            leftMargin: units.gu(2)
+            right: control == null ? parent.right : control.left
+            rightMargin: control == null ? units.gu(2) : units.gu(2)
+            verticalCenter: parent.verticalCenter
+        }
+
+        Component.onCompleted: __styleInstance.color = "white"
+
+        //width: Math.min(parent.width, units.gu(50))
+
+        font.bold: root.bold
+        visible: editing || parentEditing
+
+        onFocusChanged:  {
+            focus ? __styleInstance.color = Theme.palette.normal.overlayText : __styleInstance.color = "white"
+
+            if (focus === false) {
+                root.editing = false
             }
         }
+
+        onAccepted: editing = false
     }
 }
