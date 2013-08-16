@@ -29,6 +29,8 @@ Page {
 
     title: i18n.tr("Statistics")
 
+    property string type: "statistics"
+
     function totalCount(date) {
         return countTasks(function(task) {
             return task.existedBy(date)

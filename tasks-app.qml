@@ -75,18 +75,21 @@ MainView {
         Tabs {
             id: tabs
 
+            property string type: "root"
+
             Tab {
                 title: page.title
                 page: TasksPage {
                     title: i18n.tr("All Tasks")
                     category: ""
+                    type: "root"
                 }
             }
 
             Tab {
                 title: page.title
                 page: CategoriesPage {
-
+                    property string type: "root"
                 }
             }
 
@@ -103,26 +106,23 @@ MainView {
             pushHomePage()
         }
 
-        onCurrentPageChanged: {
-            currentTask = null
-            print("CURRENT PAGE CHANGED!!! Home page?", showingHomePage, pageStack.currentPage)
-            var count = depth
-            if (showingHomePage) count--
-
-            if (count === 1) {
-                viewing = "root"
-            } else if (count === 2) {
-                var task = pageStack.currentPage.hasOwnProperty("task") ? pageStack.currentPage.task : null
-                viewing = task === null ? "category" : "task"
-                if (task !== null)
-                    currentTask = task
-            } else {
-                viewing = "task"
-            }
-
-            print("Now viewing:", viewing, depth)
-        }
+        onDepthChanged: print("Depth changed")
     }
+
+    property string viewing: {
+        var type = pageStack.currentPage.hasOwnProperty("type") ? pageStack.currentPage.type : "unknown"
+        print(pageStack.currentPage)
+        print("Now viewing:", type)
+        return type
+    }
+    property var currentTask: viewing === "task"
+                              ? (pageStack.currentPage.hasOwnProperty("task") ? pageStack.currentPage.task : null)
+                              : null
+    property var currentCategory: pageStack.currentPage.hasOwnProperty("category")
+                                  ? pageStack.currentPage.category
+                                  : currentTask !== null ? currentTask.category : ""
+
+    property bool showingHomePage: false
 
     function pushHomePage() {
         if (wideAspect) {
@@ -135,59 +135,29 @@ MainView {
     function clearPageStack() {
         while (pageStack.depth > 1)
             pageStack.pop()
-        currentTask = null
         showingHomePage = false
         pushHomePage()
     }
 
-    property bool showingHomePage: false
-
-    property string viewing: "root" // or "category" or "task"
-    property var currentTask: null
 
     onWideAspectChanged: {
         var viewing = root.viewing
-        // if mode is now wide aspect,
-        if (wideAspect) {
-            print("Switching to wide aspect")
 
-            var category = pageStack.currentPage.category
+        if (viewing === "root") {
             clearPageStack()
-
-            // if was viewing task,
-            if (viewing === "task") {
-                pageStack.push(taskViewPage)
-            } else if (viewing === "category") { // if was viewing category,
-                // push the task view mode
-                pageStack.push(taskViewPage)
-                // set the category
-                taskViewPage.category = category
-                taskViewPage.task = null
-            }
-        } else { // otherwise, mode is not wide aspect, so
-            print("Switching from wide aspect")
-
-            var task = pageStack.currentPage.hasOwnProperty("task") ? pageStack.currentPage.task : null
-            var category = pageStack.currentPage.hasOwnProperty("category") ? pageStack.currentPage.category : ""
-            if (task !== null) {
-                category = task.category
-            }
-
-            print("Category", category)
-
-            //print(task.title, category)
-
+        } else if (viewing === "task") {
+            goToTask(currentTask, "category")
+        } else if (viewing === "category") {
+            goToCategory(currentCategory)
+        } else if (viewing === "statistics") {
             clearPageStack()
-            // if was viewing task,
-            if (viewing === "task") {
-                pageStack.push(tasksPage, {category: category})
-                pageStack.push(taskViewPage)
-            } else if (viewing === "category") { // if was viewing category,
-                print("Current page:", pageStack.currentPage)
-
-                // push the category page
-                pageStack.push(tasksPage, {category: category})
-            }
+            pageStack.push(statisticsPage)
+        } else if (viewing === "add") {
+            var page = root.pageStack.currentPage
+            pageStack.pop()
+            var category = currentCategory
+            goToCategory(category)
+            pageStack.push(page)
         }
     }
 
@@ -204,7 +174,6 @@ MainView {
     }
 
     function goToCategory(category) {
-        currentTask = null
         // if in wide aspect mode,
         if (wideAspect) {
             // clear current task
@@ -226,12 +195,14 @@ MainView {
             // push the new category
             pageStack.push(tasksPage, {category: category})
         }
-
-        root.viewing = "category"
     }
 
-    function goToTask(task) {
+    function goToTask(task, viewing) {
         print("Going to task...", task.title)
+
+        if (viewing === undefined)
+            viewing = root.viewing
+
         // if in wide aspect mode,
         if (wideAspect) {
             // set the category and task
@@ -249,12 +220,15 @@ MainView {
                 taskViewPage.category = task.category
             }
         } else { // otherwise,
+            clearPageStack()
+
+            if (viewing === "category") {
+                pageStack.push(tasksPage, {category: task.category})
+            }
+
             // push the new task
             pageStack.push(taskViewPage, {task: task})
         }
-
-        currentTask = task
-        root.viewing = "task"
     }
 
     Component {

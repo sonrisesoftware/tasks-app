@@ -32,6 +32,8 @@ Page {
 
     property alias category: list.category
 
+    property string type: "category"
+
     actions: [
         Action {
             id: addAction
@@ -75,14 +77,6 @@ Page {
             visible: category != ""
             onTriggered: {
                 removeCategory(category)
-            }
-        }
-
-        ToolbarButton {
-            iconSource: icon("graphs")
-            text: i18n.tr("Statistics")
-            onTriggered: {
-                pageStack.push(statisticsPage)
             }
         }
 

@@ -30,6 +30,8 @@ Page {
 
     title: i18n.tr("Tasks")
 
+    property string type: "root"
+
     Sidebar {
         id: sidebar
         anchors {
@@ -102,6 +104,14 @@ Page {
 
             onTriggered: {
                 PopupUtils.open(newCategoryDialog, caller)
+            }
+        }
+
+        ToolbarButton {
+            iconSource: icon("graphs")
+            text: i18n.tr("Statistics")
+            onTriggered: {
+                pageStack.push(statisticsPage)
             }
         }
     }

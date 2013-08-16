@@ -29,6 +29,8 @@ Page {
 
     title: i18n.tr("Add Task")
 
+    property string type: "add"
+
     property string category
 
 //    property color headerColor: labelHeaderColor(taskItem.task.label)

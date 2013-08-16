@@ -33,6 +33,8 @@ Page {
     property Task task
     property string category: task.category
 
+    property string type: task !== null ? "task" : "category"
+
 //    property color headerColor: labelHeaderColor(task.label)
 //    property color backgroundColor: labelColor(task.label)
 //    property color footerColor: labelFooterColor(task.label)
@@ -132,15 +134,6 @@ Page {
             visible: sidebar.expanded && category != ""
             onTriggered: {
                 removeCategory(category)
-            }
-        }
-
-        ToolbarButton {
-            iconSource: icon("graphs")
-            text: i18n.tr("Statistics")
-            visible: sidebar.expanded
-            onTriggered: {
-                pageStack.push(statisticsPage)
             }
         }
 
