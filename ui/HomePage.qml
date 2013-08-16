@@ -109,7 +109,7 @@ Page {
 
                 Repeater {
                     id: overdue
-                    model: filteredTasks(function(task) { return task.overdue })
+                    model: filteredTasks(function(task) { return task.overdue && !task.completed})
                     delegate: TaskListItem {
                         objectName: "overdueTask" + index
 
@@ -124,7 +124,7 @@ Page {
 
                 Repeater {
                     id: upcoming
-                    model: filteredTasks(function(task) { return task.isToday() })
+                    model: filteredTasks(function(task) { return task.isToday() && !task.completed })
                     delegate: TaskListItem {
                         objectName: "upcomingTask" + index
 
