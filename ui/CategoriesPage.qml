@@ -53,6 +53,15 @@ Page {
         flickableItem: listView
     }
 
+    Label {
+        anchors.centerIn: parent
+        visible: categories.length === 0
+
+        fontSize: "large"
+        text: i18n.tr("No categories!")
+        opacity: 0.5
+    }
+
     tools: ToolbarItems {
         ToolbarButton {
             iconSource: icon("add")

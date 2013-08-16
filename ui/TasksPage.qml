@@ -148,6 +148,7 @@ Page {
         anchors.centerIn: parent
 
         visible: length() === 0
+        opacity: 0.5
 
         fontSize: "large"
 
