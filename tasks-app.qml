@@ -21,6 +21,7 @@
  ***************************************************************************/
 import QtQuick 2.0
 import Ubuntu.Components 0.1
+import Ubuntu.Components.Popups 0.1
 import U1db 1.0 as U1db
 
 import "ui"
@@ -63,14 +64,33 @@ MainView {
         id: pageStack
 
         Tabs {
-            id: tabs
+            id: wideAspectTabs
 
-            property string type: "root"
+            property string type: "tabs"
 
             Tab {
                 title: page.title
                 page: HomePage {
+                    id: homePage
+                }
+            }
 
+            Tab {
+                title: page.title
+                page: StatisticsPage {
+                }
+            }
+        }
+
+        Tabs {
+            id: phoneTabs
+
+            property string type: "tabs"
+
+            Tab {
+                title: page.title
+                page: HomePage {
+                    title: i18n.tr("Upcoming")
                 }
             }
 
@@ -81,13 +101,14 @@ MainView {
                 }
             }
 
+            Tab {
+                title: page.title
+                page: StatisticsPage {
+                }
+            }
+
             //onVisibleChanged: tabBar.visible = visible
 
-            visible: false
-        }
-
-        HomePage {
-            id: homePage
             visible: false
         }
 
@@ -97,44 +118,53 @@ MainView {
         }
 
         Component.onCompleted: {
-            pageStack.push(tabs)
-            pageStack.push(homePage)
+            pageStack.push(phoneTabs)
             pageStack.push(taskViewPage)
+            pageStack.push(wideAspectTabs)
             clearPageStack()
-            pushHomePage()
         }
 
         onDepthChanged: print("Depth changed")
     }
 
+    property Page currentPage: pageStack.currentPage.hasOwnProperty("type")
+                               ? (pageStack.currentPage.type === "tabs"
+                                  ? pageStack.currentPage.currentPage
+                                  : pageStack.currentPage)
+                               : pageStack.currentPage
+
     property string viewing: {
-        var type = pageStack.currentPage.hasOwnProperty("type") ? pageStack.currentPage.type : "unknown"
-        print(pageStack.currentPage)
+        //var type = pageStack.currentPage.hasOwnProperty("type") ? pageStack.currentPage.type : "unknown"
+        var type = "uknown"
+        if (currentTask !== null)
+            type = "task"
+        else if (currentCategory !== null_category)
+            type = "category"
+        else if (currentPage.hasOwnProperty("type"))
+            type = currentPage.type
+
+        print(currentPage)
         print("Now viewing:", type)
         return type
     }
     property var currentTask: viewing === "task"
-                              ? (pageStack.currentPage.hasOwnProperty("task") ? pageStack.currentPage.task : null)
+                              ? (currentPage.hasOwnProperty("task") ? currentPage.task : null)
                               : null
-    property var currentCategory: pageStack.currentPage.hasOwnProperty("category")
-                                  ? pageStack.currentPage.category
-                                  : currentTask !== null ? currentTask.category : ""
+    property string currentCategory: currentPage.hasOwnProperty("category")
+                                  ? currentPage.category
+                                  : currentTask !== null ? currentTask.category : null_category
+    onCurrentCategoryChanged: print("Current Category:", currentCategory)
 
-    property bool showingHomePage: false
-
-    function pushHomePage() {
-        if (wideAspect) {
-            print("Pushing home page...")
-            showingHomePage = true
-            pageStack.push(homePage)
-        }
-    }
+    readonly property string null_category: "\0"
 
     function clearPageStack() {
-        while (pageStack.depth > 1)
+        while (pageStack.depth > 0)
             pageStack.pop()
-        showingHomePage = false
-        pushHomePage()
+        if (wideAspect) {
+            pageStack.push(wideAspectTabs)
+        } else {
+            pageStack.push(phoneTabs)
+        }
     }
 
 
@@ -149,7 +179,19 @@ MainView {
             goToCategory(currentCategory)
         } else if (viewing === "statistics") {
             clearPageStack()
-            pageStack.push(statisticsPage)
+            if (wideAspect) {
+                wideAspectTabs.selectedTabIndex = 1
+            } else {
+                phoneTabs.selectedTabIndex = 2
+            }
+        } else if (viewing === "upcoming") {
+            clearPageStack()
+            if (wideAspect) {
+                wideAspectTabs.selectedTabIndex = 0
+                homePage.category = null_category
+            } else {
+                phoneTabs.selectedTabIndex = 0
+            }
         } else if (viewing === "add") {
             var page = root.pageStack.currentPage
             pageStack.pop()
@@ -162,22 +204,13 @@ MainView {
     function goToCategory(category) {
         // if in wide aspect mode,
         if (wideAspect) {
-            // clear current task
-            taskViewPage.task = null
-            // change category
-            taskViewPage.category = category
-
-            // if not in task view mode,
-            if (viewing !== "task") {
-                // push the task view mode
-                clearPageStack()
-
-                // push the task view mode
-                pageStack.push(taskViewPage)
-            }
+            clearPageStack()
+            homePage.category = category
+            wideAspectTabs.selectedTabIndex = 0
         } else { // otherwise,
             // clear the page stack
             clearPageStack()
+            phoneTabs.selectedTabIndex = 1
             // push the new category
             pageStack.push(tasksPage, {category: category})
         }
@@ -195,18 +228,18 @@ MainView {
 
             if (viewing !== "task") {
                 clearPageStack()
+                wideAspectTabs.selectedTabIndex = 0
 
                 taskViewPage.task = task
-                taskViewPage.category = task.category
 
                 // push the task view mode
                 pageStack.push(taskViewPage)
             } else {
                 taskViewPage.task = task
-                taskViewPage.category = task.category
             }
         } else { // otherwise,
             clearPageStack()
+            phoneTabs.selectedTabIndex = 1
 
             if (viewing === "category") {
                 pageStack.push(tasksPage, {category: task.category})
@@ -600,8 +633,6 @@ MainView {
         today.setSeconds(0)
         return today
     }
-
-    /* DIALOGS AND POPOVERS */
 
     Component {
         id: optionsPopover

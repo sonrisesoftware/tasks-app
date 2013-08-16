@@ -28,58 +28,26 @@ import "../components"
 Page {
     id: root
 
-    title: category === "" ? i18n.tr("Uncategorized") : category
+    title: task.category === "" ? i18n.tr("Uncategorized") : task.category
 
     property Task task
-    property string category: task.category
 
-    property string type: task !== null ? "task" : "category"
+    property string type: "task"
 
 //    property color headerColor: labelHeaderColor(task.label)
 //    property color backgroundColor: labelColor(task.label)
 //    property color footerColor: labelFooterColor(task.label)
 
-    flickable: wideAspect || category === "" ? null: taskItem
-
-    Sidebar {
-        id: sidebar
-        anchors {
-            top: parent.top
-            topMargin: wideAspect ? 0 : (category !== "" ? units.gu(9.5) : 0)
-            bottom: parent.bottom
-        }
-
-        TasksList {
-            category: root.category
-            anchors.fill: parent
-
-            //addBarColor: Qt.rgba(0.5,0.5,0.5,0.5)
-        }
-
-        //width: units.gu(40)
-        expanded: wideAspect
-    }
 
     TaskItem {
         id: taskItem
         visible: task != null
         task: root.task
-        topMargin: wideAspect ? 0 : (category !== "" ? units.gu(9.5) : 0)
-        anchors {
-            top: parent.top
-            bottom: parent.bottom
-            left: sidebar.right
-            right: parent.right
-        }
+        anchors.fill: parent
     }
 
     Item {
-        anchors {
-            top: parent.top
-            bottom: parent.bottom
-            left: sidebar.right
-            right: parent.right
-        }
+        anchors.fill: parent
 
         Label {
             anchors.centerIn: parent
@@ -99,51 +67,39 @@ Page {
         ToolbarButton {
             text: i18n.tr("Delete")
             iconSource: icon("delete")
-            visible: task != null
-            onTriggered: {
-                pageStack.pop()
+            onTriggered: PopupUtils.open(confirmDeleteTaskDialog, root)
+        }
+    }
+
+    Component {
+        id: confirmDeleteTaskDialog
+
+        ConfirmDialog {
+            id: confirmDeleteTaskDialogItem
+            title: i18n.tr("Delete Task")
+            text: i18n.tr("Are you sure you want to delete '%1'?").arg(task.title)
+
+            onAccepted: {
+                var task = root.task
+                PopupUtils.close(confirmDeleteTaskDialogItem)
+                goToCategory(task.category)
                 task.remove()
             }
         }
+    }
 
-        ToolbarButton {
-            iconSource: icon("add")
-            text: i18n.tr("Add")
+    Component {
+        id: confirmDeleteCategoryDialog
 
-            onTriggered: {
-                pageStack.push(addTaskPage, { category: root.category })
-            }
+        ConfirmDialog {
+            id: confirmDeleteCategoryDialogItem
+            title: i18n.tr("Delete Category")
+            text: i18n.tr("Are you sure you want to delete '%1'?").arg(category)
 
-            visible: sidebar.expanded
-        }
-
-        ToolbarButton {
-            iconSource: icon("edit")
-            text: i18n.tr("Rename")
-            visible: sidebar.expanded && category != ""
-            onTriggered: {
-                PopupUtils.open(renameCategoryDialog, caller, {
-                                    category: category
-                                })
-            }
-        }
-
-        ToolbarButton {
-            iconSource: icon("delete")
-            text: i18n.tr("Delete")
-            visible: sidebar.expanded && category != ""
-            onTriggered: {
+            onAccepted: {
+                PopupUtils.close(confirmDeleteCategoryDialogItem)
+                clearPageStack()
                 removeCategory(category)
-            }
-        }
-
-        ToolbarButton {
-            text: i18n.tr("Options")
-            iconSource: icon("settings")
-            visible: sidebar.expanded
-
-            onTriggered: {
-                PopupUtils.open(optionsPopover, caller)
             }
         }
     }

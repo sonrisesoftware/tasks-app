@@ -30,7 +30,10 @@ Page {
 
     title: i18n.tr("Tasks")
 
-    property string type: "root"
+    property string type: category === null_category ? "upcoming" : "category"
+
+    property string category: null_category
+    property bool upcoming: category === null_category
 
     Sidebar {
         id: sidebar
@@ -46,15 +49,30 @@ Page {
 
             clip: true
 
-            header: Header {
-                text: i18n.tr("Categories")
+            header: Column {
+                width: parent.width
+
+                Standard {
+                    text: i18n.tr("Upcoming")
+                    onClicked: category = null_category
+                    selected: upcoming
+                }
+
+                Header {
+                    text: i18n.tr("Categories")
+                }
             }
 
             delegate: Standard {
                 id: categoryItem
 
                 text: modelData
-                onClicked: goToCategory(modelData)
+                onClicked: {
+                    category = modelData
+                    //goToCategory(modelData)
+                }
+
+                selected: category == modelData
 
                 onPressAndHold: {
                     PopupUtils.open(categoryActionsPopover, categoryItem, {
@@ -65,7 +83,12 @@ Page {
 
             footer: Standard {
                 text: i18n.tr("Uncategorized")
-                onClicked: goToCategory("")
+                onClicked: {
+                    category = ""
+                    //goToCategory("")
+                }
+
+                selected: category == ""
             }
         }
 
@@ -86,61 +109,17 @@ Page {
             left: sidebar.right
         }
 
-        Flickable {
-            id: flickable
+        UpcomingTasksList {
             anchors.fill: parent
-            contentWidth: parent.width
-            contentHeight: column.height
-
-            Column {
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                }
-
-                Header {
-                    text: i18n.tr("Overdue")
-                    visible: overdue.count > 0
-                }
-
-                Repeater {
-                    id: overdue
-                    model: filteredTasks(function(task) { return task.overdue && !task.completed})
-                    delegate: TaskListItem {
-                        objectName: "overdueTask" + index
-
-                        task: modelData
-                    }
-                }
-
-                Header {
-                    text: i18n.tr("Upcoming")
-                    visible: upcoming.count > 0
-                }
-
-                Repeater {
-                    id: upcoming
-                    model: filteredTasks(function(task) { return task.isToday() && !task.completed })
-                    delegate: TaskListItem {
-                        objectName: "upcomingTask" + index
-
-                        task: modelData
-                    }
-                }
-            }
+            visible: upcoming
         }
 
-        Scrollbar {
-            flickableItem: flickable
-        }
+        TasksList {
+            id: list
 
-        Label {
-            anchors.centerIn: parent
-            visible: upcoming.count == 0 && overdue.count == 0
-
-            fontSize: "large"
-            text: i18n.tr("No upcoming tasks")
-            opacity: 0.5
+            anchors.fill: parent
+            category: root.category
+            visible: !upcoming
         }
     }
 
@@ -150,17 +129,10 @@ Page {
         ToolbarButton {
             iconSource: icon("add")
             text: i18n.tr("New")
+            visible: sidebar.expanded
 
             onTriggered: {
                 PopupUtils.open(newCategoryDialog, caller)
-            }
-        }
-
-        ToolbarButton {
-            iconSource: icon("graphs")
-            text: i18n.tr("Statistics")
-            onTriggered: {
-                pageStack.push(statisticsPage)
             }
         }
     }

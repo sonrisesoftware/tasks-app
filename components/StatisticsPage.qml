@@ -59,22 +59,7 @@ Page {
             }
             Label {
                 anchors.verticalCenter: parent.verticalCenter
-                text: i18n.tr("Completed")
-                //color: Theme.palette.normal.overlayText
-            }
-        }
-
-        Row {
-            spacing: units.gu(1)
-            UbuntuShape {
-                anchors.verticalCenter: parent.verticalCenter
-                width: units.gu(3)
-                height: width
-                color: labelColor("yellow")
-            }
-            Label {
-                anchors.verticalCenter: parent.verticalCenter
-                text: i18n.tr("Pending")
+                text: i18n.tr("Todo")
                 //color: Theme.palette.normal.overlayText
             }
         }
@@ -134,6 +119,20 @@ Page {
                         left: parent.left
                         right: parent.right
                         margins: 1
+                    }
+
+                    Label {
+                        text: {
+                            if (index === 0) return "100%"
+                            if (index === graph.count - 1) return "0%"
+                        }
+                        color: Theme.palette.normal.overlayText
+                        anchors {
+                            left: parent.left
+                            leftMargin: units.gu(1)
+                            bottom: parent.bottom
+                            bottomMargin: units.gu(1)
+                        }
                     }
                 }
             }
@@ -207,25 +206,14 @@ Page {
                     }
 
                     width: parent.width
-                    height: scale * countTasks(function(task) { return  task.completedBy(graphDate) }) * (graph.spacing * barScale)
-                    color: labelColor("green")
-                }
-
-                Rectangle {
-                    id: notDoneRectangle
-                    anchors {
-                        bottom: doneRectangle.top
-                    }
-
-                    width: parent.width
                     height: countTasks(function(task) { return task.notCompletedBy(graphDate) && !task.overdueBy(graphDate) }) * (graph.spacing * barScale)
-                    color: labelColor("yellow")
+                    color: labelColor("green")
                 }
 
                 Rectangle {
                     id: overDueRectangle
                     anchors {
-                        bottom: notDoneRectangle.top
+                        bottom: doneRectangle.top
                     }
 
                     width: parent.width
