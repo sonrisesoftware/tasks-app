@@ -146,6 +146,7 @@ MainView {
     property var currentTask: null
 
     onWideAspectChanged: {
+        var viewing = root.viewing
         // if mode is now wide aspect,
         if (wideAspect) {
             print("Switching to wide aspect")
@@ -166,20 +167,23 @@ MainView {
         } else { // otherwise, mode is not wide aspect, so
             print("Switching from wide aspect")
 
-            var task = pageStack.currentPage.task
-            var category = pageStack.currentPage.category || ""
+            var task = pageStack.currentPage.hasOwnProperty("task") ? pageStack.currentPage.task : null
+            var category = pageStack.currentPage.hasOwnProperty("category") ? pageStack.currentPage.category : ""
+            if (task !== null) {
+                category = task.category
+            }
+
+            print("Category", category)
+
+            //print(task.title, category)
 
             clearPageStack()
             // if was viewing task,
             if (viewing === "task") {
-                pageStack.push(tasksPage, {category: task.category})
+                pageStack.push(tasksPage, {category: category})
                 pageStack.push(taskViewPage)
             } else if (viewing === "category") { // if was viewing category,
                 print("Current page:", pageStack.currentPage)
-
-                if (task !== null) {
-                    category = task.category
-                }
 
                 // push the category page
                 pageStack.push(tasksPage, {category: category})

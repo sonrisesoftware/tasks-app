@@ -37,7 +37,7 @@ Page {
 //    property color backgroundColor: labelColor(task.label)
 //    property color footerColor: labelFooterColor(task.label)
 
-    flickable: wideAspect || task.category === "" ? null: taskItem
+    flickable: wideAspect || category === "" ? null: taskItem
 
     Sidebar {
         id: sidebar
@@ -112,13 +112,13 @@ Page {
                 pageStack.push(addTaskPage, { category: root.category })
             }
 
-            visible: sidebar.visible
+            visible: sidebar.expanded
         }
 
         ToolbarButton {
             iconSource: icon("edit")
             text: i18n.tr("Rename")
-            visible: sidebar.visible && category != ""
+            visible: sidebar.expanded && category != ""
             onTriggered: {
                 PopupUtils.open(renameCategoryDialog, caller, {
                                     category: category
@@ -129,7 +129,7 @@ Page {
         ToolbarButton {
             iconSource: icon("delete")
             text: i18n.tr("Delete")
-            visible: sidebar.visible && category != ""
+            visible: sidebar.expanded && category != ""
             onTriggered: {
                 removeCategory(category)
             }
@@ -138,7 +138,7 @@ Page {
         ToolbarButton {
             iconSource: icon("graphs")
             text: i18n.tr("Statistics")
-            visible: sidebar.visible
+            visible: sidebar.expanded
             onTriggered: {
                 pageStack.push(statisticsPage)
             }
@@ -147,7 +147,7 @@ Page {
         ToolbarButton {
             text: i18n.tr("Options")
             iconSource: icon("settings")
-            visible: sidebar.visible
+            visible: sidebar.expanded
 
             onTriggered: {
                 PopupUtils.open(optionsPopover, caller)
