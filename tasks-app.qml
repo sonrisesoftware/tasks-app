@@ -159,18 +159,6 @@ MainView {
         }
     }
 
-    function goTo(path) {
-        var entries = path.split("/")
-
-        if (entries.length === 3) {
-            goToTask(getTask(entries[2]))
-        } else if (entries.length === 2 && entries[2] !== "") {
-            goToCategory(entries[2])
-        } else {
-            clearPageStack()
-        }
-    }
-
     function goToCategory(category) {
         // if in wide aspect mode,
         if (wideAspect) {
@@ -337,7 +325,7 @@ MainView {
         categories = list
         print(categories)
 
-        goTo("/" + category)
+        goToCategory(category)
     }
 
     function removeCategory(category) {
@@ -357,7 +345,7 @@ MainView {
             print(categories)
         }
 
-        goTo("/")
+        clearPageStack()
     }
 
     function renameCategory(category, newCategory) {

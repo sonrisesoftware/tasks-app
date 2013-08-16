@@ -28,7 +28,7 @@ import "../components"
 Page {
     id: root
 
-    title: category
+    title: category === "" ? i18n.tr("Uncategorized") : category
 
     property Task task
     property string category: task.category
@@ -86,7 +86,7 @@ Page {
             visible: task === null
 
             fontSize: "large"
-            text: i18n.tr("No task selected!")
+            text: i18n.tr("No task selected")
             opacity: 0.5
         }
     }

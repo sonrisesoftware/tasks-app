@@ -28,9 +28,9 @@ import "../ui"
 Item {
     id: root
 
-    property string noneMessage: i18n.tr("No tasks!")
+    property string noneMessage: i18n.tr("No tasks")
     property var model: filteredTasks(function(task) {
-        return (category === "" || task.category === root.category) && (showCompletedTasks || !task.completed)
+        return (task.category === root.category) && (showCompletedTasks || !task.completed)
     })
     property string category
 

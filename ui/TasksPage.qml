@@ -28,7 +28,7 @@ import "../components"
 Page {
     id: root
 
-    title: category
+    title: category === "" ? i18n.tr("Uncategorized") : category
 
     property alias category: list.category
 
