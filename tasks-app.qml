@@ -71,23 +71,95 @@ MainView {
                 }
             }
 
-            onVisibleChanged: tabBar.visible = visible
+            Tab {
+                title: page.title
+                page: CategoriesPage {
 
-            Repeater {
-                model: categories
-
-                delegate: Tab {
-                    title: page.title
-                    page: TasksPage {
-                        category: modelData
-                    }
                 }
             }
+
+            onVisibleChanged: tabBar.visible = visible
+
+//            Repeater {
+//                model: categories
+
+//                delegate: Tab {
+//                    title: page.title
+//                    page: TasksPage {
+//                        category: modelData
+//                    }
+//                }
+//            }
 
             visible: false
         }
 
         Component.onCompleted: pageStack.push(tabs)
+    }
+
+    function goToCategory(category) {
+        pageStack.push(tasksPage, {
+                           category: category
+                       })
+    }
+
+    function goToTask(task) {
+        pageStack.push(taskViewPage, {
+                           task: task
+                       })
+    }
+
+    Component {
+        id: taskViewPage
+
+        TaskViewPage {
+
+        }
+    }
+
+    Component {
+        id: tasksPage
+
+        TasksPage {
+
+        }
+    }
+
+    Component {
+        id: newCategoryDialog
+
+        InputDialog {
+            property var task
+
+            title: i18n.tr("New Category")
+
+            placeholderText: i18n.tr("Category")
+
+            onAccepted: {
+                addCategory(value)
+
+                if (task !== undefined)
+                    task.category = value
+            }
+        }
+    }
+
+    Component {
+        id: renameCategoryDialog
+
+        InputDialog {
+            property string category
+
+            title: i18n.tr("Rename Category")
+
+            value: category
+            placeholderText: i18n.tr("Category")
+
+            onAccepted: {
+                if (value !== category)
+                    renameCategory(category, value)
+            }
+        }
     }
 
     /* TASK MANAGEMENT */
@@ -169,7 +241,9 @@ MainView {
             print(categories)
         }
 
-        tabs.selectedTabIndex = 0
+        while (pageStack.depth > 1) {
+            pageStack.pop()
+        }
     }
 
     function renameCategory(category, newCategory) {

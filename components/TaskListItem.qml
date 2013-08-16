@@ -127,9 +127,7 @@ Empty {
     }
 
     onClicked: {
-        pageStack.push(taskViewPage, {
-                           task: root.task
-                       })
+        goToTask(task)
     }
 
     onPressAndHold: {

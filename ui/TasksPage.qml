@@ -80,10 +80,6 @@ Page {
 
             task: modelData
         }
-
-        remove: Transition {
-            NumberAnimation { property: "opacity"; to: 0; duration: 1000 }
-        }
     }
 
     Scrollbar {
@@ -159,17 +155,29 @@ Page {
     }
 
     tools: ToolbarItems {
-        back: ToolbarButton {
-            iconSource: icon("properties")
-            text: i18n.tr("Categories")
 
+        ToolbarButton {
+            action: addAction
+        }
+
+        ToolbarButton {
+            iconSource: icon("edit")
+            text: i18n.tr("Rename")
+            visible: category != ""
             onTriggered: {
-                PopupUtils.open(categoriesPopover, caller)
+                PopupUtils.open(renameCategoryDialog, caller, {
+                                    category: category
+                                })
             }
         }
 
         ToolbarButton {
-            action: addAction
+            iconSource: icon("delete")
+            text: i18n.tr("Delete")
+            visible: category != ""
+            onTriggered: {
+                removeCategory(category)
+            }
         }
 
         ToolbarButton {
@@ -217,14 +225,6 @@ Page {
     }
 
     Component {
-        id: taskViewPage
-
-        TaskViewPage {
-
-        }
-    }
-
-    Component {
         id: taskActionsPopover
 
         ActionSelectionPopover {
@@ -248,104 +248,6 @@ Page {
                     text: i18n.tr("Delete")
                     onTriggered: task.remove()
                 }
-            }
-        }
-    }
-
-    Component {
-        id: categoriesPopover
-
-        ActionSelectionPopover {
-            id: categoriesPopoverItem
-
-            actions: ActionList {
-                Action {
-                    id: newCategoryAction
-
-                    text: i18n.tr("New Category")
-                    onTriggered: {
-                        PopupUtils.open(newCategoryDialog, caller)
-                    }
-                }
-
-                Action {
-                    id: renameCategoryAction
-
-                    text: i18n.tr("Rename '%1' Category").arg(category)
-                    enabled: category != ""
-                    onTriggered: {
-                        PopupUtils.open(renameCategoryDialog, caller, {
-                                            category: category
-                                        })
-                    }
-                }
-
-                Action {
-                    id: deleteCategoryAction
-
-                    text: i18n.tr("Delete '%1' Category").arg(category)
-                    enabled: category != ""
-                    onTriggered: {
-                        removeCategory(category)
-                    }
-                }
-            }
-
-            delegate: Empty {
-                id: listItem
-                Label {
-                    text: listItem.text
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                        horizontalCenter: parent.horizontalCenter
-                    }
-                    wrapMode: Text.Wrap
-                    color: Theme.palette.normal.overlayText
-                }
-
-                /*! \internal */
-                onTriggered: categoriesPopoverItem.hide()
-                visible: listItem.enabled
-                height: visible ? implicitHeight : 0
-            }
-
-            grabDismissAreaEvents: true
-        }
-    }
-
-    Component {
-        id: newCategoryDialog
-
-        InputDialog {
-            property var task
-
-            title: i18n.tr("New Category")
-
-            placeholderText: i18n.tr("Category")
-
-            onAccepted: {
-                addCategory(value)
-
-                if (task !== undefined)
-                    task.category = value
-            }
-        }
-    }
-
-    Component {
-        id: renameCategoryDialog
-
-        InputDialog {
-            property string category
-
-            title: i18n.tr("Rename Category")
-
-            value: category
-            placeholderText: i18n.tr("Category")
-
-            onAccepted: {
-                if (value !== category)
-                    renameCategory(category, value)
             }
         }
     }
