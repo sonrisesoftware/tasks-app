@@ -43,6 +43,7 @@ Page {
         id: sidebar
         anchors {
             top: parent.top
+            topMargin: wideAspect ? 0 : (category !== "" ? units.gu(9.5) : 0)
             bottom: parent.bottom
         }
 
@@ -61,7 +62,7 @@ Page {
         id: taskItem
         visible: task != null
         task: root.task
-        topMargin: wideAspect ? 0: units.gu(9.5)
+        topMargin: wideAspect ? 0 : (category !== "" ? units.gu(9.5) : 0)
         anchors {
             top: parent.top
             bottom: parent.bottom

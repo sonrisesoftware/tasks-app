@@ -30,11 +30,105 @@ Page {
 
     title: i18n.tr("Tasks")
 
-    ListView {
-        anchors.fill: parent
+    Sidebar {
+        id: sidebar
+        anchors {
+            top: parent.top
+            bottom: parent.bottom
+        }
 
-        header: Header {
-            text: i18n.tr("Overdue")
+        ListView {
+            id: listView
+            anchors.fill: parent
+            model: categories
+
+            clip: true
+
+            header: Header {
+                text: i18n.tr("Categories")
+            }
+
+            delegate: Standard {
+                id: categoryItem
+
+                text: modelData
+                onClicked: goToCategory(modelData)
+
+                onPressAndHold: {
+                    PopupUtils.open(categoryActionsPopover, categoryItem, {
+                                        category: modelData
+                                    })
+                }
+            }
+        }
+
+        Scrollbar {
+            flickableItem: listView
+        }
+
+        Label {
+            anchors.centerIn: parent
+            visible: categories.length === 0
+
+            fontSize: "large"
+            text: i18n.tr("No categories!")
+            opacity: 0.5
+        }
+
+        //width: units.gu(40)
+        expanded: wideAspect
+    }
+
+
+    Item {
+        anchors {
+            top: parent.top
+            bottom: parent.bottom
+            right: parent.right
+            left: sidebar.right
+        }
+
+        TasksList {
+            anchors.fill: parent
+        }
+    }
+
+    tools: ToolbarItems {
+        back: null
+
+        ToolbarButton {
+            iconSource: icon("add")
+            text: i18n.tr("New")
+
+            onTriggered: {
+                PopupUtils.open(newCategoryDialog, caller)
+            }
+        }
+    }
+
+    Component {
+        id: categoryActionsPopover
+
+        ActionSelectionPopover {
+            property string category
+
+            actions: ActionList {
+                Action {
+                    text: i18n.tr("Rename")
+                    onTriggered: {
+                        PopupUtils.open(renameCategoryDialog, caller, {
+                                            category: category
+                                        })
+                    }
+                }
+
+                Action {
+                    text: i18n.tr("Delete")
+                    onTriggered: {
+                        removeCategory(category)
+                    }
+                }
+            }
         }
     }
 }

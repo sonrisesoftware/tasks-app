@@ -36,6 +36,9 @@ Item {
 
     property alias addBarColor: addBar.color
 
+    property var flickable: taskListView
+    property alias header: taskListView.header
+
     function length() {
         if (model.hasOwnProperty("count")) {
             print(model.count)

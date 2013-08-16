@@ -59,6 +59,16 @@ MainView {
 
     property var pageStack: pageStack
 
+    HomePage {
+        id: homePage
+        visible: false
+    }
+
+    TaskViewPage {
+        id: taskViewPage
+        visible: false
+    }
+
     PageStack {
         id: pageStack
 
@@ -80,31 +90,32 @@ MainView {
                 }
             }
 
-            onVisibleChanged: tabBar.visible = visible
-
-//            Repeater {
-//                model: categories
-
-//                delegate: Tab {
-//                    title: page.title
-//                    page: TasksPage {
-//                        category: modelData
-//                    }
-//                }
-//            }
+            //onVisibleChanged: tabBar.visible = visible
 
             visible: false
         }
 
-        Component.onCompleted: pageStack.push(tabs)
+        Component.onCompleted: {
+            pageStack.push(tabs)
+            pageStack.push(homePage)
+            pageStack.push(taskViewPage)
+            clearPageStack()
+            pushHomePage()
+        }
 
         onCurrentPageChanged: {
-            print(pageStack.currentPage)
-            if (depth === 1) {
+            currentTask = null
+            print("CURRENT PAGE CHANGED!!! Home page?", showingHomePage, pageStack.currentPage)
+            var count = depth
+            if (showingHomePage) count--
+
+            if (count === 1) {
                 viewing = "root"
-            } else if (depth === 2) {
+            } else if (count === 2) {
                 var task = pageStack.currentPage.hasOwnProperty("task") ? pageStack.currentPage.task : null
                 viewing = task === null ? "category" : "task"
+                if (task !== null)
+                    currentTask = task
             } else {
                 viewing = "task"
             }
@@ -112,6 +123,24 @@ MainView {
             print("Now viewing:", viewing, depth)
         }
     }
+
+    function pushHomePage() {
+        if (wideAspect) {
+            print("Pushing home page...")
+            showingHomePage = true
+            pageStack.push(homePage)
+        }
+    }
+
+    function clearPageStack() {
+        while (pageStack.depth > 1)
+            pageStack.pop()
+        currentTask = null
+        showingHomePage = false
+        pushHomePage()
+    }
+
+    property bool showingHomePage: false
 
     property string viewing: "root" // or "category" or "task"
     property var currentTask: null
@@ -123,16 +152,14 @@ MainView {
             // if was viewing task,
             if (viewing === "task") {
                 // if category page in page stack, remove it
-                while (pageStack.depth > 1)
-                    pageStack.pop()
+                clearPageStack()
 
                 pageStack.push(taskViewPage)
             } else if (viewing === "category") { // if was viewing category,
                 var category = pageStack.currentPage.category
                 // pop it
                 // if category page in page stack, remove it
-                while (pageStack.depth > 1)
-                    pageStack.pop()
+                clearPageStack()
                 // push the task view mode
                 pageStack.push(taskViewPage)
                 // set the category
@@ -146,8 +173,7 @@ MainView {
                 var task = pageStack.currentPage.task
 
                 // insert category page into page stack
-                while (pageStack.depth > 1)
-                    pageStack.pop()
+                clearPageStack()
                 pageStack.push(tasksPage, {category: task.category})
                 pageStack.push(taskViewPage)
             } else if (viewing === "category") { // if was viewing category,
@@ -162,8 +188,7 @@ MainView {
 
 
                 // pop task viewing page
-                while (pageStack.depth > 1)
-                    pageStack.pop()
+                clearPageStack()
                 // push the category page
                 pageStack.push(tasksPage, {category: category})
             }
@@ -175,6 +200,10 @@ MainView {
 
         if (entries.length === 3) {
             goToTask(getTask(entries[2]))
+        } else if (entries.length === 2 && entries[2] !== "") {
+            goToCategory(entries[2])
+        } else {
+            clearPageStack()
         }
     }
 
@@ -190,16 +219,14 @@ MainView {
             // if not in task view mode,
             if (viewing !== "task") {
                 // push the task view mode
-                while (pageStack.depth > 1)
-                    pageStack.pop()
+                clearPageStack()
 
                 // push the task view mode
                 pageStack.push(taskViewPage)
             }
         } else { // otherwise,
             // clear the page stack
-            while (pageStack.depth > 1)
-                pageStack.pop()
+            clearPageStack()
             // push the new category
             pageStack.push(tasksPage, {category: category})
         }
@@ -208,31 +235,30 @@ MainView {
     }
 
     function goToTask(task) {
-        currentTask = task
+        print("Going to task...", task.title)
         // if in wide aspect mode,
         if (wideAspect) {
             // set the category and task
-            taskViewPage.task = task
-            taskViewPage.category = task.category
 
             if (viewing !== "task") {
-                while (pageStack.depth > 1)
-                    pageStack.pop()
+                clearPageStack()
+
+                taskViewPage.task = task
+                taskViewPage.category = task.category
 
                 // push the task view mode
                 pageStack.push(taskViewPage)
+            } else {
+                taskViewPage.task = task
+                taskViewPage.category = task.category
             }
         } else { // otherwise,
             // push the new task
             pageStack.push(taskViewPage, {task: task})
         }
 
+        currentTask = task
         root.viewing = "task"
-    }
-
-    TaskViewPage {
-        id: taskViewPage
-        visible: false
     }
 
     Component {
