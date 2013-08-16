@@ -108,23 +108,23 @@ Column {
 
     ThinDivider {}
 
-    Checklist {
-        visible: task.hasChecklist
-        task: root.task
+//    Checklist {
+//        visible: task.hasChecklist
+//        task: root.task
 
-        width: parent.width
-    }
+//        width: parent.width
+//    }
 
     Header {
         text: i18n.tr("Options")
     }
 
-    Standard {
-        visible: !task.hasChecklist
+//    Standard {
+//        visible: !task.hasChecklist
 
-        text: i18n.tr("Add Checklist")
-        onClicked: task.hasChecklist = true
-    }
+//        text: i18n.tr("Add Checklist")
+//        onClicked: task.hasChecklist = true
+//    }
 
     ValueSelector {
         id: prioritySelector
