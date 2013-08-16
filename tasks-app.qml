@@ -97,13 +97,38 @@ MainView {
         Component.onCompleted: pageStack.push(tabs)
     }
 
+    function goTo(path) {
+        var entries = path.split("/")
+        print("entries", entries)
+
+        while (pageStack.depth > 1) {
+            pageStack.pop()
+        }
+
+        if (entries.length > 1) {
+            if (entries[1] === "") {
+                tabs.selectedTabIndex = 0
+            } else {
+                pageStack.push(tasksPage, {
+                                   category: entries[1]
+                               })
+            }
+        }
+
+        if (entries.length > 2) {
+            pageStack.push(taskViewPage, {
+                               task: taskListModel.get(entries[2]).modelData
+                           })
+        }
+    }
+
     function goToCategory(category) {
-        pageStack.push(tasksPage, {
-                           category: category
-                       })
+        goTo("/" + category)
     }
 
     function goToTask(task) {
+        //goTo("/" + task.category + "/" + task.index)
+
         pageStack.push(taskViewPage, {
                            task: task
                        })
@@ -180,6 +205,8 @@ MainView {
         id: taskListModel
     }
 
+    property int indexCount: 0
+
     function addTask(args) {
         //print("ADDING TASK:", args)
         var task = taskComponent.createObject(root, args)
@@ -192,6 +219,8 @@ MainView {
     }
 
     function addExistingTask(task) {
+        task.index = indexCount++
+
         if (task.category !== "" && categories.indexOf(task.category) === -1) {
             console.log("WARNING: Task has new category:", task.category)
             addCategory(task.category)
@@ -221,7 +250,7 @@ MainView {
         categories = list
         print(categories)
 
-        tabs.selectedTabIndex = categories.length
+        goTo("/" + category)
     }
 
     function removeCategory(category) {
@@ -241,13 +270,10 @@ MainView {
             print(categories)
         }
 
-        while (pageStack.depth > 1) {
-            pageStack.pop()
-        }
+        goTo("/")
     }
 
     function renameCategory(category, newCategory) {
-        var tab = tabs.selectedTab
         var list = categories
         list[categories.indexOf(category)] = newCategory
         categories = list
@@ -258,8 +284,6 @@ MainView {
                 task.category = newCategory
             }
         }
-
-        tabs.selectedTabIndex = tab
     }
 
     function loadCategories() {
@@ -289,6 +313,14 @@ MainView {
         tempContents.tasks = JSON.stringify(tasks)
         //print(tempContents.tasks)
         tasksDatebase.contents = tempContents
+    }
+
+    function getTask(index) {
+        for (var i = 0; i < taskListModel.count; i++) {
+            var task = taskListModel.get(i).modelData
+            if (task.index === index)
+                return task
+        }
     }
 
     function filteredTasks(filter) {

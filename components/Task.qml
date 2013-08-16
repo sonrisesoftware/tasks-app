@@ -39,6 +39,8 @@ QtObject {
         }
     }
 
+    property int index
+
     property string title
     property string category
     property string contents

@@ -28,36 +28,13 @@ import "../components"
 Page {
     id: root
 
-    title: task.category
+    title: i18n.tr("Tasks")
 
-    property Task task
-
-    property alias editing: taskItem.editing
-
-//    property color headerColor: labelHeaderColor(task.label)
-//    property color backgroundColor: labelColor(task.label)
-//    property color footerColor: labelFooterColor(task.label)
-
-    flickable: task.category === "" ? null: taskItem
-
-    TaskItem {
-        id: taskItem
-        task: root.task
+    ListView {
         anchors.fill: parent
-    }
 
-    Scrollbar {
-        flickableItem: taskItem
-    }
-
-    tools: ToolbarItems {
-        ToolbarButton {
-            text: i18n.tr("Delete")
-            iconSource: icon("delete")
-            onTriggered: {
-                pageStack.pop()
-                task.remove()
-            }
+        header: Header {
+            text: i18n.tr("Overdue")
         }
     }
 }
