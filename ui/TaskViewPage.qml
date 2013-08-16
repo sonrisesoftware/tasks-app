@@ -97,9 +97,60 @@ Page {
         ToolbarButton {
             text: i18n.tr("Delete")
             iconSource: icon("delete")
+            visible: task != null
             onTriggered: {
                 pageStack.pop()
                 task.remove()
+            }
+        }
+
+        ToolbarButton {
+            iconSource: icon("add")
+            text: i18n.tr("Add")
+
+            onTriggered: {
+                pageStack.push(addTaskPage, { category: root.category })
+            }
+
+            visible: sidebar.visible
+        }
+
+        ToolbarButton {
+            iconSource: icon("edit")
+            text: i18n.tr("Rename")
+            visible: sidebar.visible && category != ""
+            onTriggered: {
+                PopupUtils.open(renameCategoryDialog, caller, {
+                                    category: category
+                                })
+            }
+        }
+
+        ToolbarButton {
+            iconSource: icon("delete")
+            text: i18n.tr("Delete")
+            visible: sidebar.visible && category != ""
+            onTriggered: {
+                removeCategory(category)
+            }
+        }
+
+        ToolbarButton {
+            iconSource: icon("graphs")
+            text: i18n.tr("Statistics")
+            visible: sidebar.visible
+            onTriggered: {
+                pageStack.push(statisticsPage)
+            }
+        }
+
+        ToolbarButton {
+            text: i18n.tr("Options")
+            iconSource: icon("settings")
+            visible: sidebar.visible
+
+            onTriggered: {
+                PopupUtils.open(optionsPopover, caller)
             }
         }
     }

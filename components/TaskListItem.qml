@@ -42,9 +42,12 @@ Empty {
             topMargin: units.gu(0.7)
             left: parent.left
             leftMargin: units.gu(2)
+            right: doneCheckBox.left
+            rightMargin: units.gu(2)
             verticalCenter: dueDateLabel.visible ? undefined : parent.verticalCenter
         }
 
+        elide: Text.ElideRight
         text: task.title
         color: selected ? UbuntuColors.orange : Theme.palette.selected.backgroundText
     }
@@ -58,6 +61,8 @@ Empty {
             bottomMargin: units.gu(0.7)
             left: parent.left
             leftMargin: units.gu(2)
+            right: doneCheckBox.left
+            rightMargin: units.gu(2)
         }
 
         //color: UbuntuColors.warmGrey
@@ -66,6 +71,7 @@ Empty {
         font.italic: true
         text: task.dueDateInfo
         visible: Qt.formatDate(task.dueDate) != ""
+        elide: Text.ElideRight
     }
 
     Rectangle {
