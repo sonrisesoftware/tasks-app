@@ -90,8 +90,61 @@ Page {
             left: sidebar.right
         }
 
-        TasksList {
+        Flickable {
+            id: flickable
             anchors.fill: parent
+            contentWidth: parent.width
+            contentHeight: column.height
+
+            Column {
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                }
+
+                Header {
+                    text: i18n.tr("Overdue")
+                    visible: overdue.count > 0
+                }
+
+                Repeater {
+                    id: overdue
+                    model: filteredTasks(function(task) { return task.overdue })
+                    delegate: TaskListItem {
+                        objectName: "overdueTask" + index
+
+                        task: modelData
+                    }
+                }
+
+                Header {
+                    text: i18n.tr("Upcoming")
+                    visible: upcoming.count > 0
+                }
+
+                Repeater {
+                    id: upcoming
+                    model: filteredTasks(function(task) { return task.isToday() })
+                    delegate: TaskListItem {
+                        objectName: "upcomingTask" + index
+
+                        task: modelData
+                    }
+                }
+            }
+        }
+
+        Scrollbar {
+            flickableItem: flickable
+        }
+
+        Label {
+            anchors.centerIn: parent
+            visible: upcoming.count == 0 && overdue.count == 0
+
+            fontSize: "large"
+            text: i18n.tr("No upcoming tasks")
+            opacity: 0.5
         }
     }
 

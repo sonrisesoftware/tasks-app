@@ -59,16 +59,6 @@ MainView {
 
     property var pageStack: pageStack
 
-    HomePage {
-        id: homePage
-        visible: false
-    }
-
-    TaskViewPage {
-        id: taskViewPage
-        visible: false
-    }
-
     PageStack {
         id: pageStack
 
@@ -79,10 +69,8 @@ MainView {
 
             Tab {
                 title: page.title
-                page: TasksPage {
-                    title: i18n.tr("All Tasks")
-                    category: ""
-                    type: "root"
+                page: HomePage {
+
                 }
             }
 
@@ -95,6 +83,16 @@ MainView {
 
             //onVisibleChanged: tabBar.visible = visible
 
+            visible: false
+        }
+
+        HomePage {
+            id: homePage
+            visible: false
+        }
+
+        TaskViewPage {
+            id: taskViewPage
             visible: false
         }
 
