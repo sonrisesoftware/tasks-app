@@ -149,17 +149,14 @@ MainView {
         // if mode is now wide aspect,
         if (wideAspect) {
             print("Switching to wide aspect")
+
+            var category = pageStack.currentPage.category
+            clearPageStack()
+
             // if was viewing task,
             if (viewing === "task") {
-                // if category page in page stack, remove it
-                clearPageStack()
-
                 pageStack.push(taskViewPage)
             } else if (viewing === "category") { // if was viewing category,
-                var category = pageStack.currentPage.category
-                // pop it
-                // if category page in page stack, remove it
-                clearPageStack()
                 // push the task view mode
                 pageStack.push(taskViewPage)
                 // set the category
@@ -168,27 +165,22 @@ MainView {
             }
         } else { // otherwise, mode is not wide aspect, so
             print("Switching from wide aspect")
+
+            var task = pageStack.currentPage.task
+            var category = pageStack.currentPage.category || ""
+
+            clearPageStack()
             // if was viewing task,
             if (viewing === "task") {
-                var task = pageStack.currentPage.task
-
-                // insert category page into page stack
-                clearPageStack()
                 pageStack.push(tasksPage, {category: task.category})
                 pageStack.push(taskViewPage)
             } else if (viewing === "category") { // if was viewing category,
                 print("Current page:", pageStack.currentPage)
-                var task = pageStack.currentPage.hasOwnProperty("task") ? pageStack.currentPage.task : null
-                var category = ""
-                if (task === null) {
-                    category = pageStack.currentPage.hasOwnProperty("category") ? pageStack.currentPage.category : null
-                } else {
+
+                if (task !== null) {
                     category = task.category
                 }
 
-
-                // pop task viewing page
-                clearPageStack()
                 // push the category page
                 pageStack.push(tasksPage, {category: category})
             }
