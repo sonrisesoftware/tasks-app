@@ -28,22 +28,62 @@ import "../components"
 Page {
     id: root
 
-    title: task.category
+    title: category
 
     property Task task
-
-    property alias editing: taskItem.editing
+    property string category: task.category
 
 //    property color headerColor: labelHeaderColor(task.label)
 //    property color backgroundColor: labelColor(task.label)
 //    property color footerColor: labelFooterColor(task.label)
 
-    flickable: task.category === "" ? null: taskItem
+    flickable: wideAspect || task.category === "" ? null: taskItem
+
+    Sidebar {
+        id: sidebar
+        anchors {
+            top: parent.top
+            bottom: parent.bottom
+        }
+
+        TasksList {
+            category: root.category
+            anchors.fill: parent
+        }
+
+        //width: units.gu(40)
+        expanded: wideAspect
+    }
 
     TaskItem {
         id: taskItem
+        visible: task != null
         task: root.task
-        anchors.fill: parent
+        topMargin: wideAspect ? 0: units.gu(9.5)
+        anchors {
+            top: parent.top
+            bottom: parent.bottom
+            left: sidebar.right
+            right: parent.right
+        }
+    }
+
+    Item {
+        anchors {
+            top: parent.top
+            bottom: parent.bottom
+            left: sidebar.right
+            right: parent.right
+        }
+
+        Label {
+            anchors.centerIn: parent
+            visible: task === null
+
+            fontSize: "large"
+            text: i18n.tr("No task selected!")
+            opacity: 0.5
+        }
     }
 
     Scrollbar {

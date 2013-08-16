@@ -46,6 +46,8 @@ MainView {
     width: units.gu(50)
     height: units.gu(75)
 
+    property bool wideAspect: width > units.gu(80)
+
     // Colors from Calculator app
     headerColor: pageStack.currentPage.hasOwnProperty("headerColor") ? pageStack.currentPage.headerColor : "#323A5D"
     backgroundColor: pageStack.currentPage.hasOwnProperty("backgroundColor") ? pageStack.currentPage.backgroundColor : "#6A6AA1"
@@ -95,51 +97,139 @@ MainView {
         }
 
         Component.onCompleted: pageStack.push(tabs)
+
+        onCurrentPageChanged: {
+            print(pageStack.currentPage)
+            if (depth === 1) {
+                viewing = "root"
+            } else if (depth === 2) {
+                var task = pageStack.currentPage.hasOwnProperty("task") ? pageStack.currentPage.task : null
+                viewing = task === null ? "category" : "task"
+            } else {
+                viewing = "task"
+            }
+
+            print("Now viewing:", viewing, depth)
+        }
+    }
+
+    property string viewing: "root" // or "category" or "task"
+
+    onWideAspectChanged: {
+        // if mode is now wide aspect,
+        if (wideAspect) {
+            print("Switching to wide aspect")
+            // if was viewing task,
+            if (viewing === "task") {
+                // if category page in page stack, remove it
+                while (pageStack.depth > 1)
+                    pageStack.pop()
+
+                pageStack.push(taskViewPage)
+            } else if (viewing === "category") { // if was viewing category,
+                var category = pageStack.currentPage.category
+                // pop it
+                // if category page in page stack, remove it
+                while (pageStack.depth > 1)
+                    pageStack.pop()
+                // push the task view mode
+                pageStack.push(taskViewPage)
+                // set the category
+                taskViewPage.category = category
+                taskViewPage.task = null
+            }
+        } else { // otherwise, mode is not wide aspect, so
+            print("Switching from wide aspect")
+            // if was viewing task,
+            if (viewing === "task") {
+                var task = pageStack.currentPage.task
+
+                // insert category page into page stack
+                while (pageStack.depth > 1)
+                    pageStack.pop()
+                pageStack.push(tasksPage, {category: task.category})
+                pageStack.push(taskViewPage)
+            } else if (viewing === "category") { // if was viewing category,
+                print("Current page:", pageStack.currentPage)
+                var task = pageStack.currentPage.hasOwnProperty("task") ? pageStack.currentPage.task : null
+                var category = ""
+                if (task === null) {
+                    category = pageStack.currentPage.hasOwnProperty("category") ? pageStack.currentPage.category : null
+                } else {
+                    category = task.category
+                }
+
+
+                // pop task viewing page
+                while (pageStack.depth > 1)
+                    pageStack.pop()
+                // push the category page
+                pageStack.push(tasksPage, {category: category})
+            }
+        }
     }
 
     function goTo(path) {
         var entries = path.split("/")
-        print("entries", entries)
 
-        while (pageStack.depth > 1) {
-            pageStack.pop()
-        }
-
-        if (entries.length > 1) {
-            if (entries[1] === "") {
-                tabs.selectedTabIndex = 0
-            } else {
-                pageStack.push(tasksPage, {
-                                   category: entries[1]
-                               })
-            }
-        }
-
-        if (entries.length > 2) {
-            pageStack.push(taskViewPage, {
-                               task: taskListModel.get(entries[2]).modelData
-                           })
+        if (entries.length === 3) {
+            goToTask(getTask(entries[2]))
         }
     }
 
     function goToCategory(category) {
-        goTo("/" + category)
+        // if in wide aspect mode,
+        if (wideAspect) {
+            // clear current task
+            taskViewPage.task = null
+            // change category
+            taskViewPage.category = category
+
+            // if not in task view mode,
+            if (viewing !== "task") {
+                // push the task view mode
+                while (pageStack.depth > 1)
+                    pageStack.pop()
+
+                // push the task view mode
+                pageStack.push(taskViewPage)
+            }
+        } else { // otherwise,
+            // clear the page stack
+            while (pageStack.depth > 1)
+                pageStack.pop()
+            // push the new category
+            pageStack.push(tasksPage, {category: category})
+        }
+
+        root.viewing = "category"
     }
 
     function goToTask(task) {
-        //goTo("/" + task.category + "/" + task.index)
+        // if in wide aspect mode,
+        if (wideAspect) {
+            // set the category and task
+            taskViewPage.task = task
+            taskViewPage.category = task.category
 
-        pageStack.push(taskViewPage, {
-                           task: task
-                       })
+            if (viewing !== "task") {
+                while (pageStack.depth > 1)
+                    pageStack.pop()
+
+                // push the task view mode
+                pageStack.push(taskViewPage)
+            }
+        } else { // otherwise,
+            // push the new task
+            pageStack.push(taskViewPage, {task: task})
+        }
+
+        root.viewing = "task"
     }
 
-    Component {
+    TaskViewPage {
         id: taskViewPage
-
-        TaskViewPage {
-
-        }
+        visible: false
     }
 
     Component {
@@ -318,8 +408,11 @@ MainView {
     function getTask(index) {
         for (var i = 0; i < taskListModel.count; i++) {
             var task = taskListModel.get(i).modelData
-            if (task.index === index)
+            print(task.index,"==", index)
+            if (task.index === parseInt(index)) {
+                print("Found task!")
                 return task
+            }
         }
     }
 
@@ -521,5 +614,31 @@ MainView {
         today.setMinutes(0)
         today.setSeconds(0)
         return today
+    }
+
+    /* DIALOGS AND POPOVERS */
+
+    Component {
+        id: optionsPopover
+
+        OptionsPopover {
+
+        }
+    }
+
+    Component {
+        id: addTaskPage
+
+        AddTaskPage {
+
+        }
+    }
+
+    Component {
+        id: statisticsPage
+
+        StatisticsPage {
+
+        }
     }
 }

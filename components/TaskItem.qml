@@ -36,6 +36,8 @@ Flickable {
     contentHeight: column.height
     contentWidth: width
 
+    clip: true
+
     Column {
         id: column
         anchors {
