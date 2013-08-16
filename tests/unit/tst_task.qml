@@ -10,40 +10,40 @@ import "../../components"
 
 Item {
     // The objects
-    HelloComponent {
+    Task {
         id: objectUnderTest
     }
-    
+
     TestCase {
         name: "HelloComponent"
-        
+
         function init() {
             console.debug(">> init");
-            compare("",objectUnderTest.text,"text was not empty on init");
-            console.debug("<< init");    
+            compare("",objectUnderTest.title,"title was not empty on init");
+            console.debug("<< init");
         }
-        
+
         function cleanup() {
             console.debug(">> cleanup");
             console.debug("<< cleanup");
         }
-        
+
         function initTestCase() {
             console.debug(">> initTestCase");
             console.debug("<< initTestCase");
         }
-        
+
         function cleanupTestCase() {
             console.debug(">> cleanupTestCase");
             console.debug("<< cleanupTestCase");
         }
-        
+
         function test_canReadAndWriteText() {
             var expected = "Hello World";
-            
-            objectUnderTest.text = expected;
-            
-            compare(expected,objectUnderTest.text,"expected did not equal result");
+
+            objectUnderTest.title = expected;
+
+            compare(expected,objectUnderTest.title,"expected did not equal result");
         }
     }
 }

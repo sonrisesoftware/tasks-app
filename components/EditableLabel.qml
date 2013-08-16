@@ -79,12 +79,16 @@ Item {
             verticalCenter: parent.verticalCenter
         }
 
+        Component.onCompleted: __styleInstance.color = "white"
+
         //width: Math.min(parent.width, units.gu(50))
 
         font.bold: root.bold
         visible: editing || parentEditing
 
         onFocusChanged:  {
+            focus ? __styleInstance.color = Theme.palette.normal.overlayText : __styleInstance.color = "white"
+
             if (focus === false) {
                 root.editing = false
             }

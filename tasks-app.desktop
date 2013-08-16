@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Tasks
 Comment=My project description
-Exec=/usr/bin/qmlscene $@ /usr/share/SuperTaskPro/SuperTaskPro.qml
+Exec=/usr/bin/qmlscene $@ /usr/share/tasks-app/tasks-app.qml
 Icon=qmlscene
 Terminal=false
 Type=Application

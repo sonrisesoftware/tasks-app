@@ -31,11 +31,15 @@ Page {
 
     property string category
 
+//    property color headerColor: labelHeaderColor(taskItem.task.label)
+//    property color backgroundColor: labelColor(taskItem.task.label)
+//    property color footerColor: labelFooterColor(taskItem.task.label)
+
     TaskItem {
         id: taskItem
         task: newTask({category: root.category})
         anchors.fill: parent
-        anchors.margins: units.gu(2)
+        //anchors.margins: units.gu(1)
 
         editing: true
         creating: true

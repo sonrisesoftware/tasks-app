@@ -24,105 +24,93 @@ import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
 
-Item {
+Column {
     id: root
-
-    height: childrenRect.height
 
     property Task task
 
-    property var items: tasks.checklist
+    property var items: task.checklist
 
     onItemsChanged: progressBar.value = 0
 
-    Column {
-        id: contents
-        anchors {
-            left: parent.left
-            right: parent.right
-        }
-
-        spacing: units.gu(1)
-
-        Row {
-            spacing: units.gu(2)
-
-            width: parent.width
-
-            Label {
-                id: checklistLabel
-                text: i18n.tr("Checklist")
-                font.bold: true
-
-                anchors.verticalCenter: parent.verticalCenter
-            }
-
-            ProgressBar {
-                id: progressBar
-
-                anchors.verticalCenter: parent.verticalCenter
-
-                width: parent.width - checklistLabel.width - parent.spacing
-
-                height: units.gu(3)
-
-                value: 0
-                minimumValue: 0
-                maximumValue: root.items.length
-
-                onValueChanged: {
-                    if (value === maximumValue) {
-                        task.completed = true
-                    } else {
-                        task.completed = false
-                    }
-                }
-            }
-        }
-
-
-        Repeater {
-            id: repeater
-            model: root.items
-
-            delegate: ChecklistItem {
-                listItem: modelData
-
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                }
-
-                onCompletedChanged: {
-                    if (completed) {
-                        progressBar.value += 1
-                    } else {
-                        progressBar.value -= 1
-                    }
-                }
-            }
-        }
-
+    Header {
         Label {
+            id: checklistLabel
+            text: i18n.tr("Checklist")
+
+            anchors {
+                left: parent.left
+                leftMargin: units.gu(1)
+                verticalCenter: parent.verticalCenter
+            }
+        }
+
+        ProgressBar {
+            id: progressBar
+
+            anchors {
+                left: parent.horizontalCenter
+                //leftMargin: units.gu(1)
+                right: parent.right
+                rightMargin: units.gu(2)
+                verticalCenter: parent.verticalCenter
+            }
+            //width: units.gu(20)
+
+            height: units.gu(2.5)
+
+            value: 0
+            minimumValue: 0
+            maximumValue: root.items.length
+
+            onValueChanged: {
+                if (value === maximumValue) {
+                    task.completed = true
+                } else {
+                    task.completed = false
+                }
+            }
+        }
+    }
+
+
+    Repeater {
+        id: repeater
+        model: root.items
+
+        delegate: ChecklistItem {
+            listItem: modelData
+
             anchors {
                 left: parent.left
                 right: parent.right
             }
 
-            font.italic: true
-            text: i18n.tr("Add item...")
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    print("CLICKED!")
-                    task.checklist.push({completed: true, text: "New Item"})
-                    var list = task.checklist
-                    task.checklist = []
-                    task.checklist = list
-                    repeater.children.get(repeater.model.length - 1).editing = true
+            onCompletedChanged: {
+                if (completed) {
+                    progressBar.value += 1
+                } else {
+                    progressBar.value -= 1
                 }
             }
+        }
+    }
+
+    Standard {
+        anchors {
+            left: parent.left
+            right: parent.right
+        }
+
+        text: i18n.tr("Add item")
+
+        onClicked: {
+            print("CLICKED!")
+            task.checklist.push({completed: true, text: "New Item"})
+            var list = task.checklist
+            task.checklist = []
+            task.checklist = list
+            repeater.children.get(repeater.model.length - 1).editing = true
         }
     }
 }

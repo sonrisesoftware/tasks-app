@@ -26,50 +26,74 @@ import Ubuntu.Components.Popups 0.1
 
 Empty {
     id: root
-    property alias completed: checkBox.checked
-    property var listItem
 
-    Row {
+    property alias text: textField.text
+    property bool editing
+    property bool bold
+    property alias fontSize: label.fontSize
+
+    property var control
+
+    onEditingChanged: {
+        if (editing)
+            textField.focus = true
+    }
+
+    property bool parentEditing
+
+    onParentEditingChanged: editing = parentEditing
+
+    property alias placeholderText: textField.placeholderText
+
+    onClicked: {
+        editing = true
+    }
+
+
+    Label {
+        id: label
+
         anchors {
             left: parent.left
-            right: parent.right
-            margins: units.gu(2)
+            leftMargin: units.gu(2)
+            right: control == null ? parent.right : control.left
+            rightMargin: control == null ? units.gu(2) : units.gu(1)
             verticalCenter: parent.verticalCenter
         }
 
-        spacing: units.gu(1)
+        font.bold: root.text != "" ? root.bold : false
+        font.italic: root.text === ""
+        elide: Text.ElideRight
+        visible: !(editing || parentEditing)
+        text: root.text != "" ? root.text : root.placeholderText
+    }
 
-        CheckBox {
-            id: checkBox
+    TextField {
+        id: textField
 
-            //width: units.gu(3)
-            //height: width
-            anchors.verticalCenter: parent.verticalCenter
-
-            checked: listItem.completed
-            onCheckedChanged: listItem.completed = checked
+        anchors {
+            left: parent.left
+            leftMargin: units.gu(2)
+            right: control == null ? parent.right : control.left
+            rightMargin: control == null ? units.gu(2) : units.gu(2)
+            verticalCenter: parent.verticalCenter
         }
 
-        EditableLabel {
-            id: label
-            anchors.verticalCenter: parent.verticalCenter
-            width: editing ? parent.width - checkBox.width - deleteButton.width - parent.spacing * 2
-                           : parent.width - checkBox.width - parent.spacing
+        Component.onCompleted: __styleInstance.color = "white"
 
-            text: listItem.text
-            onTextChanged: listItem.text = text
-        }
+        //width: Math.min(parent.width, units.gu(50))
 
-        Button {
-            id: deleteButton
-            visible: label.editing
-            iconSource: icon("delete")
-            color: "red"
-            height: label.height
-            width: height
-            onClicked: {
-                task.checklist.splice(0,1)
+        font.bold: root.bold
+        visible: editing || parentEditing
+
+        onFocusChanged:  {
+            focus ? __styleInstance.color = Theme.palette.normal.overlayText : __styleInstance.color = "white"
+
+            if (focus === false) {
+                root.editing = false
             }
         }
+
+        onAccepted: editing = false
     }
 }
