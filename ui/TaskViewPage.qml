@@ -42,20 +42,13 @@ Page {
         id: taskItem
         task: root.task
         anchors.fill: parent
-        //anchors.margins: units.gu(1)
+    }
+
+    Scrollbar {
+        flickableItem: taskItem
     }
 
     tools: ToolbarItems {
-//        ToolbarButton {
-//            text: i18n.tr("Move")
-//            iconSource: icon("location")
-//            onTriggered: {
-//                PopupUtils.open(Qt.resolvedUrl("../components/CategoriesPopover.qml"), caller, {
-//                                    task: root.task
-//                                })
-//            }
-//        }
-
         ToolbarButton {
             text: i18n.tr("Delete")
             iconSource: icon("delete")
