@@ -43,7 +43,7 @@ MainView {
 
     anchorToKeyboard: true
     
-    width: units.gu(50)
+    width: units.gu(100)
     height: units.gu(75)
 
     property bool wideAspect: width > units.gu(80)
@@ -114,6 +114,7 @@ MainView {
     }
 
     property string viewing: "root" // or "category" or "task"
+    property var currentTask: null
 
     onWideAspectChanged: {
         // if mode is now wide aspect,
@@ -178,6 +179,7 @@ MainView {
     }
 
     function goToCategory(category) {
+        currentTask = null
         // if in wide aspect mode,
         if (wideAspect) {
             // clear current task
@@ -206,6 +208,7 @@ MainView {
     }
 
     function goToTask(task) {
+        currentTask = task
         // if in wide aspect mode,
         if (wideAspect) {
             // set the category and task

@@ -33,6 +33,8 @@ Empty {
 
     clip: true
 
+    selected: currentTask === task
+
     Label {
         id: titleLabel
         anchors {
@@ -44,7 +46,7 @@ Empty {
         }
 
         text: task.title
-        color: Theme.palette.selected.backgroundText
+        color: selected ? UbuntuColors.orange : Theme.palette.selected.backgroundText
     }
 
     Label {

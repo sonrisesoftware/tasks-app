@@ -34,6 +34,8 @@ Item {
     })
     property string category
 
+    property alias addBarColor: addBar.color
+
     function length() {
         if (model.hasOwnProperty("count")) {
             print(model.count)

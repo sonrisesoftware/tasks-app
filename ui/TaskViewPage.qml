@@ -49,6 +49,8 @@ Page {
         TasksList {
             category: root.category
             anchors.fill: parent
+
+            //addBarColor: Qt.rgba(0.5,0.5,0.5,0.5)
         }
 
         //width: units.gu(40)
