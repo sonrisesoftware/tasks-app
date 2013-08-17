@@ -25,84 +25,51 @@ import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
 import "../ui"
 
-Item {
-    id: root
+Rectangle {
+    id: addBar
 
-    property alias showAddBar: addBar.visible
+    property bool expanded: visible
 
-    property string noneMessage: i18n.tr("No tasks")
-    property var model: filteredTasks(function(task) {
-        return (task.category === root.category) && (showCompletedTasks || !task.completed)
-    })
-    property string category
+    color: Qt.rgba(0.5,0.5,0.5,0.8)
 
-    property alias addBarColor: addBar.color
+    anchors {
+        left: parent.left
+        right: parent.right
+        bottom: parent.bottom
+        bottomMargin: expanded ? 0 : -addBar.height
 
-    property var flickable: taskListView
-    property alias header: taskListView.header
-
-    function length() {
-        if (model.hasOwnProperty("count")) {
-            print(model.count)
-            return model.count
-        } else {
-            print(model.length)
-            return model.length
+        Behavior on bottomMargin {
+            UbuntuNumberAnimation { }
         }
     }
 
-    ListView {
-        id: taskListView
-        objectName: "taskListView"
+    implicitHeight: addField.height + addBarDivider.height + units.gu(2)
+
+    ThinDivider {
+        id: addBarDivider
 
         anchors {
-            top: parent.top
             left: parent.left
             right: parent.right
-            bottom: addBar.top
-        }
-
-        clip: true
-
-        model: root.model
-
-        delegate: TaskListItem {
-            objectName: "task" + index
-
-            task: modelData
+            bottom: addField.top
+            bottomMargin: units.gu(1)
         }
     }
 
-    Scrollbar {
-        flickableItem: taskListView
-    }
-
-    QuickAddBar {
-        id: addBar
-        anchors.bottomMargin: 0
-        height: expanded ? implicitHeight : 0
-    }
-
-    Item {
+    TextField {
+        id: addField
         anchors {
-            top: parent.top
             left: parent.left
             right: parent.right
-            bottom: addBar.top
+            bottom: parent.bottom
+            margins: units.gu(1)
         }
 
-        Label {
-            id: noTasksLabel
-            objectName: "noTasksLabel"
+        placeholderText: i18n.tr("Add New Task")
 
-            anchors.centerIn: parent
-
-            visible: length() === 0
-            opacity: 0.5
-
-            fontSize: "large"
-
-            text: root.noneMessage
+        onAccepted: {
+            addTask({title: addField.text, category: root.category})
+            addField.text = ""
         }
     }
 }

@@ -85,7 +85,7 @@ Page {
     Item {
         anchors {
             top: parent.top
-            bottom: parent.bottom
+            bottom: addBar.top//parent.bottom
             right: parent.right
             left: sidebar.right
         }
@@ -100,10 +100,17 @@ Page {
         TasksList {
             id: list
 
+            showAddBar: false
             anchors.fill: parent
             category: root.category
             visible: !upcoming
         }
+    }
+
+    QuickAddBar {
+        id: addBar
+        expanded: list.visible
+        anchors.left: sidebar.right
     }
 
     tools: ToolbarItems {

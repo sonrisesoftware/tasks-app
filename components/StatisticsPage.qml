@@ -123,8 +123,12 @@ Page {
 
                     Label {
                         text: {
-                            if (index === 0) return "100%"
-                            if (index === graph.count - 1) return "0%"
+                            if (index === 0)
+                                return "100%"
+                            else if (index === graph.count - 1)
+                                return "0%"
+                            else
+                                return ""
                         }
                         color: Theme.palette.normal.overlayText
                         anchors {
