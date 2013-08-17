@@ -36,6 +36,8 @@ Item {
         contentWidth: parent.width
         contentHeight: column.height
 
+        clip: true
+
         Column {
             id: column
             anchors {

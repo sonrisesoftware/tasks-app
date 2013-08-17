@@ -49,5 +49,8 @@ SingleValue {
                         })
     }
 
-    value: countTasks(filter)
+    property int count: countTasks(filter)
+    property int overdue
+
+    value: count === 0 ? "" : count
 }

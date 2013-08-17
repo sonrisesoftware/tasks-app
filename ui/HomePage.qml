@@ -56,7 +56,7 @@ Page {
                     text: i18n.tr("Upcoming")
                     onClicked: category = null_category
                     selected: upcoming
-                    value: upcomingTasks.count
+                    count: upcomingTasks.count
                 }
 
                 Header {
