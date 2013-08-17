@@ -24,7 +24,7 @@ import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 
 Rectangle {
-    color: Qt.rgba(0.2,0.2,0.2,0.3)
+    color: Qt.rgba(0.2,0.2,0.2,0.4)
 
     property bool expanded: true
 

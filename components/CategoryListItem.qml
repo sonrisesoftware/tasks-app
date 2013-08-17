@@ -44,9 +44,10 @@ SingleValue {
     selected: currentCategory === category
 
     onPressAndHold: {
-        PopupUtils.open(categoryActionsPopover, root, {
-                            category: category
-                        })
+        if (category !== "")
+            PopupUtils.open(categoryActionsPopover, root, {
+                                category: category
+                            })
     }
 
     property int count: countTasks(filter)

@@ -112,11 +112,6 @@ MainView {
             visible: false
         }
 
-        TaskViewPage {
-            id: taskViewPage
-            visible: false
-        }
-
         Component.onCompleted: {
             pageStack.push(phoneTabs)
             pageStack.push(taskViewPage)
@@ -227,17 +222,11 @@ MainView {
         if (wideAspect) {
             // set the category and task
 
-            if (viewing !== "task") {
-                clearPageStack()
-                wideAspectTabs.selectedTabIndex = 0
+            clearPageStack()
+            wideAspectTabs.selectedTabIndex = 0
 
-                taskViewPage.task = task
-
-                // push the task view mode
-                pageStack.push(taskViewPage)
-            } else {
-                taskViewPage.task = task
-            }
+            // push the task view mode
+            pageStack.push(taskViewPage, {task: task})
         } else { // otherwise,
             clearPageStack()
             phoneTabs.selectedTabIndex = 1
@@ -253,10 +242,12 @@ MainView {
 
     Component {
         id: tasksPage
+        TasksPage {}
+    }
 
-        TasksPage {
-
-        }
+    Component {
+        id: taskViewPage
+        TaskViewPage {}
     }
 
     Component {
@@ -663,6 +654,8 @@ MainView {
         id: confirmDeleteTaskDialog
 
         ConfirmDialog {
+            property var task
+
             id: confirmDeleteTaskDialogItem
             title: i18n.tr("Delete Task")
             text: i18n.tr("Are you sure you want to delete '%1'?").arg(task.title)
