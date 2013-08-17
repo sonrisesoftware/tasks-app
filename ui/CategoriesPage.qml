@@ -35,22 +35,12 @@ Page {
         anchors.fill: parent
         model: categories
 
-        delegate: Standard {
-            id: categoryItem
-
-            text: modelData
-            onClicked: goToCategory(modelData)
-
-            onPressAndHold: {
-                PopupUtils.open(categoryActionsPopover, categoryItem, {
-                                    category: modelData
-                                })
-            }
+        delegate: CategoryListItem {
+            category: modelData
         }
 
-        footer: Standard {
-            text: i18n.tr("Uncategorized")
-            onClicked: goToCategory("")
+        footer: CategoryListItem {
+            category: ""
         }
     }
 
@@ -65,32 +55,6 @@ Page {
 
             onTriggered: {
                 PopupUtils.open(newCategoryDialog, caller)
-            }
-        }
-    }
-
-    Component {
-        id: categoryActionsPopover
-
-        ActionSelectionPopover {
-            property string category
-
-            actions: ActionList {
-                Action {
-                    text: i18n.tr("Rename")
-                    onTriggered: {
-                        PopupUtils.open(renameCategoryDialog, caller, {
-                                            category: category
-                                        })
-                    }
-                }
-
-                Action {
-                    text: i18n.tr("Delete")
-                    onTriggered: {
-                        removeCategory(category)
-                    }
-                }
             }
         }
     }

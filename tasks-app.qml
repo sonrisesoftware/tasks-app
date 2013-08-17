@@ -147,6 +147,7 @@ MainView {
         print("Now viewing:", type)
         return type
     }
+
     property var currentTask: viewing === "task"
                               ? (currentPage.hasOwnProperty("task") ? currentPage.task : null)
                               : null
@@ -655,6 +656,95 @@ MainView {
 
         StatisticsPage {
 
+        }
+    }
+
+    Component {
+        id: confirmDeleteTaskDialog
+
+        ConfirmDialog {
+            id: confirmDeleteTaskDialogItem
+            title: i18n.tr("Delete Task")
+            text: i18n.tr("Are you sure you want to delete '%1'?").arg(task.title)
+
+            onAccepted: {
+                var task = root.task
+                PopupUtils.close(confirmDeleteTaskDialogItem)
+                goToCategory(task.category)
+                task.remove()
+            }
+        }
+    }
+
+    Component {
+        id: confirmDeleteCategoryDialog
+
+        ConfirmDialog {
+            property string category
+
+            id: confirmDeleteCategoryDialogItem
+            title: i18n.tr("Delete Category")
+            text: i18n.tr("Are you sure you want to delete '%1'?").arg(category)
+
+            onAccepted: {
+                PopupUtils.close(confirmDeleteCategoryDialogItem)
+                clearPageStack()
+                removeCategory(category)
+            }
+        }
+    }
+
+    Component {
+        id: categoryActionsPopover
+
+        ActionSelectionPopover {
+            property string category
+
+            actions: ActionList {
+                Action {
+                    text: i18n.tr("Rename")
+                    onTriggered: {
+                        PopupUtils.open(renameCategoryDialog, caller, {
+                                            category: category
+                                        })
+                    }
+                }
+
+                Action {
+                    text: i18n.tr("Delete")
+                    onTriggered: {
+                        PopupUtils.open(confirmDeleteCategoryDialog, root, {category: category})
+                    }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: taskActionsPopover
+
+        ActionSelectionPopover {
+            property var task
+
+            actions: ActionList {
+                Action {
+                    id: moveAction
+
+                    text: i18n.tr("Move")
+                    onTriggered: {
+                        PopupUtils.open(Qt.resolvedUrl("../components/CategoriesPopover.qml"), caller, {
+                                            task: task
+                                        })
+                    }
+                }
+
+                Action {
+                    id: deleteAction
+
+                    text: i18n.tr("Delete")
+                    onTriggered: task.remove()
+                }
+            }
         }
     }
 }

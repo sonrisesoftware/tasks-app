@@ -52,10 +52,11 @@ Page {
             header: Column {
                 width: parent.width
 
-                Standard {
+                CategoryListItem {
                     text: i18n.tr("Upcoming")
                     onClicked: category = null_category
                     selected: upcoming
+                    value: upcomingTasks.count
                 }
 
                 Header {
@@ -63,32 +64,12 @@ Page {
                 }
             }
 
-            delegate: Standard {
-                id: categoryItem
-
-                text: modelData
-                onClicked: {
-                    category = modelData
-                    //goToCategory(modelData)
-                }
-
-                selected: category == modelData
-
-                onPressAndHold: {
-                    PopupUtils.open(categoryActionsPopover, categoryItem, {
-                                        category: modelData
-                                    })
-                }
+            delegate: CategoryListItem {
+                category: modelData
             }
 
-            footer: Standard {
-                text: i18n.tr("Uncategorized")
-                onClicked: {
-                    category = ""
-                    //goToCategory("")
-                }
-
-                selected: category == ""
+            footer: CategoryListItem {
+                category: ""
             }
         }
 
@@ -110,6 +91,8 @@ Page {
         }
 
         UpcomingTasksList {
+            id: upcomingTasks
+
             anchors.fill: parent
             visible: upcoming
         }
@@ -128,6 +111,17 @@ Page {
 
         ToolbarButton {
             iconSource: icon("add")
+            text: i18n.tr("Add")
+
+            visible: sidebar.expanded && category != null_category && category != ""
+
+            onTriggered: {
+                pageStack.push(addTaskPage, { category: root.category })
+            }
+        }
+
+        ToolbarButton {
+            iconSource: icon("add")
             text: i18n.tr("New")
             visible: sidebar.expanded
 
@@ -135,30 +129,36 @@ Page {
                 PopupUtils.open(newCategoryDialog, caller)
             }
         }
-    }
 
-    Component {
-        id: categoryActionsPopover
+        ToolbarButton {
+            iconSource: icon("edit")
+            text: i18n.tr("Rename")
+            visible: sidebar.expanded && category != null_category && category != ""
 
-        ActionSelectionPopover {
-            property string category
+            onTriggered: {
+                PopupUtils.open(renameCategoryDialog, caller, {
+                                    category: category
+                                })
+            }
+        }
 
-            actions: ActionList {
-                Action {
-                    text: i18n.tr("Rename")
-                    onTriggered: {
-                        PopupUtils.open(renameCategoryDialog, caller, {
-                                            category: category
-                                        })
-                    }
-                }
+        ToolbarButton {
+            iconSource: icon("delete")
+            text: i18n.tr("Delete")
+            visible: sidebar.expanded && category != null_category && category != ""
 
-                Action {
-                    text: i18n.tr("Delete")
-                    onTriggered: {
-                        removeCategory(category)
-                    }
-                }
+            onTriggered: {
+                PopupUtils.open(confirmDeleteCategoryDialog, root)
+            }
+        }
+
+        ToolbarButton {
+            text: i18n.tr("Options")
+            iconSource: icon("settings")
+            visible: sidebar.expanded
+
+            onTriggered: {
+                PopupUtils.open(optionsPopover, caller)
             }
         }
     }

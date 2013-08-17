@@ -70,37 +70,4 @@ Page {
             onTriggered: PopupUtils.open(confirmDeleteTaskDialog, root)
         }
     }
-
-    Component {
-        id: confirmDeleteTaskDialog
-
-        ConfirmDialog {
-            id: confirmDeleteTaskDialogItem
-            title: i18n.tr("Delete Task")
-            text: i18n.tr("Are you sure you want to delete '%1'?").arg(task.title)
-
-            onAccepted: {
-                var task = root.task
-                PopupUtils.close(confirmDeleteTaskDialogItem)
-                goToCategory(task.category)
-                task.remove()
-            }
-        }
-    }
-
-    Component {
-        id: confirmDeleteCategoryDialog
-
-        ConfirmDialog {
-            id: confirmDeleteCategoryDialogItem
-            title: i18n.tr("Delete Category")
-            text: i18n.tr("Are you sure you want to delete '%1'?").arg(category)
-
-            onAccepted: {
-                PopupUtils.close(confirmDeleteCategoryDialogItem)
-                clearPageStack()
-                removeCategory(category)
-            }
-        }
-    }
 }

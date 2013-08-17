@@ -28,6 +28,8 @@ import "../ui"
 Item {
     id: root
 
+    property int count: overdue.count + today.count
+
     Flickable {
         id: flickable
         anchors.fill: parent
@@ -79,7 +81,7 @@ Item {
 
     Label {
         anchors.centerIn: parent
-        visible: today.count == 0 && overdue.count == 0
+        visible: count === 0
 
         fontSize: "large"
         text: i18n.tr("No upcoming tasks")

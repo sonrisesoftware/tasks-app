@@ -23,70 +23,31 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
-import "../components"
+import "../ui"
 
-Page {
+
+SingleValue {
     id: root
 
-    title: category === "" ? i18n.tr("Uncategorized") : category
-
-    property alias category: list.category
-
-    property string type: "category"
-
-    actions: [
-        Action {
-            id: addAction
-
-            iconSource: icon("add")
-            text: i18n.tr("Add")
-
-            onTriggered: {
-                pageStack.push(addTaskPage, { category: root.category })
-            }
-        }
-
-    ]
-
-    TasksList {
-        id: list
-
-        anchors.fill: parent
+    property string category
+    //property string currentCategory
+    property var filter: function(task) {
+        return (task.category === root.category) && (showCompletedTasks || !task.completed)
     }
 
-    tools: ToolbarItems {
+    text: category === "" ? i18n.tr("Uncategorized") : category
 
-        ToolbarButton {
-            action: addAction
-        }
-
-        ToolbarButton {
-            iconSource: icon("edit")
-            text: i18n.tr("Rename")
-            visible: category != ""
-            onTriggered: {
-                PopupUtils.open(renameCategoryDialog, caller, {
-                                    category: category
-                                })
-            }
-        }
-
-        ToolbarButton {
-            iconSource: icon("delete")
-            text: i18n.tr("Delete")
-            visible: category != ""
-            onTriggered: {
-                PopupUtils.open(confirmDeleteCategoryDialog, root)
-            }
-        }
-
-        ToolbarButton {
-            text: i18n.tr("Options")
-            iconSource: icon("settings")
-
-            onTriggered: {
-                PopupUtils.open(optionsPopover, caller)
-            }
-        }
+    onClicked: {
+        goToCategory(category)
     }
+
+    selected: currentCategory === category
+
+    onPressAndHold: {
+        PopupUtils.open(categoryActionsPopover, root, {
+                            category: category
+                        })
+    }
+
+    value: countTasks(filter)
 }

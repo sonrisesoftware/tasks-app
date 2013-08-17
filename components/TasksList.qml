@@ -143,32 +143,4 @@ Item {
 
         text: root.noneMessage
     }
-
-    Component {
-        id: taskActionsPopover
-
-        ActionSelectionPopover {
-            property var task
-
-            actions: ActionList {
-                Action {
-                    id: moveAction
-
-                    text: i18n.tr("Move")
-                    onTriggered: {
-                        PopupUtils.open(Qt.resolvedUrl("../components/CategoriesPopover.qml"), caller, {
-                                            task: task
-                                        })
-                    }
-                }
-
-                Action {
-                    id: deleteAction
-
-                    text: i18n.tr("Delete")
-                    onTriggered: task.remove()
-                }
-            }
-        }
-    }
 }
