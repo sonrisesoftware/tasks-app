@@ -28,24 +28,33 @@ Item {
     property ListModel tasks: ListModel {
         id: tasks
 
-        onDataChanged: {
-            upcomingTasks.clear()
-            for (var i = 0; i < tasks.count; i++) {
-                if (tasks.get(i).modelData.upcoming)
-                    upcomingTasks.append(tasks.get(i))
-            }
+        onCountChanged: update()
+    }
+
+    function update() {
+        //upcomingTasks.clear()
+        uncompletedCount = 0
+        overdueCount = 0
+
+        for (var i = 0; i < tasks.count; i++) {
+            var task = tasks.get(i).modelData
+            if (task.overdue)
+                overdueCount++
         }
     }
 
-    property ListModel upcomingTasks: ListModel {
-        id: upcomingTasks
-    }
+    property var upcomingTasks: filteredTasks(function(task) {
+        return task.upcoming
+    }, "Upcoming")
 
-    property var model: showCompletedTasks ? tasks : filteredTasks(function(task) {
+    property var uncompletedTasks: filteredTasks(function(task) {
         return !task.completed
-    })
+    }, "Uncompleted")
 
-    function filteredTasks(filter) {
+    property var model: showCompletedTasks ? tasks : uncompletedTasks
+
+    function filteredTasks(filter, name) {
+        print("Running filter:", name)
         var list = []
 
         for (var i = 0; i < tasks.count; i++) {
@@ -53,13 +62,27 @@ Item {
                 list.push(tasks.get(i).modelData)
         }
 
+        print("Count:", list.length)
         return list
+    }
+
+    function countTasks(filter) {
+        print("Counting tasks...")
+        var count = 0
+
+        for (var i = 0; i < tasks.count; i++) {
+            if (filter(tasks.get(i).modelData))
+                count++
+        }
+
+        return count
     }
 
     property var backend
 
     property string name
-    property int count: model.hasOwnProperty("count") ? model.count : model.length
+    property int count: tasks.count
+    property int overdueCount: 0
 
     function load(json) {
         name = json.name

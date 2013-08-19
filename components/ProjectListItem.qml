@@ -49,7 +49,8 @@ SingleValue {
                             })
     }
 
-    property int count: project === null ? upcomingTasks.length : project.count
+    property int count: project === null ? upcomingTasks.length : project.uncompletedTasks.length
 
-    value: count === 0 ? "" : count
+    value: count === 0 ? ""
+                       : project.overdueCount > 0 ? "<b>" + count + "</b>" : count
 }

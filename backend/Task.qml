@@ -43,6 +43,25 @@ QtObject {
         }
     }
 
+    property var json: {
+        return {
+            name: name,
+            description: description,
+            creationDate: creationDate,
+            dueDate: dueDate,
+            repeat: repeat,
+            completed: completed,
+            completionDate: completionDate,
+            priority: priority,
+            tags: tags
+        }
+    }
+
+    onJsonChanged: {
+        if (project !== undefined)
+            project.update()
+    }
+
     property bool upcoming: overdue || isDueToday()
 
     property bool overdue: {
@@ -65,19 +84,8 @@ QtObject {
                                      ? i18n.tr("Overdue (due %1)").arg(formattedDate(task.dueDate))
                                      : formattedDate(task.dueDate)
 
-
     function save() {
-        return {
-            name: name,
-            description: description,
-            creationDate: creationDate,
-            dueDate: dueDate,
-            repeat: repeat,
-            completed: completed,
-            completionDate: completionDate,
-            priority: priority,
-            tags: tags
-        }
+        return json
     }
 
     function completedBy(date) {
