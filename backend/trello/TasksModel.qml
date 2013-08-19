@@ -20,24 +20,72 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.    *
  ***************************************************************************/
 import QtQuick 2.0
+import U1db 1.0 as U1db
 
-GenericTask {
-    id: task
+Item {
+    id: root
 
-    property int index
-    property var project
+    property ListModel projects: ListModel {
+        id: projects
+    }
+
+    property string name: "Trello Boards"
+    property bool requiresInternet: true
+
+    property var list: []
+
+    property var upcomingTasks: {
+        var tasks = []
+
+        for (var i = 0; i < projects.count; i++) {
+            tasks = tasks.concat(projects.get(i).modelData.upcomingTasks)
+        }
+
+        return tasks
+    }
+
+    function onError() {
+
+    }
+
+    function load() {
+        Trello.authorize({name: "Ubuntu Tasks", error: onError})
+    }
 
     function save() {
-        return json
+
     }
 
-    function remove() {
-        project.removeTask(task)
+    function newProject(name) {
+        var project = newProjectComponent.createObject(root)
+        project.backend = root
+
+        if (project === null) {
+            console.log("Unable to create project!")
+        }
+
+        project.name = name
+        projects.append({"modelData": project})
+        return project
     }
 
-    function moveTo(project) {
-        task.project.removeTask(task)
-        task.project = project
-        project.addTask(task)
+    function addProject(project) {
+        projects.append(project)
+    }
+
+    function removeProject(project) {
+        for (var i = 0; i < projects.count; i++) {
+            if (projects.get(i).modelData === project)
+                projects.remove(i)
+        }
+        project.destroy()
+    }
+
+    Component {
+        id: newProjectComponent
+
+        Project {
+
+        }
     }
 }

@@ -189,7 +189,6 @@ Page {
             text: i18n.tr("Options")
             iconSource: icon("settings")
             visible: currentProject !== null
-            onVisibleChanged: print("Showing options?", visible, currentProject)
 
             onTriggered: {
                 PopupUtils.open(optionsPopover, caller)
