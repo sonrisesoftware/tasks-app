@@ -45,15 +45,11 @@ QtObject {
             hasChecklist = false
             completed = false
         } else {
-            print(name, "- Checklist (%1)".arg(checklist.length))
             progress = 0
             for (var i = 0; i < checklist.length; i++) {
-                print(checklist[i].text, checklist[i].completed)
                 if (checklist[i].completed)
                     progress += 1;
             }
-
-            print("%1 Completed of %2".arg(progress).arg(checklist.length))
 
             if (progress === checklist.length)
                 completed = true
@@ -65,7 +61,6 @@ QtObject {
     property bool canComplete: !hasChecklist
     property var progress: 0
 
-    onProgressChanged: print("Progress:", progress)
     property int percent: progress * 100/checklist.length
     
     onCompletedChanged: {

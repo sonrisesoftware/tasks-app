@@ -262,12 +262,12 @@ Flickable {
             }
         }
 
-        MultiValue {
-            id: tagsSelector
+//        MultiValue {
+//            id: tagsSelector
 
-            text: i18n.tr("Tags")
+//            text: i18n.tr("Tags")
 
-            values: task.tags
-        }
+//            values: task.tags
+//        }
     }
 }

@@ -59,9 +59,6 @@ Column {
             value: task.progress
             minimumValue: 0
             maximumValue: task.checklist.length
-
-            onMaximumValueChanged: print("Max:", maximumValue)
-            onValueChanged: print("Value:", value)
         }
     }
 
@@ -90,7 +87,6 @@ Column {
         text: i18n.tr("Add item")
 
         onClicked: {
-            print("CLICKED!")
             var list = task.checklist
             list.push({completed: false, text: "New Item"})
             task.checklist = list

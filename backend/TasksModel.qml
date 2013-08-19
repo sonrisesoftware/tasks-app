@@ -49,7 +49,7 @@ Item {
     }
 
     function load() {
-        print("Loading...")
+        //print("Loading...")
         if (!runBefore)
             return
 

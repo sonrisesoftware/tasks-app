@@ -75,3 +75,5 @@ Day 13 - 8/19/2013
  * Completed new backend
  * Repeating tasks
  * Checklists
+
+**Released version 0.1**

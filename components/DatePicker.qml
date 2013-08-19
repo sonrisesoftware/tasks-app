@@ -63,7 +63,7 @@ Dialog {
         enabled: dateField.acceptableInput
 
         onClicked: {
-            print("User selected date:", dateField.text)
+            //print("User selected date:", dateField.text)
 
             if (dateField.text.toLowerCase() === i18n.tr("Today").toLowerCase()) {
                 var today = new Date()

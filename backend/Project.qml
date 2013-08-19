@@ -110,7 +110,7 @@ Item {
     function createTask(args) {
         if (args === undefined)
             args = {}
-        print("CREATING TASK...")
+        //print("CREATING TASK...")
         var task = taskComponent.createObject(root, args)
 
         if (task === null) {
