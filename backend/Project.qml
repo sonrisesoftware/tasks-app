@@ -50,7 +50,7 @@ Item {
     property var model: showCompletedTasks ? tasks : uncompletedTasks
 
     function filteredTasks(filter, name) {
-        print("Running filter:", name)
+        //print("Running filter:", name)
         var list = []
 
         for (var i = 0; i < tasks.count; i++) {
@@ -58,12 +58,12 @@ Item {
                 list.push(tasks.get(i).modelData)
         }
 
-        print("Count:", list.length)
+        //print("Count:", list.length)
         return list
     }
 
     function countTasks(filter) {
-        print("Counting tasks...")
+        //print("Counting tasks...")
         var count = 0
 
         for (var i = 0; i < tasks.count; i++) {
@@ -108,7 +108,10 @@ Item {
     }
 
     function createTask(args) {
-        var task = taskComponent.createObject(tasks, args)
+        if (args === undefined)
+            args = {}
+        print("CREATING TASK...")
+        var task = taskComponent.createObject(root, args)
 
         if (task === null) {
             console.log("Unable to create task!")

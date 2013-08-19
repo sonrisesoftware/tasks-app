@@ -122,16 +122,16 @@ Page {
     tools: ToolbarItems {
         back: null
 
-//        ToolbarButton {
-//            iconSource: icon("add")
-//            text: i18n.tr("Add")
+        ToolbarButton {
+            iconSource: icon("add")
+            text: i18n.tr("Add")
 
-//            visible: sidebar.expanded && category != null_category && category != ""
+            visible: currentProject != null
 
-//            onTriggered: {
-//                pageStack.push(addTaskPage, { category: root.category })
-//            }
-//        }
+            onTriggered: {
+                pageStack.push(addTaskPage, { project: currentProject })
+            }
+        }
 
         ToolbarButton {
             iconSource: icon("add")
@@ -143,27 +143,29 @@ Page {
             }
         }
 
-//        ToolbarButton {
-//            iconSource: icon("edit")
-//            text: i18n.tr("Rename")
-//            visible: sidebar.expanded && category != null_category && category != ""
+        ToolbarButton {
+            iconSource: icon("edit")
+            text: i18n.tr("Rename")
+            visible: currentProject != null
 
-//            onTriggered: {
-//                PopupUtils.open(renameCategoryDialog, caller, {
-//                                    category: category
-//                                })
-//            }
-//        }
+            onTriggered: {
+                PopupUtils.open(renameProjectDialog, caller, {
+                                    project: currentProject
+                                })
+            }
+        }
 
-//        ToolbarButton {
-//            iconSource: icon("delete")
-//            text: i18n.tr("Delete")
-//            visible: sidebar.expanded && category != null_category && category != ""
+        ToolbarButton {
+            iconSource: icon("delete")
+            text: i18n.tr("Delete")
+            visible: currentProject != null
 
-//            onTriggered: {
-//                PopupUtils.open(confirmDeleteCategoryDialog, root)
-//            }
-//        }
+            onTriggered: {
+                PopupUtils.open(confirmDeleteProjectDialog, caller, {
+                                    project: currentProject
+                                })
+            }
+        }
 
         ToolbarButton {
             text: i18n.tr("Options")

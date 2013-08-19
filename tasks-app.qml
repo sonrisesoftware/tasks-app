@@ -92,23 +92,12 @@ MainView {
 
     property var upcomingTasks: localProjectsModel.upcomingTasks
 
-    onUpcomingTasksChanged: print(upcomingTasks)
-
     /* SETTINGS */
 
     property bool showCompletedTasks
     property bool runBefore
 
     /* CHECKING FOR INTERNET */
-
-    NetworkInfo {
-        id: networkInfo
-        monitorNetworkStatus: true
-
-        onNetworkStatusChanged: print("Network Status:", networkStatus)
-
-        Component.onCompleted: print("Network Status:", networkInfo.networkStatus)
-    }
 
     /* SETTINGS STORAGE */
 
@@ -142,7 +131,7 @@ MainView {
 
     function saveSetting(name, value) {
         if (getSetting(name) !== value) {
-            print(name, "=>", value)
+            //print(name, "=>", value)
             var tempContents = {}
             tempContents = settings.contents
             tempContents[name] = value
@@ -179,7 +168,7 @@ MainView {
             backendModels[i].load()
         }
 
-        print("Run before: ", runBefore)
+        //print("Run before: ", runBefore)
         if (!runBefore) {
             saveSetting("runBefore", "true")
             firstRun()
@@ -240,24 +229,24 @@ MainView {
     }
 
     function filteredTasks(tasks, filter, name) {
-        print("Running filter:", name)
+        //print("Running filter:", name)
         var list = []
 
         for (var i = 0; i < length(tasks); i++) {
             var task = tasks.hasOwnProperty("get") ? tasks.get(i) : tasks[i]
             if (task.hasOwnProperty("modelData"))
                 task = task.modelData
-            print("Filtering:", task.name)
+            //print("Filtering:", task.name)
             if (filter(task))
                 list.push(task)
         }
 
-        print("Count:", list.length)
+        //print("Count:", list.length)
         return list
     }
 
     function countTasks(tasks, filter) {
-        print("Counting tasks...")
+        //print("Counting tasks...")
         var count = 0
 
         for (var i = 0; i < tasks.count; i++) {
@@ -324,7 +313,7 @@ MainView {
         }
     }
 
-    Component {
+     Component {
         id: addTaskPage
 
         AddTaskPage {
@@ -355,6 +344,24 @@ MainView {
                 PopupUtils.close(confirmDeleteTaskDialogItem)
                 goToCategory(task.category)
                 task.remove()
+            }
+        }
+    }
+
+    Component {
+        id: renameProjectDialog
+
+        InputDialog {
+            property var project
+
+            id: renameProjectDialogItem
+            title: i18n.tr("Rename Category")
+            //text: i18n.tr("Are you sure you want to delete '%1'?").arg(project.name)
+            value: project.name
+
+            onAccepted: {
+                PopupUtils.close(renameProjectDialogItem)
+                project.name = value
             }
         }
     }

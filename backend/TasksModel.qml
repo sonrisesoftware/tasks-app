@@ -39,11 +39,11 @@ Item {
         var tasks = []
 
         for (var i = 0; i < projects.count; i++) {
-            print(projects.get(i).modelData.name, projects.get(i).modelData.upcomingTasks)
+            //print(projects.get(i).modelData.name, projects.get(i).modelData.upcomingTasks)
             tasks = tasks.concat(projects.get(i).modelData.upcomingTasks)
         }
 
-        print("Upcoming tasks:", tasks)
+        //print("Upcoming tasks:", tasks)
 
         return tasks
     }

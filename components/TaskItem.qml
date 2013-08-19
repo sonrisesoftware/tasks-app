@@ -108,9 +108,6 @@ Flickable {
 
                 onFocusChanged: focus ? __styleInstance.color = Theme.palette.normal.overlayText : __styleInstance.color = "white"
 
-                //autoSize: true
-                //maximumLineCount: 23
-
                 text: task.description
                 placeholderText: i18n.tr("Description")
 
@@ -230,12 +227,12 @@ Flickable {
                                        })
         }
 
-    //    MultiValue {
-    //        id: tagsSelector
+        MultiValue {
+            id: tagsSelector
 
-    //        text: i18n.tr("Tags")
+            text: i18n.tr("Tags")
 
-    //        values: ["Whatever", "Whatever again"]
-    //    }
+            values: task.tags
+        }
     }
 }

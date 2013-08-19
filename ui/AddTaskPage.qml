@@ -28,64 +28,50 @@ import "../components"
 Page {
     id: root
 
-    title: category === "" ? i18n.tr("Uncategorized") : category
+    title: i18n.tr("Add Task")
 
-    property alias category: list.category
+    property string type: "add"
 
-    property string type: "category"
+    property var project
 
-    actions: [
-        Action {
-            id: addAction
+//    property color headerColor: labelHeaderColor(taskItem.task.label)
+//    property color backgroundColor: labelColor(taskItem.task.label)
+//    property color footerColor: labelFooterColor(taskItem.task.label)
 
-            iconSource: icon("add")
-            text: i18n.tr("Add")
-
-            onTriggered: {
-                pageStack.push(addTaskPage, { category: root.category })
-            }
-        }
-
-    ]
-
-    TasksList {
-        id: list
-
+    TaskItem {
+        id: taskItem
+        task: project.createTask()
         anchors.fill: parent
+
+        editing: true
+        creating: true
+    }
+
+    Scrollbar {
+        flickableItem: taskItem
     }
 
     tools: ToolbarItems {
+        locked: true
+        opened: true
 
-        ToolbarButton {
-            action: addAction
-        }
+        back: ToolbarButton {
+            text: i18n.tr("Cancel")
+            iconSource: icon("back")
 
-        ToolbarButton {
-            iconSource: icon("edit")
-            text: i18n.tr("Rename")
-            visible: category != ""
             onTriggered: {
-                PopupUtils.open(renameCategoryDialog, caller, {
-                                    category: category
-                                })
+                taskItem.task.destroy()
+                pageStack.pop()
             }
         }
 
         ToolbarButton {
-            iconSource: icon("delete")
-            text: i18n.tr("Delete")
-            visible: category != ""
-            onTriggered: {
-                PopupUtils.open(confirmDeleteCategoryDialog, root)
-            }
-        }
-
-        ToolbarButton {
-            text: i18n.tr("Options")
-            iconSource: icon("settings")
+            text: i18n.tr("Create")
+            iconSource: icon("add")
 
             onTriggered: {
-                PopupUtils.open(optionsPopover, caller)
+                project.addTask(taskItem.task)
+                pageStack.pop()
             }
         }
     }
