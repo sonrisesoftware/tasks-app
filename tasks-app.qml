@@ -52,9 +52,9 @@ MainView {
     property bool wideAspect: width > units.gu(80)
 
     // Colors from Calculator app
-    headerColor: currentPage.hasOwnProperty("headerColor") ? pageStack.currentPage.headerColor : "#323A5D"
-    backgroundColor: currentPage.hasOwnProperty("backgroundColor") ? pageStack.currentPage.backgroundColor : "#6A6AA1"
-    footerColor: currentPage.hasOwnProperty("footerColor") ? pageStack.currentPage.footerColor : "#6899D7"
+    headerColor: currentPage.hasOwnProperty("headerColor") ? currentPage.headerColor : "#323A5D"
+    backgroundColor: currentPage.hasOwnProperty("backgroundColor") ? currentPage.backgroundColor : "#6A6AA1"
+    footerColor: currentPage.hasOwnProperty("footerColor") ? currentPage.footerColor : "#6899D7"
 
     //backgroundColor: "#FCFF95"
     //backgroundColor: "#FFFFBB"
@@ -120,10 +120,8 @@ MainView {
 
     property var showToolbar: wideAspect ? true : undefined
 
-    property Page currentPage: pageStack.currentPage.hasOwnProperty("type")
-                               ? (pageStack.currentPage.type === "tabs"
-                                  ? pageStack.currentPage.currentPage
-                                  : pageStack.currentPage)
+    property Page currentPage: pageStack.currentPage.hasOwnProperty("currentPage")
+                               ? pageStack.currentPage.currentPage
                                : pageStack.currentPage
 
     property var currentProject: currentPage.hasOwnProperty("currentProject") ? currentPage.currentProject : null

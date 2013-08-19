@@ -51,6 +51,7 @@ Empty {
             checked: checklist[itemIndex].completed
             onCheckedChanged: {
                 checklist[itemIndex].completed = checked
+                task.checklist = checklist
             }
         }
 
@@ -63,6 +64,7 @@ Empty {
             text: checklist[itemIndex].text
             onTextChanged: {
                 checklist[itemIndex].text = text
+                task.checklist = checklist
             }
         }
 
@@ -80,5 +82,5 @@ Empty {
         }
     }
 
-    onClicked: label.focus = false
+    //onClicked: label.focus = false
 }

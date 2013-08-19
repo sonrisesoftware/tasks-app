@@ -95,6 +95,12 @@ Flickable {
                     checked: task.completed
                     onCheckedChanged: task.completed = checked
                 }
+
+                Label {
+                    anchors.centerIn: completedCheckBox
+                    text: task.percent + "%"
+                    visible: !task.canComplete && !task.completed
+                }
             }
 
             TextArea {

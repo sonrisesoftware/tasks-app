@@ -28,7 +28,7 @@ Item {
     id: root
 
     property string labelText: text
-    property alias text: textField.text
+    property var text
     property bool editing
 
     onEditingChanged: {
@@ -92,6 +92,9 @@ Item {
 
             if (focus === false) {
                 root.editing = false
+                root.text = text
+            } else {
+                text = root.text
             }
         }
 

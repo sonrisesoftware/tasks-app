@@ -56,25 +56,12 @@ Column {
 
             height: units.gu(2.5)
 
-            value: 0
+            value: task.progress
             minimumValue: 0
             maximumValue: task.checklist.length
 
-            onMaximumValueChanged: {
-                if (value === maximumValue && maximumValue !== 0) {
-                    task.completed = true
-                } else {
-                    task.completed = false
-                }
-            }
-
-            onValueChanged: {
-                if (value === maximumValue && maximumValue !== 0) {
-                    task.completed = true
-                } else {
-                    task.completed = false
-                }
-            }
+            onMaximumValueChanged: print("Max:", maximumValue)
+            onValueChanged: print("Value:", value)
         }
     }
 
@@ -90,14 +77,6 @@ Column {
             anchors {
                 left: parent.left
                 right: parent.right
-            }
-
-            onCompletedChanged: {
-                if (completed) {
-                    progressBar.value += 1
-                } else {
-                    progressBar.value -= 1
-                }
             }
         }
     }

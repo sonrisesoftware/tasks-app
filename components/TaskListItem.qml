@@ -133,6 +133,12 @@ Empty {
 
     }
 
+    Label {
+        anchors.centerIn: doneCheckBox
+        text: task.percent + "%"
+        visible: !task.canComplete && !task.completed
+    }
+
     onClicked: {
         goToTask(task)
     }
