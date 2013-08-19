@@ -33,6 +33,7 @@ Page {
     property string type: "add"
 
     property var project
+    property var task: project.createTask()
 
 //    property color headerColor: labelHeaderColor(taskItem.task.label)
 //    property color backgroundColor: labelColor(taskItem.task.label)
@@ -40,7 +41,7 @@ Page {
 
     TaskItem {
         id: taskItem
-        task: project.createTask()
+        task: root.task
         anchors.fill: parent
 
         editing: true

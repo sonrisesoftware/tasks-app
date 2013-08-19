@@ -46,15 +46,15 @@ MainView {
 
     anchorToKeyboard: true
     
-    width: units.gu(100)
+    width: units.gu(50)
     height: units.gu(75)
 
     property bool wideAspect: width > units.gu(80)
 
     // Colors from Calculator app
-    headerColor: pageStack.currentPage.hasOwnProperty("headerColor") ? pageStack.currentPage.headerColor : "#323A5D"
-    backgroundColor: pageStack.currentPage.hasOwnProperty("backgroundColor") ? pageStack.currentPage.backgroundColor : "#6A6AA1"
-    footerColor: pageStack.currentPage.hasOwnProperty("footerColor") ? pageStack.currentPage.footerColor : "#6899D7"
+    headerColor: currentPage.hasOwnProperty("headerColor") ? pageStack.currentPage.headerColor : "#323A5D"
+    backgroundColor: currentPage.hasOwnProperty("backgroundColor") ? pageStack.currentPage.backgroundColor : "#6A6AA1"
+    footerColor: currentPage.hasOwnProperty("footerColor") ? pageStack.currentPage.footerColor : "#6899D7"
 
     //backgroundColor: "#FCFF95"
     //backgroundColor: "#FFFFBB"
@@ -65,18 +65,134 @@ MainView {
     PageStack {
         id: pageStack
 
-        HomePage {
-            id: homePage
+        Tabs {
+            id: wideTabs
+
+            property string type: "tabs"
+
+            Tab {
+                title: page.title
+                page: HomePage {
+                    id: homePage
+                }
+            }
+
+            Tab {
+                title: page.title
+                page: ProjectsPage {
+                }
+            }
+
             visible: false
         }
 
-        Component.onCompleted: {
-            pageStack.push(homePage)
+        Tabs {
+            id: phoneTabs
+
+            property string type: "tabs"
+
+            Tab {
+                title: page.title
+                page: HomePage {
+                }
+            }
+
+            Tab {
+                title: page.title
+                page: ProjectsPage {
+                }
+            }
+
+            visible: false
+        }
+
+        Component.onCompleted: clearPageStack()
+    }
+
+
+    property Page currentPage: pageStack.currentPage.hasOwnProperty("type")
+                               ? (pageStack.currentPage.type === "tabs"
+                                  ? pageStack.currentPage.currentPage
+                                  : pageStack.currentPage)
+                               : pageStack.currentPage
+
+    property var currentProject: currentPage.hasOwnProperty("currentProject") ? currentPage.currentProject : null
+    property var currentTask: currentPage.hasOwnProperty("task") ? currentPage.task : null
+
+    property string viewing: currentPage.hasOwnProperty("type")
+                             ? currentPage.type
+                             : currentTask !== null
+                               ? "task"
+                               : currentProject !== null
+                                 ? "project"
+                                 : "unknown"
+    onViewingChanged: print("Now viewing ", viewing)
+
+    function clearPageStack() {
+        pageStack.clear()
+        if (wideAspect)
+            pageStack.push(wideTabs)
+        else
+            pageStack.push(phoneTabs)
+        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: null})
+        pageStack.pop()
+    }
+
+    onWideAspectChanged: {
+        if (viewing === "task") {
+            goToTask(currentTask, "project")
+        } else if (viewing === "project") {
+            goToProject(currentProject)
+        } else if (viewing === "add") {
+            var task = currentTask
+            goToProject(task.project)
+            pageStack.push(addTaskPage, {task: task})
+        } else {
+            if (!(viewing === "upcoming" || viewing === "projects")) {
+                clearPageStack()
+                console.log("Unknown type:", viewing)
+            }
+
+            clearPageStack()
+            if (wideAspect) {
+                wideTabs.selectedTab = 0
+                homePage.currentProject = null
+            } else {
+                phoneTabs.selectedTab = 0
+            }
         }
     }
 
-    function goToTask(task) {
-        pageStack.push(Qt.resolvedUrl("ui/TaskViewPage.qml"), {task: task})
+    function goToTask(task, viewing) {
+        if (viewing === undefined)
+            viewing = root.viewing
+
+        clearPageStack()
+
+        if (wideAspect) {
+            wideTabs.selectedTabIndex = 0
+            homePage.currentProject = task.project
+            pageStack.push(Qt.resolvedUrl("ui/TaskViewPage.qml"), {task: task})
+        } else {
+            if (viewing === "project") {
+                phoneTabs.selectedTabIndex = 1
+                pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: task.project})
+            }
+
+            pageStack.push(Qt.resolvedUrl("ui/TaskViewPage.qml"), {task: task})
+        }
+    }
+
+    function goToProject(project) {
+        clearPageStack()
+
+        if (wideAspect) {
+            wideTabs.selectedTabIndex = 0
+            homePage.currentProject = project
+        } else {
+            phoneTabs.selectedTabIndex = 1
+            pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: project})
+        }
     }
 
     /* TASK MANAGEMENT */

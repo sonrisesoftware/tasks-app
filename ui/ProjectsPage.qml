@@ -28,24 +28,51 @@ import "../components"
 Page {
     id: root
 
-    title: i18n.tr("Categories")
+    title: i18n.tr("Projects")
 
-    ListView {
-        id: listView
+    property var currentProject: null
+
+    property string type: "projects"
+
+    Flickable {
+        id: flickable
         anchors.fill: parent
-        model: categories
 
-        delegate: CategoryListItem {
-            category: modelData
-        }
+        // FIXME: REALLY uggly hack (no idea why)
+        anchors.topMargin: -1
+        topMargin: 1
 
-        footer: CategoryListItem {
-            category: ""
+        contentHeight: column.height
+        contentWidth: width
+        //clip: true
+
+        Column {
+            id: column
+            width: parent.width
+
+            Repeater {
+                model: backendModels
+
+                delegate: Column {
+                    width: parent.width
+                    Header {
+                        text: modelData.name
+                    }
+
+                    Repeater {
+                        model: modelData.projects
+
+                        delegate: ProjectListItem {
+                            project: modelData
+                        }
+                    }
+                }
+            }
         }
     }
 
     Scrollbar {
-        flickableItem: listView
+        flickableItem: flickable
     }
 
     tools: ToolbarItems {
@@ -54,7 +81,7 @@ Page {
             text: i18n.tr("New")
 
             onTriggered: {
-                PopupUtils.open(newCategoryDialog, caller)
+                PopupUtils.open(newProjectDialog, caller)
             }
         }
     }

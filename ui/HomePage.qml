@@ -33,6 +33,8 @@ Page {
 
     property var currentProject: null
 
+    property var type: upcoming ? "upcoming" : "project"
+
     property bool upcoming: currentProject === null
 
     Sidebar {
@@ -120,7 +122,6 @@ Page {
     }
 
     tools: ToolbarItems {
-        back: null
 
         ToolbarButton {
             iconSource: icon("add")

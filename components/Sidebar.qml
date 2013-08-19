@@ -32,10 +32,6 @@ Rectangle {
         ThinDivider {
             rotation: 90
 
-        //Rectangle {
-            //color: "lightgray"
-
-            //width: 1
             width: parent.height
             height: 2
             anchors {

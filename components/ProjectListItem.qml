@@ -37,7 +37,7 @@ SingleValue {
     text: project === null ? i18n.tr("Upcoming") : project.name
 
     onClicked: {
-        currentProject = project
+        goToProject(project)
     }
 
     selected: currentProject === project
