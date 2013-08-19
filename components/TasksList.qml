@@ -31,11 +31,8 @@ Item {
     property alias showAddBar: addBar.visible
 
     property string noneMessage: i18n.tr("No tasks")
-//    property var model: filteredTasks(function(task) {
-//        return (task.category === root.category) && (showCompletedTasks || !task.completed)
-//    })
+    property var model: project === null ? upcomingTasks : project.model
     property var project
-    property ListModel model: project.tasks
 
     property alias addBarColor: addBar.color
 
@@ -43,13 +40,7 @@ Item {
     property alias header: taskListView.header
 
     function length() {
-        if (model.hasOwnProperty("count")) {
-            print(model.count)
-            return model.count
-        } else {
-            print(model.length)
-            return model.length
-        }
+        return project === null ? upcomingTasks.length : project.count
     }
 
     ListView {

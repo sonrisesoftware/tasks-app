@@ -164,14 +164,14 @@ Page {
 //            }
 //        }
 
-//        ToolbarButton {
-//            text: i18n.tr("Options")
-//            iconSource: icon("settings")
-//            visible: sidebar.expanded
+        ToolbarButton {
+            text: i18n.tr("Options")
+            iconSource: icon("settings")
+            visible: sidebar.expanded
 
-//            onTriggered: {
-//                PopupUtils.open(optionsPopover, caller)
-//            }
-//        }
+            onTriggered: {
+                PopupUtils.open(optionsPopover, caller)
+            }
+        }
     }
 }

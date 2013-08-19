@@ -49,7 +49,7 @@ SingleValue {
                             })
     }
 
-    property int count: project === null ? upcomingTasks.count : project.count
+    property int count: project === null ? upcomingTasks.length : project.count
 
     value: count === 0 ? "" : count
 }

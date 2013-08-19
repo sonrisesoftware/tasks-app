@@ -49,6 +49,14 @@ QtObject {
         return dateIsBefore(dueDate, new Date())
     }
 
+    property string subText: task.completed
+                             ? i18n.tr("Completed %1").arg(formattedDate(task.completionDate))
+                             : Qt.formatDate(task.dueDate) === ""
+                               ? i18n.tr("No due date")
+                               : task.overdue
+                                 ? i18n.tr("Overdue (due %1)").arg(formattedDate(task.dueDate))
+                                 : i18n.tr("Due %1").arg(formattedDate(task.dueDate))
+
     property string dueDateInfo: task.completed
                                  ? i18n.tr("Completed %1").arg(formattedDate(task.completionDate))
                                  : Qt.formatDate(task.dueDate) === ""

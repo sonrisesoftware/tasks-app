@@ -33,8 +33,6 @@ Empty {
 
     clip: true
 
-    selected: currentTask === task
-
     Label {
         id: titleLabel
         anchors {

@@ -89,6 +89,8 @@ MainView {
         localProjectsModel
     ]
 
+    property var upcomingTasks: []
+
     /* SETTINGS */
 
     property bool showCompletedTasks
@@ -141,6 +143,19 @@ MainView {
         showCompletedTasks = getSetting("showCompletedTasks") === "true" ? true : false
     }
 
+    function saveProjects() {
+        for (var i = 0; i < backendModels.length; i++) {
+            backendModels[i].save()
+        }
+    }
+
+    Timer {
+        interval: 60000 // 60 seconds
+        repeat: true
+        running: true
+        onTriggered: saveProjects()
+    }
+
     Component.onCompleted: {
         reloadSettings()
         for (var i = 0; i < backendModels.length; i++) {
@@ -149,9 +164,7 @@ MainView {
     }
 
     Component.onDestruction: {
-        for (var i = 0; i < backendModels.length; i++) {
-            backendModels[i].save()
-        }
+        saveProjects()
     }
 
     /* PRIORITY MANAGEMENT */

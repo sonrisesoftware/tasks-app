@@ -41,10 +41,25 @@ Item {
         id: upcomingTasks
     }
 
+    property var model: showCompletedTasks ? tasks : filteredTasks(function(task) {
+        return !task.completed
+    })
+
+    function filteredTasks(filter) {
+        var list = []
+
+        for (var i = 0; i < tasks.count; i++) {
+            if (filter(tasks.get(i).modelData))
+                list.push(tasks.get(i).modelData)
+        }
+
+        return list
+    }
+
     property var backend
 
     property string name
-    property alias count: tasks.count
+    property int count: model.hasOwnProperty("count") ? model.count : model.length
 
     function load(json) {
         name = json.name
