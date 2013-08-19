@@ -46,7 +46,7 @@ MainView {
 
     anchorToKeyboard: true
     
-    width: units.gu(50)
+    width: units.gu(100)
     height: units.gu(75)
 
     property bool wideAspect: width > units.gu(80)
@@ -66,7 +66,7 @@ MainView {
         id: pageStack
 
         Tabs {
-            id: wideTabs
+            id: tabs
 
             property string type: "tabs"
 
@@ -80,35 +80,25 @@ MainView {
             Tab {
                 title: page.title
                 page: ProjectsPage {
+                    id: projectsPage
+                }
+
+                property bool show: !wideAspect
+                __isPageTreeNode: !show
+                onShowChanged: {
+                    print("Updating...")
+                    __isPageTreeNode = show
+                    parent.updateTabList()
                 }
             }
 
             visible: false
         }
 
-        Tabs {
-            id: phoneTabs
-
-            property string type: "tabs"
-
-            Tab {
-                title: page.title
-                page: HomePage {
-                }
-            }
-
-            Tab {
-                title: page.title
-                page: ProjectsPage {
-                }
-            }
-
-            visible: false
+        Component.onCompleted: {
+            pageStack.push(tabs)
         }
-
-        Component.onCompleted: clearPageStack()
     }
-
 
     property Page currentPage: pageStack.currentPage.hasOwnProperty("type")
                                ? (pageStack.currentPage.type === "tabs"
@@ -129,16 +119,17 @@ MainView {
     onViewingChanged: print("Now viewing ", viewing)
 
     function clearPageStack() {
-        pageStack.clear()
-        if (wideAspect)
-            pageStack.push(wideTabs)
-        else
-            pageStack.push(phoneTabs)
-        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: null})
-        pageStack.pop()
+        while (pageStack.depth > 1)
+            pageStack.pop()
+
+//        pageStack.push(Qt.resolvedUrl("ui/ProjectsPage.qml"))
+//        pageStack.pop()
+//        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: null})
+//        pageStack.pop()
     }
 
     onWideAspectChanged: {
+
         if (viewing === "task") {
             goToTask(currentTask, "project")
         } else if (viewing === "project") {
@@ -154,12 +145,8 @@ MainView {
             }
 
             clearPageStack()
-            if (wideAspect) {
-                wideTabs.selectedTab = 0
-                homePage.currentProject = null
-            } else {
-                phoneTabs.selectedTab = 0
-            }
+            tabs.selectedTabIndex = 0
+            homePage.currentProject = null
         }
     }
 
@@ -170,12 +157,13 @@ MainView {
         clearPageStack()
 
         if (wideAspect) {
-            wideTabs.selectedTabIndex = 0
-            homePage.currentProject = task.project
+            tabs.selectedTabIndex = 0
+            if (viewing === "project")
+                homePage.currentProject = task.project
             pageStack.push(Qt.resolvedUrl("ui/TaskViewPage.qml"), {task: task})
         } else {
             if (viewing === "project") {
-                phoneTabs.selectedTabIndex = 1
+                tabs.selectedTabIndex = 1
                 pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: task.project})
             }
 
@@ -187,10 +175,10 @@ MainView {
         clearPageStack()
 
         if (wideAspect) {
-            wideTabs.selectedTabIndex = 0
+            tabs.selectedTabIndex = 0
             homePage.currentProject = project
         } else {
-            phoneTabs.selectedTabIndex = 1
+            tabs.selectedTabIndex = 1
             pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: project})
         }
     }
