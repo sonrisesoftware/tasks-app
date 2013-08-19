@@ -23,70 +23,53 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
-import "../components"
+import "../ui"
 
-Page {
-    id: root
+Rectangle {
+    id: addBar
 
-    title: category === "" ? i18n.tr("Uncategorized") : category
+    property bool expanded: visible
 
-    property alias category: list.category
+    color: Qt.rgba(0.5,0.5,0.5,0.8)
 
-    property string type: "category"
+    anchors {
+        left: parent.left
+        right: parent.right
+        bottom: parent.bottom
+        bottomMargin: expanded ? 0 : -addBar.height
 
-    actions: [
-        Action {
-            id: addAction
-
-            iconSource: icon("add")
-            text: i18n.tr("Add")
-
-            onTriggered: {
-                pageStack.push(addTaskPage, { category: root.category })
-            }
+        Behavior on bottomMargin {
+            UbuntuNumberAnimation { }
         }
-
-    ]
-
-    TasksList {
-        id: list
-
-        anchors.fill: parent
     }
 
-    tools: ToolbarItems {
+    implicitHeight: addField.height + addBarDivider.height + units.gu(2)
 
-        ToolbarButton {
-            action: addAction
+    ThinDivider {
+        id: addBarDivider
+
+        anchors {
+            left: parent.left
+            right: parent.right
+            bottom: addField.top
+            bottomMargin: units.gu(1)
+        }
+    }
+
+    TextField {
+        id: addField
+        anchors {
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+            margins: units.gu(1)
         }
 
-        ToolbarButton {
-            iconSource: icon("edit")
-            text: i18n.tr("Rename")
-            visible: category != ""
-            onTriggered: {
-                PopupUtils.open(renameCategoryDialog, caller, {
-                                    category: category
-                                })
-            }
-        }
+        placeholderText: i18n.tr("Add New Task")
 
-        ToolbarButton {
-            iconSource: icon("delete")
-            text: i18n.tr("Delete")
-            visible: category != ""
-            onTriggered: {
-                PopupUtils.open(confirmDeleteCategoryDialog, root)
-            }
-        }
-
-        ToolbarButton {
-            text: i18n.tr("Options")
-            iconSource: icon("settings")
-
-            onTriggered: {
-                PopupUtils.open(optionsPopover, caller)
-            }
+        onAccepted: {
+            addTask({title: addField.text, category: root.category})
+            addField.text = ""
         }
     }
 }

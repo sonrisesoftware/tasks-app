@@ -28,41 +28,46 @@ import "../components"
 Page {
     id: root
 
-    title: task.category
+    title: task.category === "" ? i18n.tr("Uncategorized") : task.category
 
     property Task task
 
-    property alias editing: taskItem.editing
+    property string type: "task"
 
 //    property color headerColor: labelHeaderColor(task.label)
 //    property color backgroundColor: labelColor(task.label)
 //    property color footerColor: labelFooterColor(task.label)
 
+
     TaskItem {
         id: taskItem
+        visible: task != null
         task: root.task
         anchors.fill: parent
-        //anchors.margins: units.gu(1)
+    }
+
+    Item {
+        anchors.fill: parent
+
+        Label {
+            anchors.centerIn: parent
+            visible: task === null
+
+            fontSize: "large"
+            text: i18n.tr("No task selected")
+            opacity: 0.5
+        }
+    }
+
+    Scrollbar {
+        flickableItem: taskItem
     }
 
     tools: ToolbarItems {
-//        ToolbarButton {
-//            text: i18n.tr("Move")
-//            iconSource: icon("location")
-//            onTriggered: {
-//                PopupUtils.open(Qt.resolvedUrl("../components/CategoriesPopover.qml"), caller, {
-//                                    task: root.task
-//                                })
-//            }
-//        }
-
         ToolbarButton {
             text: i18n.tr("Delete")
             iconSource: icon("delete")
-            onTriggered: {
-                pageStack.pop()
-                task.remove()
-            }
+            onTriggered: PopupUtils.open(confirmDeleteTaskDialog, root, {task: task})
         }
     }
 }

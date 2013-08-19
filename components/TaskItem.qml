@@ -25,7 +25,7 @@ import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
 import "../components"
 
-Column {
+Flickable {
     id: root
 
     property Task task
@@ -33,192 +33,205 @@ Column {
     property bool editing: false
     property bool creating: false
 
-    Item {
-        height: headerItem.height + descriptionTextArea.height + units.gu(6)
-        width: parent.width
+    contentHeight: column.height
+    contentWidth: width
+
+    clip: true
+
+    Column {
+        id: column
+        anchors {
+            left: parent.left
+            right: parent.right
+        }
 
         Item {
-            id: headerItem
-            anchors {
-                top: parent.top
-                left: parent.left
-                right: parent.right
-                margins: units.gu(2)
-            }
+            height: headerItem.height + descriptionTextArea.height + units.gu(6)
+            width: parent.width
 
-            height: completedCheckBox.visible
-                    ? Math.max(titleLabel.height, completedCheckBox.height)
-                    : titleLabel.height
-
-            EditableLabel {
-                id: titleLabel
-
-                anchors.verticalCenter: parent.verticalCenter
+            Item {
+                id: headerItem
                 anchors {
+                    top: parent.top
                     left: parent.left
-                    right: completedCheckBox.visible ? completedCheckBox.left : parent.right
-                    rightMargin: completedCheckBox.visible ? units.gu(2) : 0
-                }
-
-                fontSize: "large"
-                bold: true
-                text: task.title
-                placeholderText: i18n.tr("Title")
-                parentEditing: root.editing
-
-                onTextChanged: task.title = text
-            }
-
-            CheckBox {
-                id: completedCheckBox
-                anchors {
-                    verticalCenter: parent.verticalCenter
                     right: parent.right
+                    margins: units.gu(2)
                 }
 
-                visible: !creating
+                height: completedCheckBox.visible
+                        ? Math.max(titleLabel.height, completedCheckBox.height)
+                        : titleLabel.height
 
-                checked: task.completed
-                onCheckedChanged: task.completed = checked
+                EditableLabel {
+                    id: titleLabel
+
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors {
+                        left: parent.left
+                        right: completedCheckBox.visible ? completedCheckBox.left : parent.right
+                        rightMargin: completedCheckBox.visible ? units.gu(2) : 0
+                    }
+
+                    fontSize: "large"
+                    bold: true
+                    text: task.title
+                    placeholderText: i18n.tr("Title")
+                    parentEditing: root.editing
+
+                    onTextChanged: task.title = text
+                }
+
+                CheckBox {
+                    id: completedCheckBox
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        right: parent.right
+                    }
+
+                    visible: !creating
+
+                    checked: task.completed
+                    onCheckedChanged: task.completed = checked
+                }
+            }
+
+            TextArea {
+                id: descriptionTextArea
+                anchors {
+                    top: headerItem.bottom
+                    left: parent.left
+                    right: parent.right
+                    margins: units.gu(2)
+                }
+
+                Component.onCompleted: __styleInstance.color = "white"
+
+                onFocusChanged: focus ? __styleInstance.color = Theme.palette.normal.overlayText : __styleInstance.color = "white"
+
+                //autoSize: true
+                //maximumLineCount: 23
+
+                text: task.contents
+                placeholderText: i18n.tr("Description")
+
+                onTextChanged: task.contents = text
             }
         }
 
-        TextArea {
-            id: descriptionTextArea
-            anchors {
-                top: headerItem.bottom
-                left: parent.left
-                right: parent.right
-                margins: units.gu(2)
+        ThinDivider {}
+
+    //    Checklist {
+    //        visible: task.hasChecklist
+    //        task: root.task
+
+    //        width: parent.width
+    //    }
+
+        Header {
+            text: i18n.tr("Options")
+        }
+
+    //    Standard {
+    //        visible: !task.hasChecklist
+
+    //        text: i18n.tr("Add Checklist")
+    //        onClicked: task.hasChecklist = true
+    //    }
+
+        ValueSelector {
+            id: prioritySelector
+
+            text: i18n.tr("Priority")
+
+    //        Row {
+    //            spacing: units.gu(1)
+
+    //            anchors {
+    //                left: parent.left
+    //                leftMargin: units.gu(2)
+    //                top: parent.top
+    //                topMargin: units.gu(1.5)
+    //            }
+
+    //            UbuntuShape {
+    //                color: labelColor(task.label)
+    //                width: units.gu(3)
+    //                height: width
+    //                anchors.verticalCenter: parent.verticalCenter
+    //            }
+
+    //            Label {
+    //                anchors.verticalCenter: parent.verticalCenter
+    //                text: i18n.tr("Priority")
+    //            }
+    //        }
+
+            selectedIndex: values.indexOf(labelName(task.label))
+
+            property var priorities: labels
+            values: {
+                var values = []
+
+                for (var i = 0; i < priorities.length; i++) {
+                    values.push(labelName(priorities[i]))
+                }
+
+                return values
             }
 
-            Component.onCompleted: __styleInstance.color = "white"
-
-            onFocusChanged: focus ? __styleInstance.color = Theme.palette.normal.overlayText : __styleInstance.color = "white"
-
-            //autoSize: true
-            //maximumLineCount: 23
-
-            text: task.contents
-            placeholderText: i18n.tr("Description")
-
-            onTextChanged: task.contents = text
-        }
-    }
-
-    ThinDivider {}
-
-//    Checklist {
-//        visible: task.hasChecklist
-//        task: root.task
-
-//        width: parent.width
-//    }
-
-    Header {
-        text: i18n.tr("Options")
-    }
-
-//    Standard {
-//        visible: !task.hasChecklist
-
-//        text: i18n.tr("Add Checklist")
-//        onClicked: task.hasChecklist = true
-//    }
-
-    ValueSelector {
-        id: prioritySelector
-
-        text: i18n.tr("Priority")
-
-//        Row {
-//            spacing: units.gu(1)
-
-//            anchors {
-//                left: parent.left
-//                leftMargin: units.gu(2)
-//                top: parent.top
-//                topMargin: units.gu(1.5)
-//            }
-
-//            UbuntuShape {
-//                color: labelColor(task.label)
-//                width: units.gu(3)
-//                height: width
-//                anchors.verticalCenter: parent.verticalCenter
-//            }
-
-//            Label {
-//                anchors.verticalCenter: parent.verticalCenter
-//                text: i18n.tr("Priority")
-//            }
-//        }
-
-        selectedIndex: values.indexOf(labelName(task.label))
-
-        property var priorities: labels
-        values: {
-            var values = []
-
-            for (var i = 0; i < priorities.length; i++) {
-                values.push(labelName(priorities[i]))
-            }
-
-            return values
-        }
-
-        onSelectedIndexChanged: {
-            task.label = priorities[selectedIndex]
-        }
-    }
-
-    ValueSelector {
-        id: categorySelector
-
-        text: i18n.tr("Category")
-        selectedIndex: values.indexOf(task.category != "" ? task.category : "Uncategorized")
-
-        values: {
-            var values = []
-            for (var i = 0; i < categories.length; i++) {
-                values.push(categories[i])
-            }
-            values.push(i18n.tr("Uncategorized"))
-            values.push(i18n.tr("<i>Create New Category</i>"))
-            return values
-        }
-
-        onSelectedIndexChanged: {
-            print(selectedIndex,values.length)
-            if (selectedIndex === values.length - 1) {
-                // Create a new category
-                PopupUtils.open(newCategoryDialog, root)
-                selectedIndex = values.indexOf(task.category != "" ? task.category : "Uncategorized")
-            } else if (selectedIndex === values.length - 2) {
-                task.category = ""
-            } else {
-                task.category = values[selectedIndex]
+            onSelectedIndexChanged: {
+                task.label = priorities[selectedIndex]
             }
         }
+
+        ValueSelector {
+            id: categorySelector
+
+            text: i18n.tr("Category")
+            selectedIndex: values.indexOf(task.category != "" ? task.category : "Uncategorized")
+
+            values: {
+                var values = []
+                for (var i = 0; i < categories.length; i++) {
+                    values.push(categories[i])
+                }
+                values.push(i18n.tr("Uncategorized"))
+                values.push(i18n.tr("<i>Create New Category</i>"))
+                return values
+            }
+
+            onSelectedIndexChanged: {
+                print(selectedIndex,values.length)
+                if (selectedIndex === values.length - 1) {
+                    // Create a new category
+                    PopupUtils.open(newCategoryDialog, root)
+                    selectedIndex = values.indexOf(task.category != "" ? task.category : "Uncategorized")
+                } else if (selectedIndex === values.length - 2) {
+                    task.category = ""
+                } else {
+                    task.category = values[selectedIndex]
+                }
+            }
+        }
+
+        SingleValue {
+            id: dueDateField
+
+            text: i18n.tr("Due Date")
+
+            value: task.dueDateInfo
+
+            onClicked: PopupUtils.open(Qt.resolvedUrl("DatePicker.qml"), dueDateField, {
+                                           task: task
+                                       })
+        }
+
+    //    MultiValue {
+    //        id: tagsSelector
+
+    //        text: i18n.tr("Tags")
+
+    //        values: ["Whatever", "Whatever again"]
+    //    }
     }
-
-    SingleValue {
-        id: dueDateField
-
-        text: i18n.tr("Due Date")
-
-        value: task.dueDateInfo
-
-        onClicked: PopupUtils.open(Qt.resolvedUrl("DatePicker.qml"), dueDateField, {
-                                       task: task
-                                   })
-    }
-
-//    MultiValue {
-//        id: tagsSelector
-
-//        text: i18n.tr("Tags")
-
-//        values: ["Whatever", "Whatever again"]
-//    }
 }

@@ -29,6 +29,8 @@ Page {
 
     title: i18n.tr("Statistics")
 
+    property string type: "statistics"
+
     function totalCount(date) {
         return countTasks(function(task) {
             return task.existedBy(date)
@@ -57,22 +59,7 @@ Page {
             }
             Label {
                 anchors.verticalCenter: parent.verticalCenter
-                text: i18n.tr("Completed")
-                //color: Theme.palette.normal.overlayText
-            }
-        }
-
-        Row {
-            spacing: units.gu(1)
-            UbuntuShape {
-                anchors.verticalCenter: parent.verticalCenter
-                width: units.gu(3)
-                height: width
-                color: labelColor("yellow")
-            }
-            Label {
-                anchors.verticalCenter: parent.verticalCenter
-                text: i18n.tr("Pending")
+                text: i18n.tr("Todo")
                 //color: Theme.palette.normal.overlayText
             }
         }
@@ -133,6 +120,24 @@ Page {
                         right: parent.right
                         margins: 1
                     }
+
+                    Label {
+                        text: {
+                            if (index === 0)
+                                return "100%"
+                            else if (index === graph.count - 1)
+                                return "0%"
+                            else
+                                return ""
+                        }
+                        color: Theme.palette.normal.overlayText
+                        anchors {
+                            left: parent.left
+                            leftMargin: units.gu(1)
+                            bottom: parent.bottom
+                            bottomMargin: units.gu(1)
+                        }
+                    }
                 }
             }
         }
@@ -161,7 +166,7 @@ Page {
 
                 property int barCount: {
                     var count = totalCount(graphDate)
-                    print("Count: ", count, formattedDate(graphDate), 10/count)
+                    //print("Count: ", count, formattedDate(graphDate), 10/count)
                     return count
                 }
 
@@ -174,8 +179,8 @@ Page {
                 property date graphDate: {
                     var day = new Date()
                     day.setDate(day.getDate() - graphBars.count + index + 1)
-                    print("GRAPH DATE:", Qt.formatDate(day))
-                    print("GRAPH TOTAL THEN: ", totalCount(day))
+                    //print("GRAPH DATE:", Qt.formatDate(day))
+                    //print("GRAPH TOTAL THEN: ", totalCount(day))
                     return day
                 }
 
@@ -205,25 +210,14 @@ Page {
                     }
 
                     width: parent.width
-                    height: scale * countTasks(function(task) { return  task.completedBy(graphDate) }) * (graph.spacing * barScale)
-                    color: labelColor("green")
-                }
-
-                Rectangle {
-                    id: notDoneRectangle
-                    anchors {
-                        bottom: doneRectangle.top
-                    }
-
-                    width: parent.width
                     height: countTasks(function(task) { return task.notCompletedBy(graphDate) && !task.overdueBy(graphDate) }) * (graph.spacing * barScale)
-                    color: labelColor("yellow")
+                    color: labelColor("green")
                 }
 
                 Rectangle {
                     id: overDueRectangle
                     anchors {
-                        bottom: notDoneRectangle.top
+                        bottom: doneRectangle.top
                     }
 
                     width: parent.width

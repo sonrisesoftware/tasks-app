@@ -23,70 +23,70 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
-import "../components"
+import "../ui"
 
-Page {
+Item {
     id: root
 
-    title: category === "" ? i18n.tr("Uncategorized") : category
+    property int count: overdue.count + today.count
 
-    property alias category: list.category
+    Flickable {
+        id: flickable
+        anchors.fill: parent
+        contentWidth: parent.width
+        contentHeight: column.height
 
-    property string type: "category"
+        clip: true
 
-    actions: [
-        Action {
-            id: addAction
+        Column {
+            id: column
+            anchors {
+                left: parent.left
+                right: parent.right
+            }
 
-            iconSource: icon("add")
-            text: i18n.tr("Add")
+            Header {
+                text: i18n.tr("Overdue")
+                visible: overdue.count > 0
+            }
 
-            onTriggered: {
-                pageStack.push(addTaskPage, { category: root.category })
+            Repeater {
+                id: overdue
+                model: filteredTasks(function(task) { return task.overdue && !task.completed})
+                delegate: TaskListItem {
+                    objectName: "overdueTask" + index
+
+                    task: modelData
+                }
+            }
+
+            Header {
+                text: i18n.tr("Today")
+                visible: today.count > 0
+            }
+
+            Repeater {
+                id: today
+                model: filteredTasks(function(task) { return task.isToday() && !task.completed })
+                delegate: TaskListItem {
+                    objectName: "upcomingTask" + index
+
+                    task: modelData
+                }
             }
         }
-
-    ]
-
-    TasksList {
-        id: list
-
-        anchors.fill: parent
     }
 
-    tools: ToolbarItems {
+    Scrollbar {
+        flickableItem: flickable
+    }
 
-        ToolbarButton {
-            action: addAction
-        }
+    Label {
+        anchors.centerIn: parent
+        visible: count === 0
 
-        ToolbarButton {
-            iconSource: icon("edit")
-            text: i18n.tr("Rename")
-            visible: category != ""
-            onTriggered: {
-                PopupUtils.open(renameCategoryDialog, caller, {
-                                    category: category
-                                })
-            }
-        }
-
-        ToolbarButton {
-            iconSource: icon("delete")
-            text: i18n.tr("Delete")
-            visible: category != ""
-            onTriggered: {
-                PopupUtils.open(confirmDeleteCategoryDialog, root)
-            }
-        }
-
-        ToolbarButton {
-            text: i18n.tr("Options")
-            iconSource: icon("settings")
-
-            onTriggered: {
-                PopupUtils.open(optionsPopover, caller)
-            }
-        }
+        fontSize: "large"
+        text: i18n.tr("No upcoming tasks")
+        opacity: 0.5
     }
 }

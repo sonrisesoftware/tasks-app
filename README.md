@@ -60,3 +60,6 @@ Day 6 - 8/12/2013
 Day 7 - 8/13/2013
  * Converted Add Task sheet into a page
  * Converted Statistics sheet into a page
+
+Day 9 - 8/15/2013
+ * Redesigned task view and create pages

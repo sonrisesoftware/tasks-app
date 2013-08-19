@@ -21,6 +21,7 @@
  ***************************************************************************/
 import QtQuick 2.0
 import Ubuntu.Components 0.1
+import Ubuntu.Components.Popups 0.1
 import U1db 1.0 as U1db
 
 import "ui"
@@ -43,8 +44,10 @@ MainView {
 
     anchorToKeyboard: true
     
-    width: units.gu(50)
+    width: units.gu(100)
     height: units.gu(75)
+
+    property bool wideAspect: width > units.gu(80)
 
     // Colors from Calculator app
     headerColor: pageStack.currentPage.hasOwnProperty("headerColor") ? pageStack.currentPage.headerColor : "#323A5D"
@@ -61,33 +64,227 @@ MainView {
         id: pageStack
 
         Tabs {
-            id: tabs
+            id: wideAspectTabs
+
+            property string type: "tabs"
 
             Tab {
                 title: page.title
-                page: TasksPage {
-                    title: i18n.tr("All Tasks")
-                    category: ""
+                page: HomePage {
+                    id: homePage
                 }
             }
 
-            onVisibleChanged: tabBar.visible = visible
-
-            Repeater {
-                model: categories
-
-                delegate: Tab {
-                    title: page.title
-                    page: TasksPage {
-                        category: modelData
-                    }
+            Tab {
+                title: page.title
+                page: StatisticsPage {
                 }
             }
+        }
+
+        Tabs {
+            id: phoneTabs
+
+            property string type: "tabs"
+
+            Tab {
+                title: page.title
+                page: HomePage {
+                    title: i18n.tr("Upcoming")
+                }
+            }
+
+            Tab {
+                title: page.title
+                page: CategoriesPage {
+                    property string type: "root"
+                }
+            }
+
+            Tab {
+                title: page.title
+                page: StatisticsPage {
+                }
+            }
+
+            //onVisibleChanged: tabBar.visible = visible
 
             visible: false
         }
 
-        Component.onCompleted: pageStack.push(tabs)
+        Component.onCompleted: {
+            pageStack.push(phoneTabs)
+            pageStack.push(taskViewPage)
+            pageStack.push(wideAspectTabs)
+            clearPageStack()
+        }
+
+        onDepthChanged: print("Depth changed")
+    }
+
+    property Page currentPage: pageStack.currentPage.hasOwnProperty("type")
+                               ? (pageStack.currentPage.type === "tabs"
+                                  ? pageStack.currentPage.currentPage
+                                  : pageStack.currentPage)
+                               : pageStack.currentPage
+
+    property string viewing: {
+        //var type = pageStack.currentPage.hasOwnProperty("type") ? pageStack.currentPage.type : "unknown"
+        var type = "uknown"
+        if (currentTask !== null)
+            type = "task"
+        else if (currentCategory !== null_category)
+            type = "category"
+        else if (currentPage.hasOwnProperty("type"))
+            type = currentPage.type
+
+        print(currentPage)
+        print("Now viewing:", type)
+        return type
+    }
+
+    property var currentTask: viewing === "task"
+                              ? (currentPage.hasOwnProperty("task") ? currentPage.task : null)
+                              : null
+    property string currentCategory: currentPage.hasOwnProperty("category")
+                                  ? currentPage.category
+                                  : currentTask !== null ? currentTask.category : null_category
+    onCurrentCategoryChanged: print("Current Category:", currentCategory)
+
+    readonly property string null_category: "\0"
+
+    function clearPageStack() {
+        while (pageStack.depth > 0)
+            pageStack.pop()
+        if (wideAspect) {
+            pageStack.push(wideAspectTabs)
+        } else {
+            pageStack.push(phoneTabs)
+        }
+    }
+
+
+    onWideAspectChanged: {
+        var viewing = root.viewing
+
+        if (viewing === "root") {
+            clearPageStack()
+        } else if (viewing === "task") {
+            goToTask(currentTask, "category")
+        } else if (viewing === "category") {
+            goToCategory(currentCategory)
+        } else if (viewing === "statistics") {
+            clearPageStack()
+            if (wideAspect) {
+                wideAspectTabs.selectedTabIndex = 1
+            } else {
+                phoneTabs.selectedTabIndex = 2
+            }
+        } else if (viewing === "upcoming") {
+            clearPageStack()
+            if (wideAspect) {
+                wideAspectTabs.selectedTabIndex = 0
+                homePage.category = null_category
+            } else {
+                phoneTabs.selectedTabIndex = 0
+            }
+        } else if (viewing === "add") {
+            var page = root.pageStack.currentPage
+            pageStack.pop()
+            var category = currentCategory
+            goToCategory(category)
+            pageStack.push(page)
+        }
+    }
+
+    function goToCategory(category) {
+        // if in wide aspect mode,
+        if (wideAspect) {
+            clearPageStack()
+            homePage.category = category
+            wideAspectTabs.selectedTabIndex = 0
+        } else { // otherwise,
+            // clear the page stack
+            clearPageStack()
+            phoneTabs.selectedTabIndex = 1
+            // push the new category
+            pageStack.push(tasksPage, {category: category})
+        }
+    }
+
+    function goToTask(task, viewing) {
+        print("Going to task...", task.title)
+
+        if (viewing === undefined)
+            viewing = root.viewing
+
+        // if in wide aspect mode,
+        if (wideAspect) {
+            // set the category and task
+
+            clearPageStack()
+            wideAspectTabs.selectedTabIndex = 0
+
+            // push the task view mode
+            pageStack.push(taskViewPage, {task: task})
+        } else { // otherwise,
+            clearPageStack()
+            phoneTabs.selectedTabIndex = 1
+
+            if (viewing === "category") {
+                pageStack.push(tasksPage, {category: task.category})
+            }
+
+            // push the new task
+            pageStack.push(taskViewPage, {task: task})
+        }
+    }
+
+    Component {
+        id: tasksPage
+        TasksPage {}
+    }
+
+    Component {
+        id: taskViewPage
+        TaskViewPage {}
+    }
+
+    Component {
+        id: newCategoryDialog
+
+        InputDialog {
+            property var task
+
+            title: i18n.tr("New Category")
+
+            placeholderText: i18n.tr("Category")
+
+            onAccepted: {
+                addCategory(value)
+
+                if (task !== undefined)
+                    task.category = value
+            }
+        }
+    }
+
+    Component {
+        id: renameCategoryDialog
+
+        InputDialog {
+            property string category
+
+            title: i18n.tr("Rename Category")
+
+            value: category
+            placeholderText: i18n.tr("Category")
+
+            onAccepted: {
+                if (value !== category)
+                    renameCategory(category, value)
+            }
+        }
     }
 
     /* TASK MANAGEMENT */
@@ -108,6 +305,8 @@ MainView {
         id: taskListModel
     }
 
+    property int indexCount: 0
+
     function addTask(args) {
         //print("ADDING TASK:", args)
         var task = taskComponent.createObject(root, args)
@@ -120,6 +319,8 @@ MainView {
     }
 
     function addExistingTask(task) {
+        task.index = indexCount++
+
         if (task.category !== "" && categories.indexOf(task.category) === -1) {
             console.log("WARNING: Task has new category:", task.category)
             addCategory(task.category)
@@ -149,7 +350,7 @@ MainView {
         categories = list
         print(categories)
 
-        tabs.selectedTabIndex = categories.length
+        goToCategory(category)
     }
 
     function removeCategory(category) {
@@ -169,11 +370,10 @@ MainView {
             print(categories)
         }
 
-        tabs.selectedTabIndex = 0
+        clearPageStack()
     }
 
     function renameCategory(category, newCategory) {
-        var tab = tabs.selectedTab
         var list = categories
         list[categories.indexOf(category)] = newCategory
         categories = list
@@ -184,8 +384,6 @@ MainView {
                 task.category = newCategory
             }
         }
-
-        tabs.selectedTabIndex = tab
     }
 
     function loadCategories() {
@@ -215,6 +413,17 @@ MainView {
         tempContents.tasks = JSON.stringify(tasks)
         //print(tempContents.tasks)
         tasksDatebase.contents = tempContents
+    }
+
+    function getTask(index) {
+        for (var i = 0; i < taskListModel.count; i++) {
+            var task = taskListModel.get(i).modelData
+            print(task.index,"==", index)
+            if (task.index === parseInt(index)) {
+                print("Found task!")
+                return task
+            }
+        }
     }
 
     function filteredTasks(filter) {
@@ -272,7 +481,7 @@ MainView {
 
     U1db.Database {
         id: storage
-        path: "tasks-app"
+        path: "tasks-app.db"
     }
 
     U1db.Document {
@@ -320,7 +529,6 @@ MainView {
         reloadSettings()
         loadCategories()
         loadTasks()
-        tabs.selectedTabIndex = 0
     }
 
     Component.onDestruction: {
@@ -415,5 +623,120 @@ MainView {
         today.setMinutes(0)
         today.setSeconds(0)
         return today
+    }
+
+    Component {
+        id: optionsPopover
+
+        OptionsPopover {
+
+        }
+    }
+
+    Component {
+        id: addTaskPage
+
+        AddTaskPage {
+
+        }
+    }
+
+    Component {
+        id: statisticsPage
+
+        StatisticsPage {
+
+        }
+    }
+
+    Component {
+        id: confirmDeleteTaskDialog
+
+        ConfirmDialog {
+            property var task
+
+            id: confirmDeleteTaskDialogItem
+            title: i18n.tr("Delete Task")
+            text: i18n.tr("Are you sure you want to delete '%1'?").arg(task.title)
+
+            onAccepted: {
+                var task = root.task
+                PopupUtils.close(confirmDeleteTaskDialogItem)
+                goToCategory(task.category)
+                task.remove()
+            }
+        }
+    }
+
+    Component {
+        id: confirmDeleteCategoryDialog
+
+        ConfirmDialog {
+            property string category
+
+            id: confirmDeleteCategoryDialogItem
+            title: i18n.tr("Delete Category")
+            text: i18n.tr("Are you sure you want to delete '%1'?").arg(category)
+
+            onAccepted: {
+                PopupUtils.close(confirmDeleteCategoryDialogItem)
+                clearPageStack()
+                removeCategory(category)
+            }
+        }
+    }
+
+    Component {
+        id: categoryActionsPopover
+
+        ActionSelectionPopover {
+            property string category
+
+            actions: ActionList {
+                Action {
+                    text: i18n.tr("Rename")
+                    onTriggered: {
+                        PopupUtils.open(renameCategoryDialog, caller, {
+                                            category: category
+                                        })
+                    }
+                }
+
+                Action {
+                    text: i18n.tr("Delete")
+                    onTriggered: {
+                        PopupUtils.open(confirmDeleteCategoryDialog, root, {category: category})
+                    }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: taskActionsPopover
+
+        ActionSelectionPopover {
+            property var task
+
+            actions: ActionList {
+                Action {
+                    id: moveAction
+
+                    text: i18n.tr("Move")
+                    onTriggered: {
+                        PopupUtils.open(Qt.resolvedUrl("../components/CategoriesPopover.qml"), caller, {
+                                            task: task
+                                        })
+                    }
+                }
+
+                Action {
+                    id: deleteAction
+
+                    text: i18n.tr("Delete")
+                    onTriggered: task.remove()
+                }
+            }
+        }
     }
 }

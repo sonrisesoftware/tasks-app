@@ -37,6 +37,9 @@ Dialog {
         id: textField
 
         onAccepted: okButton.clicked()
+        validator: RegExpValidator {
+            regExp: /.+/
+        }
     }
 
     Button {

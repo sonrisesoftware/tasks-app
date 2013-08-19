@@ -28,64 +28,33 @@ import "../components"
 Page {
     id: root
 
-    title: category === "" ? i18n.tr("Uncategorized") : category
+    title: i18n.tr("Categories")
 
-    property alias category: list.category
+    ListView {
+        id: listView
+        anchors.fill: parent
+        model: categories
 
-    property string type: "category"
-
-    actions: [
-        Action {
-            id: addAction
-
-            iconSource: icon("add")
-            text: i18n.tr("Add")
-
-            onTriggered: {
-                pageStack.push(addTaskPage, { category: root.category })
-            }
+        delegate: CategoryListItem {
+            category: modelData
         }
 
-    ]
+        footer: CategoryListItem {
+            category: ""
+        }
+    }
 
-    TasksList {
-        id: list
-
-        anchors.fill: parent
+    Scrollbar {
+        flickableItem: listView
     }
 
     tools: ToolbarItems {
-
         ToolbarButton {
-            action: addAction
-        }
-
-        ToolbarButton {
-            iconSource: icon("edit")
-            text: i18n.tr("Rename")
-            visible: category != ""
-            onTriggered: {
-                PopupUtils.open(renameCategoryDialog, caller, {
-                                    category: category
-                                })
-            }
-        }
-
-        ToolbarButton {
-            iconSource: icon("delete")
-            text: i18n.tr("Delete")
-            visible: category != ""
-            onTriggered: {
-                PopupUtils.open(confirmDeleteCategoryDialog, root)
-            }
-        }
-
-        ToolbarButton {
-            text: i18n.tr("Options")
-            iconSource: icon("settings")
+            iconSource: icon("add")
+            text: i18n.tr("New")
 
             onTriggered: {
-                PopupUtils.open(optionsPopover, caller)
+                PopupUtils.open(newCategoryDialog, caller)
             }
         }
     }

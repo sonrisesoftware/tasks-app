@@ -22,71 +22,57 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
-import Ubuntu.Components.Popups 0.1
-import "../components"
 
-Page {
-    id: root
+Rectangle {
+    color: Qt.rgba(0.2,0.2,0.2,0.4)
 
-    title: category === "" ? i18n.tr("Uncategorized") : category
+    property bool expanded: true
 
-    property alias category: list.category
+    Item {
+        ThinDivider {
+            rotation: 90
 
-    property string type: "category"
+        //Rectangle {
+            //color: "lightgray"
 
-    actions: [
-        Action {
-            id: addAction
-
-            iconSource: icon("add")
-            text: i18n.tr("Add")
-
-            onTriggered: {
-                pageStack.push(addTaskPage, { category: root.category })
+            //width: 1
+            width: parent.height
+            height: 2
+            anchors {
+                left: undefined
+                right: undefined
+                centerIn: parent
             }
         }
+        width: 2
 
-    ]
-
-    TasksList {
-        id: list
-
-        anchors.fill: parent
+        anchors {
+            top: parent.top
+            bottom: parent.bottom
+            right: parent.right
+            rightMargin: 0
+        }
     }
 
-    tools: ToolbarItems {
+    width: units.gu(35)
 
-        ToolbarButton {
-            action: addAction
+
+    x: expanded ? 0 : -width
+
+    Behavior on x {
+        PropertyAnimation {
+            duration: 250
         }
+    }
 
-        ToolbarButton {
-            iconSource: icon("edit")
-            text: i18n.tr("Rename")
-            visible: category != ""
-            onTriggered: {
-                PopupUtils.open(renameCategoryDialog, caller, {
-                                    category: category
-                                })
-            }
-        }
+    default property alias contents: contents.data
 
-        ToolbarButton {
-            iconSource: icon("delete")
-            text: i18n.tr("Delete")
-            visible: category != ""
-            onTriggered: {
-                PopupUtils.open(confirmDeleteCategoryDialog, root)
-            }
-        }
+    Item {
+        id: contents
 
-        ToolbarButton {
-            text: i18n.tr("Options")
-            iconSource: icon("settings")
-
-            onTriggered: {
-                PopupUtils.open(optionsPopover, caller)
-            }
+        anchors {
+            fill: parent
+            rightMargin: 1
         }
     }
 }

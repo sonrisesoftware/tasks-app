@@ -23,70 +23,86 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
-import "../components"
+import "../ui"
 
-Page {
+Item {
     id: root
 
-    title: category === "" ? i18n.tr("Uncategorized") : category
+    property alias showAddBar: addBar.visible
 
-    property alias category: list.category
+    property string noneMessage: i18n.tr("No tasks")
+    property var model: filteredTasks(function(task) {
+        return (task.category === root.category) && (showCompletedTasks || !task.completed)
+    })
+    property string category
 
-    property string type: "category"
+    property alias addBarColor: addBar.color
 
-    actions: [
-        Action {
-            id: addAction
+    property var flickable: taskListView
+    property alias header: taskListView.header
 
-            iconSource: icon("add")
-            text: i18n.tr("Add")
-
-            onTriggered: {
-                pageStack.push(addTaskPage, { category: root.category })
-            }
+    function length() {
+        if (model.hasOwnProperty("count")) {
+            print(model.count)
+            return model.count
+        } else {
+            print(model.length)
+            return model.length
         }
-
-    ]
-
-    TasksList {
-        id: list
-
-        anchors.fill: parent
     }
 
-    tools: ToolbarItems {
+    ListView {
+        id: taskListView
+        objectName: "taskListView"
 
-        ToolbarButton {
-            action: addAction
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+            bottom: addBar.top
         }
 
-        ToolbarButton {
-            iconSource: icon("edit")
-            text: i18n.tr("Rename")
-            visible: category != ""
-            onTriggered: {
-                PopupUtils.open(renameCategoryDialog, caller, {
-                                    category: category
-                                })
-            }
+        clip: true
+
+        model: root.model
+
+        delegate: TaskListItem {
+            objectName: "task" + index
+
+            task: modelData
+        }
+    }
+
+    Scrollbar {
+        flickableItem: taskListView
+    }
+
+    QuickAddBar {
+        id: addBar
+        anchors.bottomMargin: 0
+        height: expanded ? implicitHeight : 0
+    }
+
+    Item {
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+            bottom: addBar.top
         }
 
-        ToolbarButton {
-            iconSource: icon("delete")
-            text: i18n.tr("Delete")
-            visible: category != ""
-            onTriggered: {
-                PopupUtils.open(confirmDeleteCategoryDialog, root)
-            }
-        }
+        Label {
+            id: noTasksLabel
+            objectName: "noTasksLabel"
 
-        ToolbarButton {
-            text: i18n.tr("Options")
-            iconSource: icon("settings")
+            anchors.centerIn: parent
 
-            onTriggered: {
-                PopupUtils.open(optionsPopover, caller)
-            }
+            visible: length() === 0
+            opacity: 0.5
+
+            fontSize: "large"
+
+            text: root.noneMessage
         }
     }
 }

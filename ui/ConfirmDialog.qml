@@ -1,6 +1,6 @@
 /***************************************************************************
  * Whatsoever ye do in word or deed, do all in the name of the             *
- * Lord Jesus, giving thanks to God and the Father by him.                 *
+ * Lord Jesus, giving thanks to okd and the Father by him.                 *
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
@@ -23,70 +23,56 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
-import "../components"
 
-Page {
+Dialog {
     id: root
 
-    title: category === "" ? i18n.tr("Uncategorized") : category
+    signal accepted
+    signal rejected
 
-    property alias category: list.category
+    Button {
+        id: okButton
+        objectName: "okButton"
 
-    property string type: "category"
+//        gradient: Gradient {
+//            GradientStop {
+//                position: 0
+//                color: "green"//Qt.rgba(0,0.7,0,1)
+//            }
 
-    actions: [
-        Action {
-            id: addAction
+//            GradientStop {
+//                position: 1
+//                color: Qt.rgba(0.3,0.7,0.3,1)
+//            }
+//        }
 
-            iconSource: icon("add")
-            text: i18n.tr("Add")
+        text: i18n.tr("Ok")
 
-            onTriggered: {
-                pageStack.push(addTaskPage, { category: root.category })
-            }
+        onClicked: {
+            PopupUtils.close(root)
+            accepted()
         }
-
-    ]
-
-    TasksList {
-        id: list
-
-        anchors.fill: parent
     }
 
-    tools: ToolbarItems {
+    Button {
+        objectName: "cancelButton"
+        text: i18n.tr("Cancel")
 
-        ToolbarButton {
-            action: addAction
-        }
+        gradient: Gradient {
+            GradientStop {
+                position: 0
+                color: "gray"
+            }
 
-        ToolbarButton {
-            iconSource: icon("edit")
-            text: i18n.tr("Rename")
-            visible: category != ""
-            onTriggered: {
-                PopupUtils.open(renameCategoryDialog, caller, {
-                                    category: category
-                                })
+            GradientStop {
+                position: 1
+                color: "lightgray"
             }
         }
 
-        ToolbarButton {
-            iconSource: icon("delete")
-            text: i18n.tr("Delete")
-            visible: category != ""
-            onTriggered: {
-                PopupUtils.open(confirmDeleteCategoryDialog, root)
-            }
-        }
-
-        ToolbarButton {
-            text: i18n.tr("Options")
-            iconSource: icon("settings")
-
-            onTriggered: {
-                PopupUtils.open(optionsPopover, caller)
-            }
+        onClicked: {
+            PopupUtils.close(root)
+            rejected()
         }
     }
 }
