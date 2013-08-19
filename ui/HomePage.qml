@@ -121,22 +121,22 @@ Page {
         anchors.left: sidebar.right
     }
 
-    states: [
-        State {
-            when: wideAspect
-            PropertyChanges {
-                target: root.tools
-                locked: true
-                opened: true
-            }
+//    states: [
+//        State {
+//            when: showToolbar
+//            PropertyChanges {
+//                target: root.tools
+//                locked: true
+//                opened: true
+//            }
 
-            PropertyChanges {
-                target: root.parent
-                anchors.bottomMargin: units.gu(-2)
-            }
-        }
+//            PropertyChanges {
+//                target: root.parent
+//                anchors.bottomMargin: units.gu(-2)
+//            }
+//        }
 
-    ]
+//    ]
 
     tools: ToolbarItems {
 

@@ -67,6 +67,7 @@ Item {
 
         onClicked: {
             editing = true
+            textField.forceActiveFocus()
         }
     }
 
@@ -94,6 +95,13 @@ Item {
             }
         }
 
-        onAccepted: editing = false
+        onCursorVisibleChanged: {
+            if (cursorVisible === false)
+                focus = false
+        }
+
+        Keys.onEscapePressed: focus = false
+
+        onAccepted: focus = false
     }
 }

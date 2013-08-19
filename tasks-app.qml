@@ -81,17 +81,32 @@ MainView {
                 title: page.title
                 page: ProjectsPage {
                     id: projectsPage
+
                 }
 
-                // Doesn't work :(
+                property bool show: !wideAspect
+                onShowChanged: {
+                    parent.tabList = tabs.customUpdateTabList(parent)
+                }
+            }
 
-//                property bool show: !wideAspect
-//                __isPageTreeNode: !show
-//                onShowChanged: {
-//                    print("Updating...")
-//                    __isPageTreeNode = show
-//                    parent.updateTabList()
-//                }
+            function customUpdateTabList(tabsModel) {
+                var list = [];
+                for (var i=0; i < tabsModel.children.length; i++) {
+                    if (isTab(tabsModel.children[i])) list.push(tabsModel.children[i]);
+                }
+                return list
+            }
+
+            function isTab(item) {
+                if (item && item.hasOwnProperty("__isPageTreeNode")
+                        && item.__isPageTreeNode && item.hasOwnProperty("title")
+                        && item.hasOwnProperty("page")
+                        && (item.hasOwnProperty("show") ? item.show : true)) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
 
             visible: false
@@ -121,7 +136,8 @@ MainView {
                                : currentProject !== null
                                  ? "project"
                                  : "unknown"
-    onViewingChanged: print("Now viewing ", viewing)
+
+    //onViewingChanged: print("Now viewing ", viewing)
 
     function clearPageStack() {
         while (pageStack.depth > 1)

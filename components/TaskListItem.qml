@@ -115,6 +115,7 @@ Empty {
         }
 
         checked: task.completed
+        __acceptEvents: task.canComplete
 
         onCheckedChanged: showCompletedTasks ? task.completed = checked : hideAnimation.start()
 

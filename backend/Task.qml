@@ -36,6 +36,18 @@ QtObject {
     property date completionDate
     property string priority: "low"
     property var tags: []
+    property var checklist: []
+
+    property bool hasChecklist: false
+
+    onChecklistChanged: {
+        if (checklist.length === 0) {
+            hasChecklist = false
+            completed = false
+        }
+    }
+
+    property bool canComplete: !hasChecklist
     
     onCompletedChanged: {
         if (completed) {
@@ -78,7 +90,9 @@ QtObject {
             completed: completed,
             completionDate: completionDate,
             priority: priority,
-            tags: tags
+            tags: tags,
+            checklist: checklist,
+            hasChecklist: hasChecklist
         }
     }
 

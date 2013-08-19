@@ -27,11 +27,8 @@ import Ubuntu.Components.Popups 0.1
 Column {
     id: root
 
-    property Task task
+    property var task
 
-    property var items: task.checklist
-
-    onItemsChanged: progressBar.value = 0
 
     Header {
         Label {
@@ -61,10 +58,18 @@ Column {
 
             value: 0
             minimumValue: 0
-            maximumValue: root.items.length
+            maximumValue: task.checklist.length
+
+            onMaximumValueChanged: {
+                if (value === maximumValue && maximumValue !== 0) {
+                    task.completed = true
+                } else {
+                    task.completed = false
+                }
+            }
 
             onValueChanged: {
-                if (value === maximumValue) {
+                if (value === maximumValue && maximumValue !== 0) {
                     task.completed = true
                 } else {
                     task.completed = false
@@ -76,10 +81,11 @@ Column {
 
     Repeater {
         id: repeater
-        model: root.items
+        model: task.checklist
 
         delegate: ChecklistItem {
-            listItem: modelData
+            itemIndex: index
+            checklist: task.checklist
 
             anchors {
                 left: parent.left
@@ -106,11 +112,10 @@ Column {
 
         onClicked: {
             print("CLICKED!")
-            task.checklist.push({completed: true, text: "New Item"})
             var list = task.checklist
-            task.checklist = []
+            list.push({completed: false, text: "New Item"})
             task.checklist = list
-            repeater.children.get(repeater.model.length - 1).editing = true
+            //repeater.children.get(repeater.model.length - 1).editing = true
         }
     }
 }

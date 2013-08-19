@@ -89,6 +89,8 @@ Flickable {
                     }
 
                     visible: !creating
+                    __acceptEvents: task.canComplete
+
 
                     checked: task.completed
                     onCheckedChanged: task.completed = checked
@@ -117,23 +119,26 @@ Flickable {
 
         ThinDivider {}
 
-    //    Checklist {
-    //        visible: task.hasChecklist
-    //        task: root.task
+        Checklist {
+            visible: task.hasChecklist
+            task: root.task
 
-    //        width: parent.width
-    //    }
+            width: parent.width
+        }
 
         Header {
             text: i18n.tr("Options")
         }
 
-    //    Standard {
-    //        visible: !task.hasChecklist
+        Standard {
+            visible: !task.hasChecklist
 
-    //        text: i18n.tr("Add Checklist")
-    //        onClicked: task.hasChecklist = true
-    //    }
+            text: i18n.tr("Add Checklist...")
+            onClicked: {
+                task.hasChecklist = true
+                task.checklist = [{completed: false, text: "New Item"}]
+            }
+        }
 
         ValueSelector {
             id: prioritySelector
@@ -180,28 +185,28 @@ Flickable {
             }
         }
 
-        ValueSelector {
-            id: projectSelector
+//        ValueSelector {
+//            id: projectSelector
 
-            text: i18n.tr("Project")
-            selectedIndex: {
-                for (var i = 0; i < localProjectsModel.projects.count; i++) {
-                    if (task.project === localProjectsModel.projects.get(i).modelData)
-                        return i
-                }
-                return -1
-            }
+//            text: i18n.tr("Project")
+//            selectedIndex: {
+//                for (var i = 0; i < localProjectsModel.projects.count; i++) {
+//                    if (task.project === localProjectsModel.projects.get(i).modelData)
+//                        return i
+//                }
+//                return -1
+//            }
 
-            values: {
-                var values = []
-                for (var i = 0; i < localProjectsModel.projects.count; i++) {
-                    values.push(localProjectsModel.projects.get(i).modelData.name)
-                }
-                values.push(i18n.tr("<i>Create New Project</i>"))
-                return values
-            }
+//            values: {
+//                var values = []
+//                for (var i = 0; i < localProjectsModel.projects.count; i++) {
+//                    values.push(localProjectsModel.projects.get(i).modelData.name)
+//                }
+//                values.push(i18n.tr("<i>Create New Project</i>"))
+//                return values
+//            }
 
-            onSelectedIndexChanged: {
+//            onSelectedIndexChanged: {
 //                print(selectedIndex,values.length)
 //                if (selectedIndex === values.length - 1) {
 //                    // Create a new category
@@ -212,8 +217,8 @@ Flickable {
 //                } else {
 //                    task.category = values[selectedIndex]
 //                }
-            }
-        }
+//            }
+//        }
 
         SingleValue {
             id: dueDateField
@@ -221,6 +226,7 @@ Flickable {
             text: i18n.tr("Due Date")
 
             value: task.dueDateInfo
+            visible: task.hasOwnProperty("dueDate")
 
             onClicked: PopupUtils.open(Qt.resolvedUrl("DatePicker.qml"), dueDateField, {
                                            task: task
@@ -230,6 +236,7 @@ Flickable {
         ValueSelector {
             id: repeatSelector
             text: i18n.tr("Repeat")
+            visible: task.hasOwnProperty("repeat")
 
             values: [i18n.tr("Never"), i18n.tr("Daily"), i18n.tr("Weekly"), i18n.tr("Monthly"), i18n.tr("Yearly")]
             selectedIndex: {
