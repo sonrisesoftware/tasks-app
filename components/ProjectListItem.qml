@@ -43,13 +43,13 @@ SingleValue {
     selected: currentProject === project
 
     onPressAndHold: {
-//        if (category !== "")
-//            PopupUtils.open(categoryActionsPopover, root, {
-//                                category: category
-//                            })
+        if (project !== null)
+            PopupUtils.open(projectActionsPopover, root, {
+                                project: project
+                            })
     }
 
-    property int count: project === null ? projectsModel.upcomingTasks.count : project.count
+    property int count: project === null ? upcomingTasks.count : project.count
 
     value: count === 0 ? "" : count
 }

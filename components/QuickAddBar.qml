@@ -68,7 +68,7 @@ Rectangle {
         placeholderText: i18n.tr("Add New Task")
 
         onAccepted: {
-            addTask({title: addField.text, category: root.category})
+            currentProject.newTask({name: addField.text})
             addField.text = ""
         }
     }

@@ -28,7 +28,7 @@ import "../components"
 Flickable {
     id: root
 
-    property Task task
+    property var task
 
     property bool editing: false
     property bool creating: false
@@ -74,11 +74,11 @@ Flickable {
 
                     fontSize: "large"
                     bold: true
-                    text: task.title
+                    text: task.name
                     placeholderText: i18n.tr("Title")
                     parentEditing: root.editing
 
-                    onTextChanged: task.title = text
+                    onTextChanged: task.name = text
                 }
 
                 CheckBox {
@@ -111,10 +111,10 @@ Flickable {
                 //autoSize: true
                 //maximumLineCount: 23
 
-                text: task.contents
+                text: task.description
                 placeholderText: i18n.tr("Description")
 
-                onTextChanged: task.contents = text
+                onTextChanged: task.description = text
             }
         }
 
@@ -166,51 +166,55 @@ Flickable {
     //            }
     //        }
 
-            selectedIndex: values.indexOf(labelName(task.label))
+            selectedIndex: values.indexOf(priorityName(task.priority))
 
-            property var priorities: labels
             values: {
                 var values = []
 
                 for (var i = 0; i < priorities.length; i++) {
-                    values.push(labelName(priorities[i]))
+                    values.push(priorityName(priorities[i]))
                 }
 
                 return values
             }
 
             onSelectedIndexChanged: {
-                task.label = priorities[selectedIndex]
+                task.priority = priorities[selectedIndex]
             }
         }
 
         ValueSelector {
-            id: categorySelector
+            id: projectSelector
 
-            text: i18n.tr("Category")
-            selectedIndex: values.indexOf(task.category != "" ? task.category : "Uncategorized")
+            text: i18n.tr("Project")
+            selectedIndex: {
+                for (var i = 0; i < projectsModel.projects.count; i++) {
+                    if (task.project === projectsModel.projects.get(i).modelData)
+                        return i
+                }
+                return -1
+            }
 
             values: {
                 var values = []
-                for (var i = 0; i < categories.length; i++) {
-                    values.push(categories[i])
+                for (var i = 0; i < projectsModel.projects.count; i++) {
+                    values.push(projectsModel.projects.get(i).modelData.name)
                 }
-                values.push(i18n.tr("Uncategorized"))
                 values.push(i18n.tr("<i>Create New Category</i>"))
                 return values
             }
 
             onSelectedIndexChanged: {
-                print(selectedIndex,values.length)
-                if (selectedIndex === values.length - 1) {
-                    // Create a new category
-                    PopupUtils.open(newCategoryDialog, root)
-                    selectedIndex = values.indexOf(task.category != "" ? task.category : "Uncategorized")
-                } else if (selectedIndex === values.length - 2) {
-                    task.category = ""
-                } else {
-                    task.category = values[selectedIndex]
-                }
+//                print(selectedIndex,values.length)
+//                if (selectedIndex === values.length - 1) {
+//                    // Create a new category
+//                    PopupUtils.open(newCategoryDialog, root)
+//                    selectedIndex = values.indexOf(task.category != "" ? task.category : "Uncategorized")
+//                } else if (selectedIndex === values.length - 2) {
+//                    task.category = ""
+//                } else {
+//                    task.category = values[selectedIndex]
+//                }
             }
         }
 

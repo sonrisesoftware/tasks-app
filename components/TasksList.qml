@@ -31,10 +31,11 @@ Item {
     property alias showAddBar: addBar.visible
 
     property string noneMessage: i18n.tr("No tasks")
-    property var model: filteredTasks(function(task) {
-        return (task.category === root.category) && (showCompletedTasks || !task.completed)
-    })
-    property string category
+//    property var model: filteredTasks(function(task) {
+//        return (task.category === root.category) && (showCompletedTasks || !task.completed)
+//    })
+    property var project
+    property ListModel model: project.tasks
 
     property alias addBarColor: addBar.color
 

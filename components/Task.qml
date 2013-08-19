@@ -53,12 +53,14 @@ QtObject {
 //    property bool hasChecklist//: true
 
     property bool flagged
-    
+
     onCompletedChanged: {
         if (completed) {
             completionDate = new Date()
         }
     }
+
+    property string subText: dueDateInfo
 
     // This is the weighted importance based on age,
     // due date, and high

@@ -28,9 +28,9 @@ import "../components"
 Page {
     id: root
 
-    title: task.category === "" ? i18n.tr("Uncategorized") : task.category
+    title: task.project.name
 
-    property Task task
+    property var task
 
     property string type: "task"
 
@@ -41,7 +41,7 @@ Page {
 
     TaskItem {
         id: taskItem
-        visible: task != null
+        visible: task !== null
         task: root.task
         anchors.fill: parent
     }

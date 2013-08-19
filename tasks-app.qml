@@ -69,17 +69,25 @@ MainView {
             visible: false
         }
 
-        Component.onCompleted: pageStack.push(homePage)
+        Component.onCompleted: {
+            pageStack.push(homePage)
+        }
     }
 
-
+    function goToTask(task) {
+        pageStack.push(Qt.resolvedUrl("ui/TaskViewPage.qml"), {task: task})
+    }
 
     /* TASK MANAGEMENT */
 
     TasksModel {
-        id: projectsModel
+        id: localProjectsModel
         database: storage
     }
+
+    property var backendModels: [
+        localProjectsModel
+    ]
 
     /* SETTINGS */
 
@@ -134,17 +142,8 @@ MainView {
     }
 
     Component.onCompleted: {
-        print("Component.onCompleted.")
         reloadSettings()
-        print("Loading...")
         projectsModel.load()
-
-        print("Loaded. Creating test...")
-        var project = projectsModel.newProject("Test")
-        project.newTask({
-                            name: "Test Task",
-                            description: "Blah blah blah"
-                        })
     }
 
     Component.onDestruction: {
@@ -289,17 +288,26 @@ MainView {
     }
 
     Component {
-        id: categoryActionsPopover
+        id: newProjectDialog
+
+        InputDialog {
+            title: i18n.tr("New Project")
+            onAccepted: localProjectsModel.newProject(value)
+        }
+    }
+
+    Component {
+        id: projectActionsPopover
 
         ActionSelectionPopover {
-            property string category
+            property var project
 
             actions: ActionList {
                 Action {
                     text: i18n.tr("Rename")
                     onTriggered: {
-                        PopupUtils.open(renameCategoryDialog, caller, {
-                                            category: category
+                        PopupUtils.open(renameProjectDialog, caller, {
+                                            project: project
                                         })
                     }
                 }
@@ -307,7 +315,7 @@ MainView {
                 Action {
                     text: i18n.tr("Delete")
                     onTriggered: {
-                        PopupUtils.open(confirmDeleteCategoryDialog, root, {category: category})
+                        PopupUtils.open(confirmDeleteProjectDialog, root, {project: project})
                     }
                 }
             }

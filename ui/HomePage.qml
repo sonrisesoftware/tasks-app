@@ -41,32 +41,45 @@ Page {
             bottom: parent.bottom
         }
 
-        ListView {
-            id: listView
+        Flickable {
+            id: flickable
             anchors.fill: parent
-            model: projectsModel.projects
 
+            contentHeight: column.height
+            contentWidth: width
             clip: true
 
-            header: Column {
+            Column {
+                id: column
                 width: parent.width
 
                 ProjectListItem {
                     project: null
                 }
 
-                Header {
-                    text: i18n.tr("Project")
-                }
-            }
+                Repeater {
+                    model: backendModels
 
-            delegate: ProjectListItem {
-                project: modelData
+                    delegate: Column {
+                        width: parent.width
+                        Header {
+                            text: modelData.name
+                        }
+
+                        Repeater {
+                            model: modelData.projects
+
+                            delegate: ProjectListItem {
+                                project: modelData
+                            }
+                        }
+                    }
+                }
             }
         }
 
         Scrollbar {
-            flickableItem: listView
+            flickableItem: flickable
         }
 
         //width: units.gu(40)
@@ -89,24 +102,24 @@ Page {
 //            visible: upcoming
 //        }
 
-//        TasksList {
-//            id: list
+        TasksList {
+            id: list
 
-//            showAddBar: false
-//            anchors.fill: parent
-//            category: root.category
-//            visible: !upcoming
-//        }
+            showAddBar: false
+            anchors.fill: parent
+            project: currentProject
+            visible: !upcoming
+        }
     }
 
     QuickAddBar {
         id: addBar
-        //expanded: list.visible
+        expanded: list.visible
         anchors.left: sidebar.right
     }
 
-//    tools: ToolbarItems {
-//        back: null
+    tools: ToolbarItems {
+        back: null
 
 //        ToolbarButton {
 //            iconSource: icon("add")
@@ -119,15 +132,15 @@ Page {
 //            }
 //        }
 
-//        ToolbarButton {
-//            iconSource: icon("add")
-//            text: i18n.tr("New")
-//            visible: sidebar.expanded
+        ToolbarButton {
+            iconSource: icon("add")
+            text: i18n.tr("New")
+            visible: sidebar.expanded
 
-//            onTriggered: {
-//                PopupUtils.open(newCategoryDialog, caller)
-//            }
-//        }
+            onTriggered: {
+                PopupUtils.open(newProjectDialog, caller)
+            }
+        }
 
 //        ToolbarButton {
 //            iconSource: icon("edit")
@@ -160,5 +173,5 @@ Page {
 //                PopupUtils.open(optionsPopover, caller)
 //            }
 //        }
-//    }
+    }
 }

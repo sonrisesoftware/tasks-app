@@ -41,6 +41,8 @@ Item {
         id: upcomingTasks
     }
 
+    property var backend
+
     property string name
     property alias count: tasks.count
 
@@ -53,7 +55,6 @@ Item {
     }
 
     function save() {
-        print("Saving project:", name)
         var json = {}
         json.name = name
         json.tasks = []
@@ -66,12 +67,7 @@ Item {
     }
 
     function newTask(args) {
-        print("Creating new task: ", args.name)
-        var task = taskComponent.createObject(root, args)
-
-        if (task === null) {
-            console.log("Unable to create task!")
-        }
+        var task = createTask(args)
 
         addTask(task)
         return task
@@ -84,6 +80,7 @@ Item {
             console.log("Unable to create task!")
         }
 
+        task.project = root
         return task
     }
 
@@ -97,6 +94,10 @@ Item {
                 tasks.remove(i)
             }
         }
+    }
+
+    function remove() {
+        backend.removeProject(root)
     }
 
     Component {

@@ -43,7 +43,6 @@ Item {
     }
 
     function save() {
-        print("Saving projects...")
         var json = []
 
         for (var i = 0; i < projects.count; i++) {
@@ -58,8 +57,8 @@ Item {
     }
 
     function newProject(name) {
-        print("Creating a new project:", name)
         var project = newProjectComponent.createObject(root)
+        project.backend = root
 
         if (project === null) {
             console.log("Unable to create project!")

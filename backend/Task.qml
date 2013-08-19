@@ -59,7 +59,6 @@ QtObject {
 
 
     function save() {
-        print("Saving task:", name)
         return {
             name: name,
             description: description,
