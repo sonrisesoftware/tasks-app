@@ -166,7 +166,7 @@ Page {
 
                 property int barCount: {
                     var count = totalCount(graphDate)
-                    print("Count: ", count, formattedDate(graphDate), 10/count)
+                    //print("Count: ", count, formattedDate(graphDate), 10/count)
                     return count
                 }
 
@@ -179,8 +179,8 @@ Page {
                 property date graphDate: {
                     var day = new Date()
                     day.setDate(day.getDate() - graphBars.count + index + 1)
-                    print("GRAPH DATE:", Qt.formatDate(day))
-                    print("GRAPH TOTAL THEN: ", totalCount(day))
+                    //print("GRAPH DATE:", Qt.formatDate(day))
+                    //print("GRAPH TOTAL THEN: ", totalCount(day))
                     return day
                 }
 

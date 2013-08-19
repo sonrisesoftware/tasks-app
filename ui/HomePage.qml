@@ -33,6 +33,10 @@ Page {
     property string type: category === null_category ? "upcoming" : "category"
 
     property string category: null_category
+    onCategoryChanged: {
+        print("Category changed:", category)
+    }
+
     property bool upcoming: category === null_category
 
     Sidebar {
@@ -54,7 +58,9 @@ Page {
 
                 CategoryListItem {
                     text: i18n.tr("Upcoming")
-                    onClicked: category = null_category
+                    onClicked: {
+                        root.category = null_category
+                    }
                     selected: upcoming
                     count: upcomingTasks.count
                 }
