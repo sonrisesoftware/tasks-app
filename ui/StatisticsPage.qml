@@ -30,11 +30,16 @@ Page {
     title: i18n.tr("Statistics")
 
     property string type: "statistics"
+    property var project
 
     function totalCount(date) {
         return countTasks(function(task) {
             return task.existedBy(date)
         })
+    }
+
+    Label {
+        fontSize: "large"
     }
 
     Row {

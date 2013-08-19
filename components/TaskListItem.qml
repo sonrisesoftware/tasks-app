@@ -29,31 +29,29 @@ Empty {
 
     id: root
 
-    property Task task
+    property var task
 
     clip: true
-
-    selected: currentTask === task
 
     Label {
         id: titleLabel
         anchors {
-            top: dueDateLabel.visible ? parent.top : undefined
+            top: subLabel.visible ? parent.top : undefined
             topMargin: units.gu(0.7)
             left: parent.left
             leftMargin: units.gu(2)
             right: doneCheckBox.left
             rightMargin: units.gu(2)
-            verticalCenter: dueDateLabel.visible ? undefined : parent.verticalCenter
+            verticalCenter: subLabel.visible ? undefined : parent.verticalCenter
         }
 
         elide: Text.ElideRight
-        text: task.title
+        text: task.name
         color: selected ? UbuntuColors.orange : Theme.palette.selected.backgroundText
     }
 
     Label {
-        id: dueDateLabel
+        id: subLabel
         anchors {
             //top: titleLabel.bottom
             //topMargin: units.gu(0.2)
@@ -69,13 +67,13 @@ Empty {
         color: Theme.palette.normal.backgroundText
         fontSize: "small"
         font.italic: true
-        text: task.dueDateInfo
+        text: task.subText
         visible: Qt.formatDate(task.dueDate) != ""
         elide: Text.ElideRight
     }
 
     Rectangle {
-        id: label
+        id: priority
 
         anchors {
             top: parent.top
@@ -91,17 +89,17 @@ Empty {
 
         width: units.gu(0.8)
 
-        color: labelColor(task.label)
+        color: priorityColor(task.priority)
 
 //        gradient: Gradient {
 //            GradientStop {
 //                position: 0
-//                color: Qt.lighter(task.label, 1.2)
+//                color: Qt.lighter(task.priority, 1.2)
 //            }
 
 //            GradientStop {
 //                position: 1
-//                color: Qt.darker(task.label, 1.2)
+//                color: Qt.darker(task.priority, 1.2)
 //            }
 //        }
     }
@@ -117,6 +115,7 @@ Empty {
         }
 
         checked: task.completed
+        __acceptEvents: task.canComplete
 
         onCheckedChanged: showCompletedTasks ? task.completed = checked : hideAnimation.start()
 
@@ -132,6 +131,12 @@ Empty {
         }
 
 
+    }
+
+    Label {
+        anchors.centerIn: doneCheckBox
+        text: task.percent + "%"
+        visible: !task.canComplete && !task.completed
     }
 
     onClicked: {

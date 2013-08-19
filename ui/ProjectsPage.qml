@@ -23,55 +23,63 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
+import "../components"
 
 Page {
     id: root
 
-    title: i18n.tr("Add Task")
+    title: i18n.tr("Projects")
 
-    property string type: "add"
+    property string type: "projects"
 
-    property string category
-
-//    property color headerColor: labelHeaderColor(taskItem.task.label)
-//    property color backgroundColor: labelColor(taskItem.task.label)
-//    property color footerColor: labelFooterColor(taskItem.task.label)
-
-    TaskItem {
-        id: taskItem
-        task: newTask({category: root.category})
+    Flickable {
+        id: flickable
         anchors.fill: parent
-        //anchors.margins: units.gu(1)
 
-        editing: true
-        creating: true
+        // FIXME: REALLY uggly hack (no idea why)
+        anchors.topMargin: -1
+        topMargin: 1
+
+        contentHeight: column.height
+        contentWidth: width
+        //clip: true
+
+        Column {
+            id: column
+            width: parent.width
+
+            Repeater {
+                model: backendModels
+
+                delegate: Column {
+                    width: parent.width
+                    Header {
+                        text: modelData.name
+                    }
+
+                    Repeater {
+                        model: modelData.projects
+
+                        delegate: ProjectListItem {
+                            project: modelData
+                        }
+                    }
+                }
+            }
+        }
     }
 
     Scrollbar {
-        flickableItem: taskItem
+        flickableItem: flickable
     }
 
     tools: ToolbarItems {
-        locked: true
-        opened: true
-
-        back: ToolbarButton {
-            text: i18n.tr("Cancel")
-            iconSource: icon("back")
-
-            onTriggered: {
-                taskItem.task.destroy()
-                pageStack.pop()
-            }
-        }
-
         ToolbarButton {
-            text: i18n.tr("Create")
             iconSource: icon("add")
+            text: i18n.tr("New")
 
             onTriggered: {
-                addExistingTask(taskItem.task)
-                pageStack.pop()
+                PopupUtils.open(newProjectDialog, caller)
             }
         }
     }

@@ -28,16 +28,14 @@ import "../components"
 Page {
     id: root
 
-    title: i18n.tr("Tasks")
+    title: wideAspect ? i18n.tr("Tasks")
+                      : upcoming ? i18n.tr("Upcoming") : currentProject.name
 
-    property string type: category === null_category ? "upcoming" : "category"
+    property var type: upcoming ? "upcoming" : "project"
 
-    property string category: null_category
-    onCategoryChanged: {
-        print("Category changed:", category)
-    }
+    property bool upcoming: currentProject === null
 
-    property bool upcoming: category === null_category
+    property var currentProject: null
 
     Sidebar {
         id: sidebar
@@ -46,41 +44,45 @@ Page {
             bottom: parent.bottom
         }
 
-        ListView {
-            id: listView
+        Flickable {
+            id: flickable
             anchors.fill: parent
-            model: categories
 
+            contentHeight: column.height
+            contentWidth: width
             clip: true
 
-            header: Column {
+            Column {
+                id: column
                 width: parent.width
 
-                CategoryListItem {
-                    text: i18n.tr("Upcoming")
-                    onClicked: {
-                        root.category = null_category
+                ProjectListItem {
+                    project: null
+                }
+
+                Repeater {
+                    model: backendModels
+
+                    delegate: Column {
+                        width: parent.width
+                        Header {
+                            text: modelData.name
+                        }
+
+                        Repeater {
+                            model: modelData.projects
+
+                            delegate: ProjectListItem {
+                                project: modelData
+                            }
+                        }
                     }
-                    selected: upcoming
-                    count: upcomingTasks.count
                 }
-
-                Header {
-                    text: i18n.tr("Categories")
-                }
-            }
-
-            delegate: CategoryListItem {
-                category: modelData
-            }
-
-            footer: CategoryListItem {
-                category: ""
             }
         }
 
         Scrollbar {
-            flickableItem: listView
+            flickableItem: flickable
         }
 
         //width: units.gu(40)
@@ -97,7 +99,7 @@ Page {
         }
 
         UpcomingTasksList {
-            id: upcomingTasks
+            id: upcomingTasksList
 
             anchors.fill: parent
             visible: upcoming
@@ -108,28 +110,44 @@ Page {
 
             showAddBar: false
             anchors.fill: parent
-            category: root.category
+            project: currentProject
             visible: !upcoming
         }
     }
 
     QuickAddBar {
         id: addBar
-        expanded: list.visible
+        expanded: !upcoming
         anchors.left: sidebar.right
     }
 
+//    states: [
+//        State {
+//            when: showToolbar
+//            PropertyChanges {
+//                target: root.tools
+//                locked: true
+//                opened: true
+//            }
+
+//            PropertyChanges {
+//                target: root.parent
+//                anchors.bottomMargin: units.gu(-2)
+//            }
+//        }
+
+//    ]
+
     tools: ToolbarItems {
-        back: null
 
         ToolbarButton {
             iconSource: icon("add")
             text: i18n.tr("Add")
 
-            visible: sidebar.expanded && category != null_category && category != ""
+            visible: currentProject !== null
 
             onTriggered: {
-                pageStack.push(addTaskPage, { category: root.category })
+                pageStack.push(addTaskPage, { project: currentProject })
             }
         }
 
@@ -139,18 +157,18 @@ Page {
             visible: sidebar.expanded
 
             onTriggered: {
-                PopupUtils.open(newCategoryDialog, caller)
+                PopupUtils.open(newProjectDialog, caller)
             }
         }
 
         ToolbarButton {
             iconSource: icon("edit")
             text: i18n.tr("Rename")
-            visible: sidebar.expanded && category != null_category && category != ""
+            visible: currentProject !== null
 
             onTriggered: {
-                PopupUtils.open(renameCategoryDialog, caller, {
-                                    category: category
+                PopupUtils.open(renameProjectDialog, caller, {
+                                    project: currentProject
                                 })
             }
         }
@@ -158,17 +176,20 @@ Page {
         ToolbarButton {
             iconSource: icon("delete")
             text: i18n.tr("Delete")
-            visible: sidebar.expanded && category != null_category && category != ""
+            visible: currentProject !== null
 
             onTriggered: {
-                PopupUtils.open(confirmDeleteCategoryDialog, root)
+                PopupUtils.open(confirmDeleteProjectDialog, caller, {
+                                    project: currentProject
+                                })
             }
         }
 
         ToolbarButton {
             text: i18n.tr("Options")
             iconSource: icon("settings")
-            visible: sidebar.expanded
+            visible: currentProject !== null
+            onVisibleChanged: print("Showing options?", visible, currentProject)
 
             onTriggered: {
                 PopupUtils.open(optionsPopover, caller)

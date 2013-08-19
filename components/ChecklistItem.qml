@@ -26,8 +26,10 @@ import Ubuntu.Components.Popups 0.1
 
 Empty {
     id: root
+
     property alias completed: checkBox.checked
-    property var listItem
+    property var checklist
+    property int itemIndex
 
     Row {
         anchors {
@@ -46,8 +48,11 @@ Empty {
             //height: width
             anchors.verticalCenter: parent.verticalCenter
 
-            checked: listItem.completed
-            onCheckedChanged: listItem.completed = checked
+            checked: checklist[itemIndex].completed
+            onCheckedChanged: {
+                checklist[itemIndex].completed = checked
+                task.checklist = checklist
+            }
         }
 
         EditableLabel {
@@ -56,8 +61,11 @@ Empty {
             width: editing ? parent.width - checkBox.width - deleteButton.width - parent.spacing * 2
                            : parent.width - checkBox.width - parent.spacing
 
-            text: listItem.text
-            onTextChanged: listItem.text = text
+            text: checklist[itemIndex].text
+            onTextChanged: {
+                checklist[itemIndex].text = text
+                task.checklist = checklist
+            }
         }
 
         Button {
@@ -68,8 +76,11 @@ Empty {
             height: label.height
             width: height
             onClicked: {
-                task.checklist.splice(0,1)
+                task.checklist.splice(itemIndex,1)
+                task.checklist = task.checklist
             }
         }
     }
+
+    //onClicked: label.focus = false
 }

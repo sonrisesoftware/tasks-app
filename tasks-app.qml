@@ -23,9 +23,11 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.Popups 0.1
 import U1db 1.0 as U1db
+import QtSystemInfo 5.0
 
 import "ui"
 import "components"
+import "backend"
 
 MainView {
     id: root
@@ -50,9 +52,9 @@ MainView {
     property bool wideAspect: width > units.gu(80)
 
     // Colors from Calculator app
-    headerColor: pageStack.currentPage.hasOwnProperty("headerColor") ? pageStack.currentPage.headerColor : "#323A5D"
-    backgroundColor: pageStack.currentPage.hasOwnProperty("backgroundColor") ? pageStack.currentPage.backgroundColor : "#6A6AA1"
-    footerColor: pageStack.currentPage.hasOwnProperty("footerColor") ? pageStack.currentPage.footerColor : "#6899D7"
+    headerColor: currentPage.hasOwnProperty("headerColor") ? currentPage.headerColor : "#323A5D"
+    backgroundColor: currentPage.hasOwnProperty("backgroundColor") ? currentPage.backgroundColor : "#6A6AA1"
+    footerColor: currentPage.hasOwnProperty("footerColor") ? currentPage.footerColor : "#6899D7"
 
     //backgroundColor: "#FCFF95"
     //backgroundColor: "#FFFFBB"
@@ -64,7 +66,7 @@ MainView {
         id: pageStack
 
         Tabs {
-            id: wideAspectTabs
+            id: tabs
 
             property string type: "tabs"
 
@@ -77,405 +79,154 @@ MainView {
 
             Tab {
                 title: page.title
-                page: StatisticsPage {
+                page: ProjectsPage {
+                    id: projectsPage
+
                 }
-            }
-        }
 
-        Tabs {
-            id: phoneTabs
-
-            property string type: "tabs"
-
-            Tab {
-                title: page.title
-                page: HomePage {
-                    title: i18n.tr("Upcoming")
+                property bool show: !wideAspect
+                onShowChanged: {
+                    parent.tabList = tabs.customUpdateTabList(parent)
                 }
             }
 
-            Tab {
-                title: page.title
-                page: CategoriesPage {
-                    property string type: "root"
+            function customUpdateTabList(tabsModel) {
+                var list = [];
+                for (var i=0; i < tabsModel.children.length; i++) {
+                    if (isTab(tabsModel.children[i])) list.push(tabsModel.children[i]);
                 }
+                return list
             }
 
-            Tab {
-                title: page.title
-                page: StatisticsPage {
+            function isTab(item) {
+                if (item && item.hasOwnProperty("__isPageTreeNode")
+                        && item.__isPageTreeNode && item.hasOwnProperty("title")
+                        && item.hasOwnProperty("page")
+                        && (item.hasOwnProperty("show") ? item.show : true)) {
+                    return true;
+                } else {
+                    return false;
                 }
             }
-
-            //onVisibleChanged: tabBar.visible = visible
 
             visible: false
         }
 
         Component.onCompleted: {
-            pageStack.push(phoneTabs)
-            pageStack.push(taskViewPage)
-            pageStack.push(wideAspectTabs)
+            pageStack.push(tabs)
             clearPageStack()
         }
-
-        onDepthChanged: print("Depth changed")
     }
 
-    property Page currentPage: pageStack.currentPage.hasOwnProperty("type")
-                               ? (pageStack.currentPage.type === "tabs"
-                                  ? pageStack.currentPage.currentPage
-                                  : pageStack.currentPage)
+    property var showToolbar: wideAspect ? true : undefined
+
+    property Page currentPage: pageStack.currentPage.hasOwnProperty("currentPage")
+                               ? pageStack.currentPage.currentPage
                                : pageStack.currentPage
 
-    property string viewing: {
-        //var type = pageStack.currentPage.hasOwnProperty("type") ? pageStack.currentPage.type : "unknown"
-        var type = "uknown"
-        if (currentTask !== null)
-            type = "task"
-        else if (currentCategory !== null_category)
-            type = "category"
-        else if (currentPage.hasOwnProperty("type"))
-            type = currentPage.type
+    property var currentProject: currentPage.hasOwnProperty("currentProject") ? currentPage.currentProject : null
+    property var currentTask: currentPage.hasOwnProperty("task") ? currentPage.task : null
 
-        print(currentPage)
-        print("Now viewing:", type)
-        return type
-    }
+    property string viewing: currentPage.hasOwnProperty("type")
+                             ? currentPage.type
+                             : currentTask !== null
+                               ? "task"
+                               : currentProject !== null
+                                 ? "project"
+                                 : "unknown"
 
-    property var currentTask: viewing === "task"
-                              ? (currentPage.hasOwnProperty("task") ? currentPage.task : null)
-                              : null
-    property string currentCategory: currentPage.hasOwnProperty("category")
-                                  ? currentPage.category
-                                  : currentTask !== null ? currentTask.category : null_category
-    onCurrentCategoryChanged: print("Current Category:", currentCategory)
-
-    readonly property string null_category: "\0"
+    //onViewingChanged: print("Now viewing ", viewing)
 
     function clearPageStack() {
-        while (pageStack.depth > 0)
+        while (pageStack.depth > 1)
             pageStack.pop()
-        if (wideAspect) {
-            pageStack.push(wideAspectTabs)
-        } else {
-            pageStack.push(phoneTabs)
-        }
-    }
+        tabs.selectedTabIndex = 1
+        tabs.selectedTabIndex = 0
 
+        pageStack.push(Qt.resolvedUrl("ui/ProjectsPage.qml"))
+        pageStack.pop()
+        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: null})
+        pageStack.pop()
+    }
 
     onWideAspectChanged: {
+        var currentProject = root.currentProject
         var viewing = root.viewing
+        if (!wideAspect)
+            homePage.currentProject = null
 
-        if (viewing === "root") {
-            clearPageStack()
-        } else if (viewing === "task") {
-            goToTask(currentTask, "category")
-        } else if (viewing === "category") {
-            goToCategory(currentCategory)
-        } else if (viewing === "statistics") {
-            clearPageStack()
-            if (wideAspect) {
-                wideAspectTabs.selectedTabIndex = 1
-            } else {
-                phoneTabs.selectedTabIndex = 2
-            }
-        } else if (viewing === "upcoming") {
-            clearPageStack()
-            if (wideAspect) {
-                wideAspectTabs.selectedTabIndex = 0
-                homePage.category = null_category
-            } else {
-                phoneTabs.selectedTabIndex = 0
-            }
+        if (viewing === "task") {
+            goToTask(currentTask, "project")
+        } else if (viewing === "project") {
+            goToProject(currentProject)
         } else if (viewing === "add") {
-            var page = root.pageStack.currentPage
-            pageStack.pop()
-            var category = currentCategory
-            goToCategory(category)
-            pageStack.push(page)
-        }
-    }
+            var task = currentTask
+            goToProject(task.project)
+            pageStack.push(addTaskPage, {task: task})
+        } else {
+            if (!(viewing === "upcoming" || viewing === "projects")) {
+                clearPageStack()
+                console.log("Unknown type:", viewing)
+            }
 
-    function goToCategory(category) {
-        // if in wide aspect mode,
-        if (wideAspect) {
             clearPageStack()
-            homePage.category = category
-            wideAspectTabs.selectedTabIndex = 0
-        } else { // otherwise,
-            // clear the page stack
-            clearPageStack()
-            phoneTabs.selectedTabIndex = 1
-            // push the new category
-            pageStack.push(tasksPage, {category: category})
+            tabs.selectedTabIndex = 0
+            homePage.currentProject = null
         }
     }
 
     function goToTask(task, viewing) {
-        print("Going to task...", task.title)
-
         if (viewing === undefined)
             viewing = root.viewing
 
-        // if in wide aspect mode,
+        clearPageStack()
+
         if (wideAspect) {
-            // set the category and task
-
-            clearPageStack()
-            wideAspectTabs.selectedTabIndex = 0
-
-            // push the task view mode
-            pageStack.push(taskViewPage, {task: task})
-        } else { // otherwise,
-            clearPageStack()
-            phoneTabs.selectedTabIndex = 1
-
-            if (viewing === "category") {
-                pageStack.push(tasksPage, {category: task.category})
+            tabs.selectedTabIndex = 0
+            if (viewing === "project")
+                homePage.currentProject = task.project
+            pageStack.push(Qt.resolvedUrl("ui/TaskViewPage.qml"), {task: task})
+        } else {
+            if (viewing === "project") {
+                tabs.selectedTabIndex = 1
+                pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: task.project})
             }
 
-            // push the new task
-            pageStack.push(taskViewPage, {task: task})
+            pageStack.push(Qt.resolvedUrl("ui/TaskViewPage.qml"), {task: task})
         }
     }
 
-    Component {
-        id: tasksPage
-        TasksPage {}
-    }
+    function goToProject(project) {
+        clearPageStack()
 
-    Component {
-        id: taskViewPage
-        TaskViewPage {}
-    }
-
-    Component {
-        id: newCategoryDialog
-
-        InputDialog {
-            property var task
-
-            title: i18n.tr("New Category")
-
-            placeholderText: i18n.tr("Category")
-
-            onAccepted: {
-                addCategory(value)
-
-                if (task !== undefined)
-                    task.category = value
-            }
-        }
-    }
-
-    Component {
-        id: renameCategoryDialog
-
-        InputDialog {
-            property string category
-
-            title: i18n.tr("Rename Category")
-
-            value: category
-            placeholderText: i18n.tr("Category")
-
-            onAccepted: {
-                if (value !== category)
-                    renameCategory(category, value)
-            }
+        if (wideAspect) {
+            tabs.selectedTabIndex = 0
+            homePage.currentProject = project
+        } else {
+            tabs.selectedTabIndex = 1
+            pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: project})
         }
     }
 
     /* TASK MANAGEMENT */
 
-    U1db.Document {
-        id: tasksDatebase
-
+    TasksModel {
+        id: localProjectsModel
         database: storage
-        docId: 'tasks'
-        create: true
-
-        defaults: {
-            tasks: []
-        }
     }
 
-    ListModel {
-        id: taskListModel
-    }
+    property var backendModels: [
+        localProjectsModel
+    ]
 
-    property int indexCount: 0
-
-    function addTask(args) {
-        //print("ADDING TASK:", args)
-        var task = taskComponent.createObject(root, args)
-
-        if (task === null) {
-            console.log("Unable to create task!")
-        }
-
-        addExistingTask(task)
-    }
-
-    function addExistingTask(task) {
-        task.index = indexCount++
-
-        if (task.category !== "" && categories.indexOf(task.category) === -1) {
-            console.log("WARNING: Task has new category:", task.category)
-            addCategory(task.category)
-        }
-
-        taskListModel.append({"modelData": task})
-    }
-
-    function newTask(args) {
-        return taskComponent.createObject(root, args)
-    }
-
-    function removeTask(task) {
-        for (var i = 0; i < taskListModel.count; i++) {
-            if (taskListModel.get(i).modelData === task) {
-                taskListModel.remove(i)
-                return
-            }
-        }
-    }
-
-    property var categories: []
-
-    function addCategory(category) {
-        var list = categories
-        list.push(category)
-        categories = list
-        print(categories)
-
-        goToCategory(category)
-    }
-
-    function removeCategory(category) {
-        //TODO: Add confirmation dialog
-
-        for (var i = 0; i < taskListModel.count; i++) {
-            var task = taskListModel.get(i).modelData
-            if (task.category === category) {
-                removeTask(task)
-            }
-        }
-
-        if (categories.indexOf(category) != -1) {
-            var list = categories
-            list.splice(list.indexOf(category), 1)
-            categories = list
-            print(categories)
-        }
-
-        clearPageStack()
-    }
-
-    function renameCategory(category, newCategory) {
-        var list = categories
-        list[categories.indexOf(category)] = newCategory
-        categories = list
-
-        for (var i = 0; i < taskListModel.count; i++) {
-            var task = taskListModel.get(i).modelData
-            if (task.category === category) {
-                task.category = newCategory
-            }
-        }
-    }
-
-    function loadCategories() {
-        categories = JSON.parse(tasksDatebase.contents.categories)
-    }
-
-    function saveCategories() {
-        var tempContents = {}
-        tempContents = tasksDatebase.contents
-        tempContents.categories = JSON.stringify(categories)
-        tasksDatebase.contents = tempContents
-    }
-
-    function saveTasks() {
-        //print("Saving Tasks...")
-
-        var tasks = []
-
-        for (var i = 0; i < taskListModel.count; i++) {
-            var task = taskListModel.get(i).modelData
-            //print("Saving task:", task.title)
-            tasks.push(task.toJSON())
-        }
-
-        var tempContents = {}
-        tempContents = tasksDatebase.contents
-        tempContents.tasks = JSON.stringify(tasks)
-        //print(tempContents.tasks)
-        tasksDatebase.contents = tempContents
-    }
-
-    function getTask(index) {
-        for (var i = 0; i < taskListModel.count; i++) {
-            var task = taskListModel.get(i).modelData
-            print(task.index,"==", index)
-            if (task.index === parseInt(index)) {
-                print("Found task!")
-                return task
-            }
-        }
-    }
-
-    function filteredTasks(filter) {
-        //print("Filtering...")
-        var tasks = []
-
-        //print("Filtered:", tasks)
-        for (var i = 0; i < taskListModel.count; i++) {
-            var task = taskListModel.get(i).modelData
-            if (filter(task))
-                tasks.push(task)
-        }
-
-        //print("Filtered:", tasks)
-
-        return tasks
-    }
-
-    function countTasks(filter) {
-        var count = 0
-
-        for (var i = 0; i < taskListModel.count; i++) {
-            var task = taskListModel.get(i).modelData
-            if (filter(task))
-                count++
-        }
-
-        //print("Count:", count)
-        return count
-    }
-
-    function loadTasks() {
-        print("Loading lists...")
-        var tasks = JSON.parse(tasksDatebase.contents.tasks)
-        print(tasks)
-
-        for (var i = 0; i < tasks.length; i++) {
-            addTask(tasks[i])
-        }
-    }
-
-    Component {
-        id: taskComponent
-
-        Task {
-
-        }
-    }
+    property var upcomingTasks: localProjectsModel.upcomingTasks
 
     /* SETTINGS */
 
     property bool showCompletedTasks
+    property bool runBefore
+
+    /* CHECKING FOR INTERNET */
 
     /* SETTINGS STORAGE */
 
@@ -492,7 +243,8 @@ MainView {
         create: true
 
         defaults: {
-            showCompletedTasks: false
+            showCompletedTasks: "false"
+            runBefore: "false"
         }
     }
 
@@ -508,7 +260,7 @@ MainView {
 
     function saveSetting(name, value) {
         if (getSetting(name) !== value) {
-            print(name, "=>", value)
+            //print(name, "=>", value)
             var tempContents = {}
             tempContents = settings.contents
             tempContents[name] = value
@@ -523,77 +275,116 @@ MainView {
         //print("showVerse <=", showVerse)
 
         showCompletedTasks = getSetting("showCompletedTasks") === "true" ? true : false
+        runBefore = getSetting("runBefore") === "true" ? true : false
+    }
+
+    function saveProjects() {
+        for (var i = 0; i < backendModels.length; i++) {
+            backendModels[i].save()
+        }
+    }
+
+    Timer {
+        interval: 60000 // 60 seconds
+        repeat: true
+        running: true
+        onTriggered: saveProjects()
     }
 
     Component.onCompleted: {
         reloadSettings()
-        loadCategories()
-        loadTasks()
+        for (var i = 0; i < backendModels.length; i++) {
+            backendModels[i].load()
+        }
+
+        //print("Run before: ", runBefore)
+        if (!runBefore) {
+            saveSetting("runBefore", "true")
+            firstRun()
+        }
     }
 
     Component.onDestruction: {
-        saveTasks()
-        saveCategories()
+        saveProjects()
     }
 
-    /* LABEL MANAGEMENT */
+    /* INITIAL WELCOME PROJECT */
 
-    property var labels: ["green", "yellow", "red"]
+    function firstRun() {
+        var project = localProjectsModel.newProject("Getting Started")
+        project.newTask({name: "Welcome to Ubuntu Tasks"})
+        project.newTask({name: "To view a task's description, tap it", description: "Here is the description for the task"})
+        project.newTask({name: "To complete a task, tap the checkbox on at the right"})
+        project.newTask({name: "When completed, tasks disappear from view"})
+        project.newTask({name: "To show completed tasks, click the Options toolbar button"})
+        project.newTask({name: "This is a completed task", completed: true, completedDate: new Date()})
+        project.newTask({name: "To set a due date, priority, or other options, tap it", description: "Look below at the options you can set"})
+        project.newTask({name: "To create a new task or project, look in the toolbar"})
+        project.newTask({name: "To create a new task, you can also type in the quick add task field"})
+        project.newTask({name: "When you're done learning, you can delete this project"})
+    }
 
-    function labelName(label) {
-        if (label === "green") {
+
+    /* PRIORITY MANAGEMENT */
+
+    property var priorities: ["low", "medium", "high"]
+
+    function priorityName(priority) {
+        if (priority === "low") {
             return "Low"
-        } else if (label === "yellow") {
+        } else if (priority === "medium") {
             return "Medium"
-        } else if (label === "orange") {
+        } else if (priority === "high") {
             return "High"
-        } else if (label === "red") {
-            return "High" //"Critical"
         } else {
             return "????"
         }
     }
 
-    function labelColor(label) {
-        if (label === "green") {
+    function priorityColor(priority) {
+        if (priority === "low") {
             return "#59B159"
-        } else if (label === "yellow") {
+        } else if (priority === "medium") {
             return "#FFFF41"
-        } else if (label === "orange") {
-            return "#FF8000" //UbuntuColors.orange
-        } else if (label === "red") {
+        } else if (priority === "high") {
             return "#FF4141"
-        } else {
-            return label
-        }
-    }
-
-    function labelHeaderColor(label) {
-//        if (label === "green") {
-//            return "#59B159"
-//        } else if (label === "yellow") {
-//            return "#FFFF41"
-//        } else if (label === "red") {
-//            return "#FF4141"
-//        } else {
-            return Qt.darker(labelColor(label), 1.5)
-//        }
-    }
-
-    function labelFooterColor(label) {
-//        if (label === "green") {
-//            return "#59B159"
-//        } else if (label === "yellow") {
-//            return "#FFFF41"
-        if (label === "red") {
-//            return "#FF4141"
-            return Qt.lighter(labelColor(label), 1.1)
-        } else {
-            return Qt.lighter(labelColor(label), 1.4)
         }
     }
 
     /* HELPER FUNCTIONS */
+
+    function length(model) {
+        return model.hasOwnProperty("count") ? model.count : model.length
+    }
+
+    function filteredTasks(tasks, filter, name) {
+        //print("Running filter:", name)
+        var list = []
+
+        for (var i = 0; i < length(tasks); i++) {
+            var task = tasks.hasOwnProperty("get") ? tasks.get(i) : tasks[i]
+            if (task.hasOwnProperty("modelData"))
+                task = task.modelData
+            //print("Filtering:", task.name)
+            if (filter(task))
+                list.push(task)
+        }
+
+        //print("Count:", list.length)
+        return list
+    }
+
+    function countTasks(tasks, filter) {
+        //print("Counting tasks...")
+        var count = 0
+
+        for (var i = 0; i < tasks.count; i++) {
+            if (filter(tasks.get(i).modelData))
+                count++
+        }
+
+        return count
+    }
 
     function icon(name) {
         //return "/usr/share/icons/ubuntu-mobile/actions/scalable/" + name + ".svg"
@@ -625,6 +416,24 @@ MainView {
         return today
     }
 
+    function dateIsBefore(date1, date2) {
+        var ans = date1.getFullYear() < date2.getFullYear() ||
+                (date1.getFullYear() === date2.getFullYear() && date1.getMonth() < date2.getMonth()) ||
+                (date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth()
+                        && date1.getDate() < date2.getDate())
+        return ans
+    }
+
+    function dateIsBeforeOrSame(date1, date2) {
+        var ans = date1.getFullYear() < date2.getFullYear() ||
+                (date1.getFullYear() === date2.getFullYear() && date1.getMonth() < date2.getMonth()) ||
+                (date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth()
+                        && date1.getDate() <= date2.getDate())
+        return ans
+    }
+
+    /* COMPONENTS */
+
     Component {
         id: optionsPopover
 
@@ -633,7 +442,7 @@ MainView {
         }
     }
 
-    Component {
+     Component {
         id: addTaskPage
 
         AddTaskPage {
@@ -662,42 +471,70 @@ MainView {
             onAccepted: {
                 var task = root.task
                 PopupUtils.close(confirmDeleteTaskDialogItem)
-                goToCategory(task.category)
+                goToProject(task.project)
                 task.remove()
             }
         }
     }
 
     Component {
-        id: confirmDeleteCategoryDialog
+        id: renameProjectDialog
 
-        ConfirmDialog {
-            property string category
+        InputDialog {
+            property var project
 
-            id: confirmDeleteCategoryDialogItem
-            title: i18n.tr("Delete Category")
-            text: i18n.tr("Are you sure you want to delete '%1'?").arg(category)
+            id: renameProjectDialogItem
+            title: i18n.tr("Rename Project")
+            //text: i18n.tr("Are you sure you want to delete '%1'?").arg(project.name)
+            value: project.name
 
             onAccepted: {
-                PopupUtils.close(confirmDeleteCategoryDialogItem)
-                clearPageStack()
-                removeCategory(category)
+                PopupUtils.close(renameProjectDialogItem)
+                project.name = value
             }
         }
     }
 
     Component {
-        id: categoryActionsPopover
+        id: confirmDeleteProjectDialog
+
+        ConfirmDialog {
+            property var project
+
+            id: confirmDeleteProjectDialogItem
+            title: i18n.tr("Delete Project")
+            text: i18n.tr("Are you sure you want to delete '%1'?").arg(project.name)
+
+            onAccepted: {
+                PopupUtils.close(confirmDeleteProjectDialogItem)
+                //clearPageStack()
+                project.remove()
+            }
+        }
+    }
+
+    Component {
+        id: newProjectDialog
+
+        InputDialog {
+            title: i18n.tr("New Project")
+            placeholderText: i18n.tr("Project name")
+            onAccepted: localProjectsModel.newProject(value)
+        }
+    }
+
+    Component {
+        id: projectActionsPopover
 
         ActionSelectionPopover {
-            property string category
+            property var project
 
             actions: ActionList {
                 Action {
                     text: i18n.tr("Rename")
                     onTriggered: {
-                        PopupUtils.open(renameCategoryDialog, caller, {
-                                            category: category
+                        PopupUtils.open(renameProjectDialog, caller, {
+                                            project: project
                                         })
                     }
                 }
@@ -705,10 +542,18 @@ MainView {
                 Action {
                     text: i18n.tr("Delete")
                     onTriggered: {
-                        PopupUtils.open(confirmDeleteCategoryDialog, root, {category: category})
+                        PopupUtils.open(confirmDeleteProjectDialog, root, {project: project})
                     }
                 }
             }
+        }
+    }
+
+    Component {
+        id: projectsPopover
+
+        ProjectsPopover {
+
         }
     }
 
@@ -724,7 +569,7 @@ MainView {
 
                     text: i18n.tr("Move")
                     onTriggered: {
-                        PopupUtils.open(Qt.resolvedUrl("../components/CategoriesPopover.qml"), caller, {
+                        PopupUtils.open(projectsPopover, caller, {
                                             task: task
                                         })
                     }

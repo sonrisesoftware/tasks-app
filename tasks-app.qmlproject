@@ -42,10 +42,14 @@ Project {
         filter: "*"
     }
     Files {
+        directory: "backend"
+        filter: "*"
+    }
+    Files {
         filter: "COPYING"
     }
     Files {
-        filter: "README.md"
+        filter: "*.md"
     }
 
     /* List of plugin directories passed to QML runtime */

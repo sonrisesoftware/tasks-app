@@ -23,70 +23,30 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
-import "../components"
+import "../ui"
 
-Page {
+SingleValue {
     id: root
 
-    title: category === "" ? i18n.tr("Uncategorized") : category
+    property var project
 
-    property alias category: list.category
+    text: project === null ? i18n.tr("Upcoming") : project.name
 
-    property string type: "category"
-
-    actions: [
-        Action {
-            id: addAction
-
-            iconSource: icon("add")
-            text: i18n.tr("Add")
-
-            onTriggered: {
-                pageStack.push(addTaskPage, { category: root.category })
-            }
-        }
-
-    ]
-
-    TasksList {
-        id: list
-
-        anchors.fill: parent
+    onClicked: {
+        currentProject = project
+        goToProject(project)
     }
 
-    tools: ToolbarItems {
+    selected: currentProject === project
 
-        ToolbarButton {
-            action: addAction
-        }
-
-        ToolbarButton {
-            iconSource: icon("edit")
-            text: i18n.tr("Rename")
-            visible: category != ""
-            onTriggered: {
-                PopupUtils.open(renameCategoryDialog, caller, {
-                                    category: category
-                                })
-            }
-        }
-
-        ToolbarButton {
-            iconSource: icon("delete")
-            text: i18n.tr("Delete")
-            visible: category != ""
-            onTriggered: {
-                PopupUtils.open(confirmDeleteCategoryDialog, root)
-            }
-        }
-
-        ToolbarButton {
-            text: i18n.tr("Options")
-            iconSource: icon("settings")
-
-            onTriggered: {
-                PopupUtils.open(optionsPopover, caller)
-            }
-        }
+    onPressAndHold: {
+        if (project !== null)
+            PopupUtils.open(projectActionsPopover, root, {
+                                project: project
+                            })
     }
+
+    property int count: project === null ? upcomingTasks.length : project.uncompletedTasks.length
+
+    value: count === 0 ? "" : count
 }

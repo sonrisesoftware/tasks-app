@@ -23,77 +23,57 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
+import "../components"
 
-Empty {
+Page {
     id: root
 
-    property alias text: textField.text
-    property bool editing
-    property bool bold
-    property alias fontSize: label.fontSize
+    title: i18n.tr("Add Task")
 
-    property var control
+    property string type: "add"
 
-    onEditingChanged: {
-        if (editing)
-            textField.focus = true
+    property var project
+    property var task: project.createTask()
+
+//    property color headerColor: labelHeaderColor(taskItem.task.label)
+//    property color backgroundColor: labelColor(taskItem.task.label)
+//    property color footerColor: labelFooterColor(taskItem.task.label)
+
+    TaskItem {
+        id: taskItem
+        task: root.task
+        anchors.fill: parent
+
+        editing: true
+        creating: true
     }
 
-    property bool parentEditing
-
-    onParentEditingChanged: editing = parentEditing
-
-    property alias placeholderText: textField.placeholderText
-
-    onClicked: {
-        editing = true
+    Scrollbar {
+        flickableItem: taskItem
     }
 
+    tools: ToolbarItems {
+        locked: true
+        opened: true
 
-    Label {
-        id: label
+        back: ToolbarButton {
+            text: i18n.tr("Cancel")
+            iconSource: icon("back")
 
-        anchors {
-            left: parent.left
-            leftMargin: units.gu(2)
-            right: control == null ? parent.right : control.left
-            rightMargin: control == null ? units.gu(2) : units.gu(1)
-            verticalCenter: parent.verticalCenter
-        }
-
-        font.bold: root.text != "" ? root.bold : false
-        font.italic: root.text === ""
-        elide: Text.ElideRight
-        visible: !(editing || parentEditing)
-        text: root.text != "" ? root.text : root.placeholderText
-    }
-
-    TextField {
-        id: textField
-
-        anchors {
-            left: parent.left
-            leftMargin: units.gu(2)
-            right: control == null ? parent.right : control.left
-            rightMargin: control == null ? units.gu(2) : units.gu(2)
-            verticalCenter: parent.verticalCenter
-        }
-
-        Component.onCompleted: __styleInstance.color = "white"
-
-        //width: Math.min(parent.width, units.gu(50))
-
-        font.bold: root.bold
-        visible: editing || parentEditing
-
-        onFocusChanged:  {
-            focus ? __styleInstance.color = Theme.palette.normal.overlayText : __styleInstance.color = "white"
-
-            if (focus === false) {
-                root.editing = false
+            onTriggered: {
+                taskItem.task.destroy()
+                pageStack.pop()
             }
         }
 
-        onAccepted: editing = false
+        ToolbarButton {
+            text: i18n.tr("Create")
+            iconSource: icon("add")
+
+            onTriggered: {
+                project.addTask(taskItem.task)
+                pageStack.pop()
+            }
+        }
     }
 }

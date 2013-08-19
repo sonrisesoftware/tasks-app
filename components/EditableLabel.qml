@@ -28,7 +28,7 @@ Item {
     id: root
 
     property string labelText: text
-    property alias text: textField.text
+    property var text
     property bool editing
 
     onEditingChanged: {
@@ -67,6 +67,7 @@ Item {
 
         onClicked: {
             editing = true
+            textField.forceActiveFocus()
         }
     }
 
@@ -91,9 +92,19 @@ Item {
 
             if (focus === false) {
                 root.editing = false
+                root.text = text
+            } else {
+                text = root.text
             }
         }
 
-        onAccepted: editing = false
+        onCursorVisibleChanged: {
+            if (cursorVisible === false)
+                focus = false
+        }
+
+        Keys.onEscapePressed: focus = false
+
+        onAccepted: focus = false
     }
 }
