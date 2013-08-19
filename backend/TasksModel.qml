@@ -94,6 +94,7 @@ Item {
 
     function removeProject(project) {
         projects.remove(project)
+        project.destroy()
     }
 
     U1db.Document {

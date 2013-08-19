@@ -227,6 +227,26 @@ Flickable {
                                        })
         }
 
+        ValueSelector {
+            id: repeatSelector
+            text: i18n.tr("Repeat")
+
+            values: [i18n.tr("Never"), i18n.tr("Daily"), i18n.tr("Weekly"), i18n.tr("Monthly")]
+            selectedIndex: {
+                if (task.repeat === "never") return 0
+                else if (task.repeat === "daily") return 1
+                else if (task.repeat === "weekly") return 2
+                else if (task.repeat === "monthly") return 3
+            }
+
+            onSelectedIndexChanged: {
+                if (selectedIndex === 0) task.repeat = "never"
+                else if (selectedIndex === 1) task.repeat = "daily"
+                else if (selectedIndex === 2) task.repeat = "weekly"
+                else if (selectedIndex === 3) task.repeat = "monthly"
+            }
+        }
+
         MultiValue {
             id: tagsSelector
 

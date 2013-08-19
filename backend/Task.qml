@@ -39,6 +39,26 @@ QtObject {
     
     onCompletedChanged: {
         if (completed) {
+            var json = task.json
+
+            // If the task has never been completed before
+            // Then create the repeat of it
+            if (Qt.formatDate(task.completionDate) === "") {
+                if (repeat === "daily") {
+                    json.dueDate.setDate(json.dueDate.getDate() + 1)
+                } else if (repeat === "weekly") {
+                    json.dueDate.setDate(json.dueDate.getDate() + 7)
+                } else if (repeat === "monthly") {
+                    json.dueDate.setMonth(json.dueDate.getMonth() + 1)
+                }
+
+                if (repeat !== "none")
+                    if (project === undefined)
+                        console.log("Unable to create repeating task!")
+                    else
+                        project.newTask(json)
+            }
+
             completionDate = new Date()
         }
     }
