@@ -25,33 +25,31 @@ import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
 import "../ui"
 
-
 SingleValue {
     id: root
 
-    property string category
-    //property string currentCategory
-    property var filter: function(task) {
-        return (task.category === root.category) && (showCompletedTasks || !task.completed)
-    }
+    property var project
 
-    text: category === "" ? i18n.tr("Uncategorized") : category
+//    property var filter: function(task) {
+//        return (task.category === root.category) && (showCompletedTasks || !task.completed)
+//    }
+
+    text: project === null ? i18n.tr("Upcoming") : project.name
 
     onClicked: {
-        goToCategory(category)
+        currentProject = project
     }
 
-    selected: currentCategory === category
+    selected: currentProject === project
 
     onPressAndHold: {
-        if (category !== "")
-            PopupUtils.open(categoryActionsPopover, root, {
-                                category: category
-                            })
+//        if (category !== "")
+//            PopupUtils.open(categoryActionsPopover, root, {
+//                                category: category
+//                            })
     }
 
-    property int count: countTasks(filter)
-    property int overdue
+    property int count: project === null ? projectsModel.upcomingTasks.count : project.count
 
     value: count === 0 ? "" : count
 }

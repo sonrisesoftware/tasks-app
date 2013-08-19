@@ -26,6 +26,7 @@ import U1db 1.0 as U1db
 
 import "ui"
 import "components"
+import "backend"
 
 MainView {
     id: root
@@ -63,414 +64,21 @@ MainView {
     PageStack {
         id: pageStack
 
-        Tabs {
-            id: wideAspectTabs
-
-            property string type: "tabs"
-
-            Tab {
-                title: page.title
-                page: HomePage {
-                    id: homePage
-                }
-            }
-
-            Tab {
-                title: page.title
-                page: StatisticsPage {
-                }
-            }
-        }
-
-        Tabs {
-            id: phoneTabs
-
-            property string type: "tabs"
-
-            Tab {
-                title: page.title
-                page: HomePage {
-                    title: i18n.tr("Upcoming")
-                }
-            }
-
-            Tab {
-                title: page.title
-                page: CategoriesPage {
-                    property string type: "root"
-                }
-            }
-
-            Tab {
-                title: page.title
-                page: StatisticsPage {
-                }
-            }
-
-            //onVisibleChanged: tabBar.visible = visible
-
+        HomePage {
+            id: homePage
             visible: false
         }
 
-        Component.onCompleted: {
-            pageStack.push(phoneTabs)
-            pageStack.push(taskViewPage)
-            pageStack.push(wideAspectTabs)
-            clearPageStack()
-        }
-
-        onDepthChanged: print("Depth changed")
-    }
-
-    property Page currentPage: pageStack.currentPage.hasOwnProperty("type")
-                               ? (pageStack.currentPage.type === "tabs"
-                                  ? pageStack.currentPage.currentPage
-                                  : pageStack.currentPage)
-                               : pageStack.currentPage
-
-    property string viewing: {
-        //var type = pageStack.currentPage.hasOwnProperty("type") ? pageStack.currentPage.type : "unknown"
-        var type = "uknown"
-        if (currentTask !== null)
-            type = "task"
-        else if (currentCategory !== null_category)
-            type = "category"
-        else if (currentPage.hasOwnProperty("type"))
-            type = currentPage.type
-
-        print(currentPage)
-        print("Now viewing:", type)
-        return type
-    }
-
-    property var currentTask: viewing === "task"
-                              ? (currentPage.hasOwnProperty("task") ? currentPage.task : null)
-                              : null
-    property string currentCategory: currentPage.hasOwnProperty("category")
-                                  ? currentPage.category
-                                  : currentTask !== null ? currentTask.category : null_category
-    onCurrentCategoryChanged: print("Current Category:", currentCategory)
-
-    readonly property string null_category: "\0"
-
-    function clearPageStack() {
-        while (pageStack.depth > 0)
-            pageStack.pop()
-        if (wideAspect) {
-            pageStack.push(wideAspectTabs)
-        } else {
-            pageStack.push(phoneTabs)
-        }
+        Component.onCompleted: pageStack.push(homePage)
     }
 
 
-    onWideAspectChanged: {
-        var viewing = root.viewing
-
-        if (viewing === "root") {
-            clearPageStack()
-        } else if (viewing === "task") {
-            goToTask(currentTask, "category")
-        } else if (viewing === "category") {
-            goToCategory(currentCategory)
-        } else if (viewing === "statistics") {
-            clearPageStack()
-            if (wideAspect) {
-                wideAspectTabs.selectedTabIndex = 1
-            } else {
-                phoneTabs.selectedTabIndex = 2
-            }
-        } else if (viewing === "upcoming") {
-            clearPageStack()
-            if (wideAspect) {
-                wideAspectTabs.selectedTabIndex = 0
-                homePage.category = null_category
-            } else {
-                phoneTabs.selectedTabIndex = 0
-            }
-        } else if (viewing === "add") {
-            var page = root.pageStack.currentPage
-            pageStack.pop()
-            var category = currentCategory
-            goToCategory(category)
-            pageStack.push(page)
-        }
-    }
-
-    function goToCategory(category) {
-        // if in wide aspect mode,
-        if (wideAspect) {
-            clearPageStack()
-            homePage.category = category
-            wideAspectTabs.selectedTabIndex = 0
-        } else { // otherwise,
-            // clear the page stack
-            clearPageStack()
-            phoneTabs.selectedTabIndex = 1
-            // push the new category
-            pageStack.push(tasksPage, {category: category})
-        }
-    }
-
-    function goToTask(task, viewing) {
-        print("Going to task...", task.title)
-
-        if (viewing === undefined)
-            viewing = root.viewing
-
-        // if in wide aspect mode,
-        if (wideAspect) {
-            // set the category and task
-
-            clearPageStack()
-            wideAspectTabs.selectedTabIndex = 0
-
-            // push the task view mode
-            pageStack.push(taskViewPage, {task: task})
-        } else { // otherwise,
-            clearPageStack()
-            phoneTabs.selectedTabIndex = 1
-
-            if (viewing === "category") {
-                pageStack.push(tasksPage, {category: task.category})
-            }
-
-            // push the new task
-            pageStack.push(taskViewPage, {task: task})
-        }
-    }
-
-    Component {
-        id: tasksPage
-        TasksPage {}
-    }
-
-    Component {
-        id: taskViewPage
-        TaskViewPage {}
-    }
-
-    Component {
-        id: newCategoryDialog
-
-        InputDialog {
-            property var task
-
-            title: i18n.tr("New Category")
-
-            placeholderText: i18n.tr("Category")
-
-            onAccepted: {
-                addCategory(value)
-
-                if (task !== undefined)
-                    task.category = value
-            }
-        }
-    }
-
-    Component {
-        id: renameCategoryDialog
-
-        InputDialog {
-            property string category
-
-            title: i18n.tr("Rename Category")
-
-            value: category
-            placeholderText: i18n.tr("Category")
-
-            onAccepted: {
-                if (value !== category)
-                    renameCategory(category, value)
-            }
-        }
-    }
 
     /* TASK MANAGEMENT */
 
-    U1db.Document {
-        id: tasksDatebase
-
+    TasksModel {
+        id: projectsModel
         database: storage
-        docId: 'tasks'
-        create: true
-
-        defaults: {
-            tasks: []
-        }
-    }
-
-    ListModel {
-        id: taskListModel
-    }
-
-    property int indexCount: 0
-
-    function addTask(args) {
-        //print("ADDING TASK:", args)
-        var task = taskComponent.createObject(root, args)
-
-        if (task === null) {
-            console.log("Unable to create task!")
-        }
-
-        addExistingTask(task)
-    }
-
-    function addExistingTask(task) {
-        task.index = indexCount++
-
-        if (task.category !== "" && categories.indexOf(task.category) === -1) {
-            console.log("WARNING: Task has new category:", task.category)
-            addCategory(task.category)
-        }
-
-        taskListModel.append({"modelData": task})
-    }
-
-    function newTask(args) {
-        return taskComponent.createObject(root, args)
-    }
-
-    function removeTask(task) {
-        for (var i = 0; i < taskListModel.count; i++) {
-            if (taskListModel.get(i).modelData === task) {
-                taskListModel.remove(i)
-                return
-            }
-        }
-    }
-
-    property var categories: []
-
-    function addCategory(category) {
-        var list = categories
-        list.push(category)
-        categories = list
-        print(categories)
-
-        goToCategory(category)
-    }
-
-    function removeCategory(category) {
-        //TODO: Add confirmation dialog
-
-        for (var i = 0; i < taskListModel.count; i++) {
-            var task = taskListModel.get(i).modelData
-            if (task.category === category) {
-                removeTask(task)
-            }
-        }
-
-        if (categories.indexOf(category) != -1) {
-            var list = categories
-            list.splice(list.indexOf(category), 1)
-            categories = list
-            print(categories)
-        }
-
-        clearPageStack()
-    }
-
-    function renameCategory(category, newCategory) {
-        var list = categories
-        list[categories.indexOf(category)] = newCategory
-        categories = list
-
-        for (var i = 0; i < taskListModel.count; i++) {
-            var task = taskListModel.get(i).modelData
-            if (task.category === category) {
-                task.category = newCategory
-            }
-        }
-    }
-
-    function loadCategories() {
-        categories = JSON.parse(tasksDatebase.contents.categories)
-    }
-
-    function saveCategories() {
-        var tempContents = {}
-        tempContents = tasksDatebase.contents
-        tempContents.categories = JSON.stringify(categories)
-        tasksDatebase.contents = tempContents
-    }
-
-    function saveTasks() {
-        //print("Saving Tasks...")
-
-        var tasks = []
-
-        for (var i = 0; i < taskListModel.count; i++) {
-            var task = taskListModel.get(i).modelData
-            //print("Saving task:", task.title)
-            tasks.push(task.toJSON())
-        }
-
-        var tempContents = {}
-        tempContents = tasksDatebase.contents
-        tempContents.tasks = JSON.stringify(tasks)
-        //print(tempContents.tasks)
-        tasksDatebase.contents = tempContents
-    }
-
-    function getTask(index) {
-        for (var i = 0; i < taskListModel.count; i++) {
-            var task = taskListModel.get(i).modelData
-            print(task.index,"==", index)
-            if (task.index === parseInt(index)) {
-                print("Found task!")
-                return task
-            }
-        }
-    }
-
-    function filteredTasks(filter) {
-        //print("Filtering...")
-        var tasks = []
-
-        //print("Filtered:", tasks)
-        for (var i = 0; i < taskListModel.count; i++) {
-            var task = taskListModel.get(i).modelData
-            if (filter(task))
-                tasks.push(task)
-        }
-
-        //print("Filtered:", tasks)
-
-        return tasks
-    }
-
-    function countTasks(filter) {
-        var count = 0
-
-        for (var i = 0; i < taskListModel.count; i++) {
-            var task = taskListModel.get(i).modelData
-            if (filter(task))
-                count++
-        }
-
-        //print("Count:", count)
-        return count
-    }
-
-    function loadTasks() {
-        print("Loading lists...")
-        var tasks = JSON.parse(tasksDatebase.contents.tasks)
-        print(tasks)
-
-        for (var i = 0; i < tasks.length; i++) {
-            addTask(tasks[i])
-        }
-    }
-
-    Component {
-        id: taskComponent
-
-        Task {
-
-        }
     }
 
     /* SETTINGS */
@@ -526,70 +134,46 @@ MainView {
     }
 
     Component.onCompleted: {
+        print("Component.onCompleted.")
         reloadSettings()
-        loadCategories()
-        loadTasks()
+        print("Loading...")
+        projectsModel.load()
+
+        print("Loaded. Creating test...")
+        var project = projectsModel.newProject("Test")
+        project.newTask({
+                            name: "Test Task",
+                            description: "Blah blah blah"
+                        })
     }
 
     Component.onDestruction: {
-        saveTasks()
-        saveCategories()
+        projectsModel.save()
     }
 
-    /* LABEL MANAGEMENT */
+    /* PRIORITY MANAGEMENT */
 
-    property var labels: ["green", "yellow", "red"]
+    property var priorities: ["low", "medium", "high"]
 
-    function labelName(label) {
-        if (label === "green") {
+    function priorityName(priority) {
+        if (priority === "low") {
             return "Low"
-        } else if (label === "yellow") {
+        } else if (priority === "medium") {
             return "Medium"
-        } else if (label === "orange") {
+        } else if (priority === "high") {
             return "High"
-        } else if (label === "red") {
-            return "High" //"Critical"
         } else {
             return "????"
         }
     }
 
-    function labelColor(label) {
-        if (label === "green") {
+    function priorityColor(priority) {
+        if (priority === "low") {
             return "#59B159"
-        } else if (label === "yellow") {
+        } else if (priority === "medium") {
             return "#FFFF41"
-        } else if (label === "orange") {
-            return "#FF8000" //UbuntuColors.orange
-        } else if (label === "red") {
+        } else if (priority === "high") {
             return "#FF4141"
-        } else {
-            return label
-        }
-    }
-
-    function labelHeaderColor(label) {
-//        if (label === "green") {
-//            return "#59B159"
-//        } else if (label === "yellow") {
-//            return "#FFFF41"
-//        } else if (label === "red") {
-//            return "#FF4141"
-//        } else {
-            return Qt.darker(labelColor(label), 1.5)
-//        }
-    }
-
-    function labelFooterColor(label) {
-//        if (label === "green") {
-//            return "#59B159"
-//        } else if (label === "yellow") {
-//            return "#FFFF41"
-        if (label === "red") {
-//            return "#FF4141"
-            return Qt.lighter(labelColor(label), 1.1)
-        } else {
-            return Qt.lighter(labelColor(label), 1.4)
         }
     }
 
@@ -624,6 +208,24 @@ MainView {
         today.setSeconds(0)
         return today
     }
+
+    function dateIsBefore(date1, date2) {
+        var ans = date1.getFullYear() < date2.getFullYear() ||
+                (date1.getFullYear() === date2.getFullYear() && date1.getMonth() < date2.getMonth()) ||
+                (date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth()
+                        && date1.getDate() < date2.getDate())
+        return ans
+    }
+
+    function dateIsBeforeOrSame(date1, date2) {
+        var ans = date1.getFullYear() < date2.getFullYear() ||
+                (date1.getFullYear() === date2.getFullYear() && date1.getMonth() < date2.getMonth()) ||
+                (date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth()
+                        && date1.getDate() <= date2.getDate())
+        return ans
+    }
+
+    /* COMPONENTS */
 
     Component {
         id: optionsPopover

@@ -30,14 +30,9 @@ Page {
 
     title: i18n.tr("Tasks")
 
-    property string type: category === null_category ? "upcoming" : "category"
+    property var currentProject: null
 
-    property string category: null_category
-    onCategoryChanged: {
-        print("Category changed:", category)
-    }
-
-    property bool upcoming: category === null_category
+    property bool upcoming: currentProject === null
 
     Sidebar {
         id: sidebar
@@ -49,33 +44,24 @@ Page {
         ListView {
             id: listView
             anchors.fill: parent
-            model: categories
+            model: projectsModel.projects
 
             clip: true
 
             header: Column {
                 width: parent.width
 
-                CategoryListItem {
-                    text: i18n.tr("Upcoming")
-                    onClicked: {
-                        root.category = null_category
-                    }
-                    selected: upcoming
-                    count: upcomingTasks.count
+                ProjectListItem {
+                    project: null
                 }
 
                 Header {
-                    text: i18n.tr("Categories")
+                    text: i18n.tr("Project")
                 }
             }
 
-            delegate: CategoryListItem {
-                category: modelData
-            }
-
-            footer: CategoryListItem {
-                category: ""
+            delegate: ProjectListItem {
+                project: modelData
             }
         }
 
@@ -96,83 +82,83 @@ Page {
             left: sidebar.right
         }
 
-        UpcomingTasksList {
-            id: upcomingTasks
+//        UpcomingTasksList {
+//            id: upcomingTasks
 
-            anchors.fill: parent
-            visible: upcoming
-        }
+//            anchors.fill: parent
+//            visible: upcoming
+//        }
 
-        TasksList {
-            id: list
+//        TasksList {
+//            id: list
 
-            showAddBar: false
-            anchors.fill: parent
-            category: root.category
-            visible: !upcoming
-        }
+//            showAddBar: false
+//            anchors.fill: parent
+//            category: root.category
+//            visible: !upcoming
+//        }
     }
 
     QuickAddBar {
         id: addBar
-        expanded: list.visible
+        //expanded: list.visible
         anchors.left: sidebar.right
     }
 
-    tools: ToolbarItems {
-        back: null
+//    tools: ToolbarItems {
+//        back: null
 
-        ToolbarButton {
-            iconSource: icon("add")
-            text: i18n.tr("Add")
+//        ToolbarButton {
+//            iconSource: icon("add")
+//            text: i18n.tr("Add")
 
-            visible: sidebar.expanded && category != null_category && category != ""
+//            visible: sidebar.expanded && category != null_category && category != ""
 
-            onTriggered: {
-                pageStack.push(addTaskPage, { category: root.category })
-            }
-        }
+//            onTriggered: {
+//                pageStack.push(addTaskPage, { category: root.category })
+//            }
+//        }
 
-        ToolbarButton {
-            iconSource: icon("add")
-            text: i18n.tr("New")
-            visible: sidebar.expanded
+//        ToolbarButton {
+//            iconSource: icon("add")
+//            text: i18n.tr("New")
+//            visible: sidebar.expanded
 
-            onTriggered: {
-                PopupUtils.open(newCategoryDialog, caller)
-            }
-        }
+//            onTriggered: {
+//                PopupUtils.open(newCategoryDialog, caller)
+//            }
+//        }
 
-        ToolbarButton {
-            iconSource: icon("edit")
-            text: i18n.tr("Rename")
-            visible: sidebar.expanded && category != null_category && category != ""
+//        ToolbarButton {
+//            iconSource: icon("edit")
+//            text: i18n.tr("Rename")
+//            visible: sidebar.expanded && category != null_category && category != ""
 
-            onTriggered: {
-                PopupUtils.open(renameCategoryDialog, caller, {
-                                    category: category
-                                })
-            }
-        }
+//            onTriggered: {
+//                PopupUtils.open(renameCategoryDialog, caller, {
+//                                    category: category
+//                                })
+//            }
+//        }
 
-        ToolbarButton {
-            iconSource: icon("delete")
-            text: i18n.tr("Delete")
-            visible: sidebar.expanded && category != null_category && category != ""
+//        ToolbarButton {
+//            iconSource: icon("delete")
+//            text: i18n.tr("Delete")
+//            visible: sidebar.expanded && category != null_category && category != ""
 
-            onTriggered: {
-                PopupUtils.open(confirmDeleteCategoryDialog, root)
-            }
-        }
+//            onTriggered: {
+//                PopupUtils.open(confirmDeleteCategoryDialog, root)
+//            }
+//        }
 
-        ToolbarButton {
-            text: i18n.tr("Options")
-            iconSource: icon("settings")
-            visible: sidebar.expanded
+//        ToolbarButton {
+//            text: i18n.tr("Options")
+//            iconSource: icon("settings")
+//            visible: sidebar.expanded
 
-            onTriggered: {
-                PopupUtils.open(optionsPopover, caller)
-            }
-        }
-    }
+//            onTriggered: {
+//                PopupUtils.open(optionsPopover, caller)
+//            }
+//        }
+//    }
 }
