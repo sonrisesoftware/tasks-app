@@ -31,7 +31,7 @@ QtObject {
     property string description
     property date creationDate: new Date()
     property date dueDate
-    property string repeat: "never" // or "daily", "weekly", "monthly"
+    property string repeat: "never" // or "daily", "weekly", "monthly", "yearly"
     property bool completed
     property date completionDate
     property string priority: "low"
@@ -50,6 +50,8 @@ QtObject {
                     json.dueDate.setDate(json.dueDate.getDate() + 7)
                 } else if (repeat === "monthly") {
                     json.dueDate.setMonth(json.dueDate.getMonth() + 1)
+                } else if (repeat === "yearly") {
+                    json.dueDate.setYear(json.dueDate.getYear() + 1)
                 }
 
                 if (repeat !== "none")
