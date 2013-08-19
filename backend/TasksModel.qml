@@ -93,7 +93,10 @@ Item {
     }
 
     function removeProject(project) {
-        projects.remove(project)
+        for (var i = 0; i < projects.count; i++) {
+            if (projects.get(i).modelData === project)
+                projects.remove(i)
+        }
         project.destroy()
     }
 
