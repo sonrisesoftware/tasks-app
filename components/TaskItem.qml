@@ -197,7 +197,7 @@ Flickable {
                 for (var i = 0; i < localProjectsModel.projects.count; i++) {
                     values.push(localProjectsModel.projects.get(i).modelData.name)
                 }
-                values.push(i18n.tr("<i>Create New Category</i>"))
+                values.push(i18n.tr("<i>Create New Project</i>"))
                 return values
             }
 

@@ -30,13 +30,10 @@ SingleValue {
 
     property var project
 
-//    property var filter: function(task) {
-//        return (task.category === root.category) && (showCompletedTasks || !task.completed)
-//    }
-
     text: project === null ? i18n.tr("Upcoming") : project.name
 
     onClicked: {
+        currentProject = project
         goToProject(project)
     }
 

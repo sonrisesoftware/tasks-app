@@ -30,8 +30,6 @@ Page {
 
     title: i18n.tr("Projects")
 
-    property var currentProject: null
-
     property string type: "projects"
 
     Flickable {

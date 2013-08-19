@@ -127,7 +127,7 @@ Item {
 
     function removeTask(task) {
         for (var i = 0; i < tasks.count; i++) {
-            if (tasks.get(i) === task) {
+            if (tasks.get(i).modelData === task) {
                 tasks.remove(i)
             }
         }

@@ -83,13 +83,15 @@ MainView {
                     id: projectsPage
                 }
 
-                property bool show: !wideAspect
-                __isPageTreeNode: !show
-                onShowChanged: {
-                    print("Updating...")
-                    __isPageTreeNode = show
-                    parent.updateTabList()
-                }
+                // Doesn't work :(
+
+//                property bool show: !wideAspect
+//                __isPageTreeNode: !show
+//                onShowChanged: {
+//                    print("Updating...")
+//                    __isPageTreeNode = show
+//                    parent.updateTabList()
+//                }
             }
 
             visible: false
@@ -97,8 +99,11 @@ MainView {
 
         Component.onCompleted: {
             pageStack.push(tabs)
+            clearPageStack()
         }
     }
+
+    property var showToolbar: wideAspect ? true : undefined
 
     property Page currentPage: pageStack.currentPage.hasOwnProperty("type")
                                ? (pageStack.currentPage.type === "tabs"
@@ -121,14 +126,20 @@ MainView {
     function clearPageStack() {
         while (pageStack.depth > 1)
             pageStack.pop()
+        tabs.selectedTabIndex = 1
+        tabs.selectedTabIndex = 0
 
-//        pageStack.push(Qt.resolvedUrl("ui/ProjectsPage.qml"))
-//        pageStack.pop()
-//        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: null})
-//        pageStack.pop()
+        pageStack.push(Qt.resolvedUrl("ui/ProjectsPage.qml"))
+        pageStack.pop()
+        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: null})
+        pageStack.pop()
     }
 
     onWideAspectChanged: {
+        var currentProject = root.currentProject
+        var viewing = root.viewing
+        if (!wideAspect)
+            homePage.currentProject = null
 
         if (viewing === "task") {
             goToTask(currentTask, "project")
@@ -446,7 +457,7 @@ MainView {
             onAccepted: {
                 var task = root.task
                 PopupUtils.close(confirmDeleteTaskDialogItem)
-                goToCategory(task.category)
+                goToProject(task.project)
                 task.remove()
             }
         }
@@ -459,7 +470,7 @@ MainView {
             property var project
 
             id: renameProjectDialogItem
-            title: i18n.tr("Rename Category")
+            title: i18n.tr("Rename Project")
             //text: i18n.tr("Are you sure you want to delete '%1'?").arg(project.name)
             value: project.name
 
@@ -477,7 +488,7 @@ MainView {
             property var project
 
             id: confirmDeleteProjectDialogItem
-            title: i18n.tr("Delete Category")
+            title: i18n.tr("Delete Project")
             text: i18n.tr("Are you sure you want to delete '%1'?").arg(project.name)
 
             onAccepted: {
@@ -525,6 +536,14 @@ MainView {
     }
 
     Component {
+        id: projectsPopover
+
+        ProjectsPopover {
+
+        }
+    }
+
+    Component {
         id: taskActionsPopover
 
         ActionSelectionPopover {
@@ -536,7 +555,7 @@ MainView {
 
                     text: i18n.tr("Move")
                     onTriggered: {
-                        PopupUtils.open(Qt.resolvedUrl("../components/CategoriesPopover.qml"), caller, {
+                        PopupUtils.open(projectsPopover, caller, {
                                             task: task
                                         })
                     }

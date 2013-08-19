@@ -31,11 +31,11 @@ Page {
     title: wideAspect ? i18n.tr("Tasks")
                       : upcoming ? i18n.tr("Upcoming") : currentProject.name
 
-    property var currentProject: null
-
     property var type: upcoming ? "upcoming" : "project"
 
     property bool upcoming: currentProject === null
+
+    property var currentProject: null
 
     Sidebar {
         id: sidebar
@@ -121,13 +121,30 @@ Page {
         anchors.left: sidebar.right
     }
 
+    states: [
+        State {
+            when: wideAspect
+            PropertyChanges {
+                target: root.tools
+                locked: true
+                opened: true
+            }
+
+            PropertyChanges {
+                target: root.parent
+                anchors.bottomMargin: units.gu(-2)
+            }
+        }
+
+    ]
+
     tools: ToolbarItems {
 
         ToolbarButton {
             iconSource: icon("add")
             text: i18n.tr("Add")
 
-            visible: currentProject != null
+            visible: currentProject !== null
 
             onTriggered: {
                 pageStack.push(addTaskPage, { project: currentProject })
@@ -147,7 +164,7 @@ Page {
         ToolbarButton {
             iconSource: icon("edit")
             text: i18n.tr("Rename")
-            visible: currentProject != null
+            visible: currentProject !== null
 
             onTriggered: {
                 PopupUtils.open(renameProjectDialog, caller, {
@@ -159,7 +176,7 @@ Page {
         ToolbarButton {
             iconSource: icon("delete")
             text: i18n.tr("Delete")
-            visible: currentProject != null
+            visible: currentProject !== null
 
             onTriggered: {
                 PopupUtils.open(confirmDeleteProjectDialog, caller, {
@@ -171,7 +188,8 @@ Page {
         ToolbarButton {
             text: i18n.tr("Options")
             iconSource: icon("settings")
-            visible: sidebar.expanded
+            visible: currentProject !== null
+            onVisibleChanged: print("Showing options?", visible, currentProject)
 
             onTriggered: {
                 PopupUtils.open(optionsPopover, caller)

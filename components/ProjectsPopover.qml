@@ -27,7 +27,7 @@ import Ubuntu.Components.Popups 0.1
 Popover {
     id: root
 
-    property Task task
+    property var task
 
     Column {
         anchors {
@@ -37,7 +37,7 @@ Popover {
         }
 
         Repeater {
-            model: categories
+            model: localProjectsModel.projects
 
             delegate: Standard {
                 //FIXME: Hack because of Suru theme!
@@ -48,12 +48,12 @@ Popover {
                         margins: units.gu(2)
                     }
 
-                    text: modelData
+                    text: modelData.name
                     fontSize: "medium"
                     color: selected ? UbuntuColors.orange : Theme.palette.normal.overlayText
                 }
 
-                selected: task.category === modelData
+                selected: task.project === modelData
 
 //                control: CheckBox {
 //                    checked: showCompletedTasks
@@ -61,36 +61,12 @@ Popover {
 //                }
 
                 onClicked: {
-                    task.category = modelData
+                    task.moveTo(modelData)
                     PopupUtils.close(root)
                 }
+
+                showDivider: index < count - 1
             }
-        }
-
-        Standard {
-            id: uncategorizedListItem
-
-            //FIXME: Hack because of Suru theme!
-            Label {
-                anchors {
-                    verticalCenter: parent.verticalCenter
-                    left: parent.left
-                    margins: units.gu(2)
-                }
-
-                text: i18n.tr("Uncategorized")
-                fontSize: "medium"
-                color: uncategorizedListItem.selected ? UbuntuColors.orange : Theme.palette.normal.overlayText
-            }
-
-            selected: task.category === ""
-
-            onClicked: {
-                task.category = ""
-                PopupUtils.close(root)
-            }
-
-            showDivider: false
         }
 
         Divider {
@@ -106,14 +82,14 @@ Popover {
                     margins: units.gu(2)
                 }
 
-                text: i18n.tr("<i>New Category...</i>")
+                text: i18n.tr("<i>New Project...</i>")
                 fontSize: "medium"
                 color: Theme.palette.normal.overlayText
             }
 
             onClicked: {
                 PopupUtils.close(root)
-                PopupUtils.open(newCategoryDialog, null, {
+                PopupUtils.open(newProjectDialog, null, {
                                       task: root.task
                                   })
             }
