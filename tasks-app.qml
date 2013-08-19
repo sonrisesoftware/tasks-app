@@ -143,11 +143,15 @@ MainView {
 
     Component.onCompleted: {
         reloadSettings()
-        projectsModel.load()
+        for (var i = 0; i < backendModels.length; i++) {
+            backendModels[i].load()
+        }
     }
 
     Component.onDestruction: {
-        projectsModel.save()
+        for (var i = 0; i < backendModels.length; i++) {
+            backendModels[i].save()
+        }
     }
 
     /* PRIORITY MANAGEMENT */
@@ -270,19 +274,19 @@ MainView {
     }
 
     Component {
-        id: confirmDeleteCategoryDialog
+        id: confirmDeleteProjectDialog
 
         ConfirmDialog {
-            property string category
+            property var project
 
-            id: confirmDeleteCategoryDialogItem
+            id: confirmDeleteProjectDialogItem
             title: i18n.tr("Delete Category")
-            text: i18n.tr("Are you sure you want to delete '%1'?").arg(category)
+            text: i18n.tr("Are you sure you want to delete '%1'?").arg(project.name)
 
             onAccepted: {
-                PopupUtils.close(confirmDeleteCategoryDialogItem)
-                clearPageStack()
-                removeCategory(category)
+                PopupUtils.close(confirmDeleteProjectDialogItem)
+                //clearPageStack()
+                project.remove()
             }
         }
     }
@@ -292,6 +296,7 @@ MainView {
 
         InputDialog {
             title: i18n.tr("New Project")
+            placeholderText: i18n.tr("Project name")
             onAccepted: localProjectsModel.newProject(value)
         }
     }
