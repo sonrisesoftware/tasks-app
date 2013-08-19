@@ -28,7 +28,8 @@ import "../components"
 Page {
     id: root
 
-    title: i18n.tr("Tasks")
+    title: wideAspect ? i18n.tr("Tasks")
+                      : upcoming ? i18n.tr("Upcoming") : currentProject.name
 
     property var currentProject: null
 
@@ -95,12 +96,12 @@ Page {
             left: sidebar.right
         }
 
-//        UpcomingTasksList {
-//            id: upcomingTasks
+        UpcomingTasksList {
+            id: upcomingTasksList
 
-//            anchors.fill: parent
-//            visible: upcoming
-//        }
+            anchors.fill: parent
+            visible: upcoming
+        }
 
         TasksList {
             id: list
@@ -114,7 +115,7 @@ Page {
 
     QuickAddBar {
         id: addBar
-        expanded: list.visible
+        expanded: !upcoming
         anchors.left: sidebar.right
     }
 

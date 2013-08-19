@@ -33,8 +33,27 @@ Item {
     property bool requiresInternet: false
     property var database
 
+    property var list: []
+
+    property var upcomingTasks: {
+        var tasks = []
+
+        for (var i = 0; i < projects.count; i++) {
+            print(projects.get(i).modelData.name, projects.get(i).modelData.upcomingTasks)
+            tasks = tasks.concat(projects.get(i).modelData.upcomingTasks)
+        }
+
+        print("Upcoming tasks:", tasks)
+
+        return tasks
+    }
+
     function load() {
-        var json = tasksDocument.contents.tasks;//JSON.parse(tasksDocument.contents.tasks)
+        print("Loading...")
+        if (!runBefore)
+            return
+
+        var json = JSON.parse(tasksDocument.contents.tasks)
 
         for (var i = 0; i < json.length; i++) {
             var project = newProject(json[i].name)
@@ -51,7 +70,7 @@ Item {
 
         var tempDocument = tasksDocument
         var tempContents = {}
-        tempContents.tasks = json
+        tempContents.tasks = JSON.stringify(json)
         tempDocument.contents = tempContents
         tasksDocument = tempDocument
     }
@@ -85,7 +104,7 @@ Item {
         create: true
 
         defaults: {
-            tasks: "[]"
+            tasks: ""
         }
     }
 

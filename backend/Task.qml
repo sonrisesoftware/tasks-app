@@ -62,7 +62,7 @@ QtObject {
             project.update()
     }
 
-    property bool upcoming: overdue || isDueToday()
+    property bool upcoming: (overdue || isDueToday()) && !completed
 
     property bool overdue: {
         return dateIsBefore(dueDate, new Date())

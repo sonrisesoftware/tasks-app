@@ -39,10 +39,6 @@ Item {
     property var flickable: taskListView
     property alias header: taskListView.header
 
-    function length() {
-        return project === null ? upcomingTasks.length : project.count
-    }
-
     ListView {
         id: taskListView
         objectName: "taskListView"
@@ -89,7 +85,7 @@ Item {
 
             anchors.centerIn: parent
 
-            visible: length() === 0
+            visible: length(model) === 0
             opacity: 0.5
 
             fontSize: "large"

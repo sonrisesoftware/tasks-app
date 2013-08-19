@@ -188,8 +188,8 @@ Flickable {
 
             text: i18n.tr("Project")
             selectedIndex: {
-                for (var i = 0; i < projectsModel.projects.count; i++) {
-                    if (task.project === projectsModel.projects.get(i).modelData)
+                for (var i = 0; i < localProjectsModel.projects.count; i++) {
+                    if (task.project === localProjectsModel.projects.get(i).modelData)
                         return i
                 }
                 return -1
@@ -197,8 +197,8 @@ Flickable {
 
             values: {
                 var values = []
-                for (var i = 0; i < projectsModel.projects.count; i++) {
-                    values.push(projectsModel.projects.get(i).modelData.name)
+                for (var i = 0; i < localProjectsModel.projects.count; i++) {
+                    values.push(localProjectsModel.projects.get(i).modelData.name)
                 }
                 values.push(i18n.tr("<i>Create New Category</i>"))
                 return values

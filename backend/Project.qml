@@ -32,10 +32,6 @@ Item {
     }
 
     function update() {
-        //upcomingTasks.clear()
-        uncompletedCount = 0
-        overdueCount = 0
-
         for (var i = 0; i < tasks.count; i++) {
             var task = tasks.get(i).modelData
             if (task.overdue)

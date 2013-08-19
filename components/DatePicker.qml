@@ -31,7 +31,7 @@ Dialog {
 
     text: i18n.tr("Please select a due date for '%1'").arg(task.title)
 
-    property Task task
+    property var task
 
     TextField {
         id: dateField

@@ -29,6 +29,7 @@ Item {
     id: root
 
     property int count: overdue.count + today.count
+    property var model: upcomingTasks
 
     Flickable {
         id: flickable
@@ -52,7 +53,8 @@ Item {
 
             Repeater {
                 id: overdue
-                model: filteredTasks(function(task) { return task.overdue && !task.completed})
+                //model: root.model
+                model: filteredTasks(upcomingTasks, function(task) { return task.overdue}, "Overdue ONLY")
                 delegate: TaskListItem {
                     objectName: "overdueTask" + index
 
@@ -67,7 +69,8 @@ Item {
 
             Repeater {
                 id: today
-                model: filteredTasks(function(task) { return task.isToday() && !task.completed })
+                //model: upcomingTasks
+                model: filteredTasks(upcomingTasks, function(task) { return !task.overdue}, "Upcoming ONLY")
                 delegate: TaskListItem {
                     objectName: "upcomingTask" + index
 

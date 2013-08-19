@@ -7,6 +7,7 @@ Tasks for Ubuntu Touch
 
  * Ubuntu SDK
  * U1db - qtdeclarative5-u1db1.0
+ * QtSystemInfo - qtdeclarative5-systeminfo-plugin
 
 To run, simply open in Qt Creator/Ubuntu SDK, and click the run button!
 
@@ -63,3 +64,9 @@ Day 7 - 8/13/2013
 
 Day 9 - 8/15/2013
  * Redesigned task view and create pages
+
+Day 10 - 8/16/2013
+ * Added adaptive layout
+
+Day 12 - 8/18/2013
+ * Began new backend

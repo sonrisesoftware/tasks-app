@@ -23,6 +23,7 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.Popups 0.1
 import U1db 1.0 as U1db
+import QtSystemInfo 5.0
 
 import "ui"
 import "components"
@@ -89,11 +90,25 @@ MainView {
         localProjectsModel
     ]
 
-    property var upcomingTasks: []
+    property var upcomingTasks: localProjectsModel.upcomingTasks
+
+    onUpcomingTasksChanged: print(upcomingTasks)
 
     /* SETTINGS */
 
     property bool showCompletedTasks
+    property bool runBefore
+
+    /* CHECKING FOR INTERNET */
+
+    NetworkInfo {
+        id: networkInfo
+        monitorNetworkStatus: true
+
+        onNetworkStatusChanged: print("Network Status:", networkStatus)
+
+        Component.onCompleted: print("Network Status:", networkInfo.networkStatus)
+    }
 
     /* SETTINGS STORAGE */
 
@@ -110,7 +125,8 @@ MainView {
         create: true
 
         defaults: {
-            showCompletedTasks: false
+            showCompletedTasks: "false"
+            runBefore: "false"
         }
     }
 
@@ -141,6 +157,7 @@ MainView {
         //print("showVerse <=", showVerse)
 
         showCompletedTasks = getSetting("showCompletedTasks") === "true" ? true : false
+        runBefore = getSetting("runBefore") === "true" ? true : false
     }
 
     function saveProjects() {
@@ -161,11 +178,34 @@ MainView {
         for (var i = 0; i < backendModels.length; i++) {
             backendModels[i].load()
         }
+
+        print("Run before: ", runBefore)
+        if (!runBefore) {
+            saveSetting("runBefore", "true")
+            firstRun()
+        }
     }
 
     Component.onDestruction: {
         saveProjects()
     }
+
+    /* INITIAL WELCOME PROJECT */
+
+    function firstRun() {
+        var project = localProjectsModel.newProject("Getting Started")
+        project.newTask({name: "Welcome to Ubuntu Tasks"})
+        project.newTask({name: "To view a task's description, tap it", description: "Here is the description for the task"})
+        project.newTask({name: "To complete a task, tap the checkbox on at the right"})
+        project.newTask({name: "When completed, tasks disappear from view"})
+        project.newTask({name: "To show completed tasks, click the Options toolbar button"})
+        project.newTask({name: "This is a completed task", completed: true, completedDate: new Date()})
+        project.newTask({name: "To set a due date, priority, or other options, tap it", description: "Look below at the options you can set"})
+        project.newTask({name: "To create a new task or project, look in the toolbar"})
+        project.newTask({name: "To create a new task, you can also type in the quick add task field"})
+        project.newTask({name: "When you're done learning, you can delete this project"})
+    }
+
 
     /* PRIORITY MANAGEMENT */
 
@@ -194,6 +234,39 @@ MainView {
     }
 
     /* HELPER FUNCTIONS */
+
+    function length(model) {
+        return model.hasOwnProperty("count") ? model.count : model.length
+    }
+
+    function filteredTasks(tasks, filter, name) {
+        print("Running filter:", name)
+        var list = []
+
+        for (var i = 0; i < length(tasks); i++) {
+            var task = tasks.hasOwnProperty("get") ? tasks.get(i) : tasks[i]
+            if (task.hasOwnProperty("modelData"))
+                task = task.modelData
+            print("Filtering:", task.name)
+            if (filter(task))
+                list.push(task)
+        }
+
+        print("Count:", list.length)
+        return list
+    }
+
+    function countTasks(tasks, filter) {
+        print("Counting tasks...")
+        var count = 0
+
+        for (var i = 0; i < tasks.count; i++) {
+            if (filter(tasks.get(i).modelData))
+                count++
+        }
+
+        return count
+    }
 
     function icon(name) {
         //return "/usr/share/icons/ubuntu-mobile/actions/scalable/" + name + ".svg"
