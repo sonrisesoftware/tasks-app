@@ -44,15 +44,18 @@ QtObject {
             // If the task has never been completed before
             // Then create the repeat of it
             if (Qt.formatDate(task.completionDate) === "") {
-                if (repeat === "daily") {
-                    json.dueDate.setDate(json.dueDate.getDate() + 1)
-                } else if (repeat === "weekly") {
-                    json.dueDate.setDate(json.dueDate.getDate() + 7)
-                } else if (repeat === "monthly") {
-                    json.dueDate.setMonth(json.dueDate.getMonth() + 1)
-                } else if (repeat === "yearly") {
-                    json.dueDate.setYear(json.dueDate.getYear() + 1)
-                }
+
+                do {
+                    if (repeat === "daily") {
+                        json.dueDate.setDate(json.dueDate.getDate() + 1)
+                    } else if (repeat === "weekly") {
+                        json.dueDate.setDate(json.dueDate.getDate() + 7)
+                    } else if (repeat === "monthly") {
+                        json.dueDate.setMonth(json.dueDate.getMonth() + 1)
+                    } else if (repeat === "yearly") {
+                        json.dueDate.setYear(json.dueDate.getYear() + 1)
+                    }
+                } while (dateIsBeforeOrSame(json.dueDate, today))
 
                 if (repeat !== "none")
                     if (project === undefined)
