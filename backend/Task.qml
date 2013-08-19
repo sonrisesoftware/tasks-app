@@ -66,7 +66,7 @@ QtObject {
     property var progress: 0
 
     onProgressChanged: print("Progress:", progress)
-    property real percent: progress * 100/checklist.length
+    property int percent: progress * 100/checklist.length
     
     onCompletedChanged: {
         if (completed) {

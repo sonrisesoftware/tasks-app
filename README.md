@@ -1,5 +1,5 @@
-Tasks for Ubuntu Touch
-======================
+Ubuntu Tasks
+============
 
 ### Installation ###
 
@@ -70,3 +70,8 @@ Day 10 - 8/16/2013
 
 Day 12 - 8/18/2013
  * Began new backend
+
+Day 13 - 8/19/2013
+ * Completed new backend
+ * Repeating tasks
+ * Checklists
