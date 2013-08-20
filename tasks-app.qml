@@ -53,9 +53,9 @@ MainView {
     property bool wideAspect: width > units.gu(80)
 
     // Colors from Calculator app
-    headerColor: currentPage.hasOwnProperty("headerColor") ? currentPage.headerColor : "#323A5D"
-    backgroundColor: currentPage.hasOwnProperty("backgroundColor") ? currentPage.backgroundColor : "#6A6AA1"
-    footerColor: currentPage.hasOwnProperty("footerColor") ? currentPage.footerColor : "#6899D7"
+    headerColor: currentPage && currentPage.hasOwnProperty("headerColor") ? currentPage.headerColor : "#323A5D"
+    backgroundColor: currentPage && currentPage.hasOwnProperty("backgroundColor") ? currentPage.backgroundColor : "#6A6AA1"
+    footerColor: currentPage && currentPage.hasOwnProperty("footerColor") ? currentPage.footerColor : "#6899D7"
 
     //backgroundColor: "#FCFF95"
     //backgroundColor: "#FFFFBB"
@@ -103,10 +103,10 @@ MainView {
                                ? pageStack.currentPage.currentPage
                                : pageStack.currentPage
 
-    property var currentProject: currentPage.hasOwnProperty("currentProject") ? currentPage.currentProject : null
-    property var currentTask: currentPage.hasOwnProperty("task") ? currentPage.task : null
+    property var currentProject: currentPage && currentPage.hasOwnProperty("currentProject") ? currentPage.currentProject : null
+    property var currentTask: currentPage && currentPage.hasOwnProperty("task") ? currentPage.task : null
 
-    property string viewing: currentPage.hasOwnProperty("type")
+    property string viewing: currentPage && currentPage.hasOwnProperty("type")
                              ? currentPage.type
                              : currentTask !== null
                                ? "task"
@@ -142,6 +142,10 @@ MainView {
             var task = currentTask
             goToProject(task.project)
             pageStack.push(addTaskPage, {task: task})
+        } else if (viewing === "statistics") {
+            var project = currentPage.project
+            goToProject(project)
+            pageStack.push(Qt.resolvedUrl("ui/StatisticsPage.qml"), {project: project})
         } else {
             if (!(viewing === "upcoming" || viewing === "projects")) {
                 clearPageStack()

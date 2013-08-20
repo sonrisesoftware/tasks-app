@@ -82,3 +82,8 @@ Day 13 - 8/19/2013
 
 Day 14 - 8/20/2013
  * Updated to use the `ubuntu-ui-extras` code unit
+ * New icon!
+ * Statistics
+ * Better removal of checklist items
+ * Upcoming view shows tasks due this week
+ * Toolbar locked and opened in wide mode

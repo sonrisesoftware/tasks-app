@@ -42,8 +42,10 @@ QtObject {
 
     onChecklistChanged: {
         if (checklist.length === 0) {
-            hasChecklist = false
-            completed = false
+            if (hasChecklist) {
+                hasChecklist = false
+                completed = false
+            }
         } else {
             progress = 0
             for (var i = 0; i < checklist.length; i++) {

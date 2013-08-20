@@ -187,10 +187,19 @@ Page {
         }
 
         ToolbarButton {
+            text: i18n.tr("Statistics")
+            iconSource: icon("graphs")
+            visible: currentProject != null
+
+            onTriggered: {
+                pageStack.push(Qt.resolvedUrl("StatisticsPage.qml"), {project: currentProject})
+            }
+        }
+
+        ToolbarButton {
             text: i18n.tr("Options")
             iconSource: icon("settings")
             visible: currentProject !== null
-            onVisibleChanged: print("Showing options?", visible, currentProject)
 
             onTriggered: {
                 PopupUtils.open(optionsPopover, caller)
