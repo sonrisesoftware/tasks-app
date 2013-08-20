@@ -8,19 +8,25 @@ Ubuntu Tasks
  * Ubuntu SDK
  * U1db - qtdeclarative5-u1db1.0
  * QtSystemInfo - qtdeclarative5-systeminfo-plugin
+ * Ubuntu UI Extras (see below)
 
-To run, simply open in Qt Creator/Ubuntu SDK, and click the run button!
+To install Ubuntu UI Extras, you will need [Code Units](https://github.com/iBeliever/code-units), a small utility to download bits of code.
+
+Once Code Units is installed, you can get the Ubuntu UI Extras by running
+
+    code install ubuntu-ui-extras
+    code use ubuntu-ui-extras
+
+To run Ubuntu Tasks, simply open in Qt Creator/Ubuntu SDK, and click the run button!
 
 ### Progress ###
 
 Day 1 - 8/7/2013
-
  * Showdown announced
  * Project selected
  * Initial ideas and code
 
 Day 2 - 8/8/2013
-
  * Adding tasks
  * Deleting tasks
  * Assigning a due date
@@ -32,23 +38,19 @@ Day 2 - 8/8/2013
  * Hiding of completed tasks
 
 Day 3 - 8/9/2013
-
  * Improved editing of tasks
  * Initial custom date picker
  * Concepts for checklists
  * Completing a task from the task list
 
 Day 4 - 8/10/2013
-
  * Quick add task field in tasks list
  * Multiple lists (categories)
 
 Day 5 - 8/11/2013
-
  * Initial Suru theme (from Calculator app)
 
 Day 6 - 8/12/2013
-
  * Animation on completing a task in the list
  * Due date hidden if not set
  * Better category managment
@@ -77,3 +79,6 @@ Day 13 - 8/19/2013
  * Checklists
 
 **Released version 0.1**
+
+Day 14 - 8/20/2013
+ * Updated to use the `ubuntu-ui-extras` code unit

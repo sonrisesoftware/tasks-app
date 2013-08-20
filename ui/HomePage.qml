@@ -24,6 +24,7 @@ import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
 import "../components"
+import "../ubuntu-ui-extras"
 
 Page {
     id: root
