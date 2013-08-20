@@ -38,10 +38,6 @@ Page {
         })
     }
 
-    Label {
-        fontSize: "large"
-    }
-
     Row {
         id: legendBar
 

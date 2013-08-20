@@ -2,7 +2,7 @@
 Name=Tasks
 Comment=My project description
 Exec=/usr/bin/qmlscene $@ /usr/share/tasks-app/tasks-app.qml
-Icon=qmlscene
+Icon=ubuntu-tasks
 Terminal=false
 Type=Application
 X-Ubuntu-Touch=true

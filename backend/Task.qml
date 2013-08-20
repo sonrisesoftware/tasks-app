@@ -115,7 +115,7 @@ QtObject {
             project.update()
     }
 
-    property bool upcoming: (overdue || isDueToday()) && !completed
+    property bool upcoming: (overdue || isDueThisWeek()) && !completed
 
     property bool overdue: {
         return dateIsBefore(dueDate, new Date())
@@ -163,6 +163,14 @@ QtObject {
         return dueDate.getFullYear() === today.getFullYear() &&
                 dueDate.getMonth() === today.getMonth() &&
                 dueDate.getDate() === today.getDate()
+    }
+
+    function isDueThisWeek() {
+        var date = today
+        //date.setDate(date.getDate() + 7)
+
+        print(dueDate, "<=", date)
+        return dateIsBeforeOrSame(dueDate, date)
     }
 
     function remove() {
