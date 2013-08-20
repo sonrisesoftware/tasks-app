@@ -166,10 +166,9 @@ QtObject {
     }
 
     function isDueThisWeek() {
-        var date = today
-        //date.setDate(date.getDate() + 7)
+        var date = new Date()
+        date.setDate(date.getDate() + 7)
 
-        print(dueDate, "<=", date)
         return dateIsBeforeOrSame(dueDate, date)
     }
 
