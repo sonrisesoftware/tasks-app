@@ -58,29 +58,54 @@ Empty {
         EditableLabel {
             id: label
             anchors.verticalCenter: parent.verticalCenter
-            width: editing ? parent.width - checkBox.width - deleteButton.width - parent.spacing * 2
-                           : parent.width - checkBox.width - parent.spacing
+            width: parent.width - checkBox.width - parent.spacing
 
             text: checklist[itemIndex].text
             onTextChanged: {
                 checklist[itemIndex].text = text
                 task.checklist = checklist
             }
+
+            customClicking: true
         }
 
-        Button {
-            id: deleteButton
-            visible: label.editing
-            iconSource: icon("delete")
-            color: "red"
-            height: label.height
-            width: height
-            onClicked: {
-                task.checklist.splice(itemIndex,1)
-                task.checklist = task.checklist
+//        Button {
+//            id: deleteButton
+//            visible: label.editing
+//            iconSource: icon("delete")
+//            color: "red"
+//            height: label.height
+//            width: height
+//            onClicked: {
+//                task.checklist.splice(itemIndex,1)
+//                task.checklist = task.checklist
+//            }
+//        }
+    }
+
+    removable: true
+    onItemRemoved: {
+        task.checklist.splice(itemIndex,1)
+        task.checklist = task.checklist
+    }
+
+    backgroundIndicator: Rectangle {
+        anchors.fill: parent
+        color: Qt.rgba(0.2,0.2,0.2,0.3)
+        clip: true
+
+        Image {
+            source: icon("delete-white")
+            anchors {
+                top: parent.top
+                horizontalCenter: parent.horizontalCenter
+                bottom: parent.bottom
+                margins: units.gu(1)
             }
+
+            width: height
         }
     }
 
-    //onClicked: label.focus = false
+    onClicked: label.edit()
 }

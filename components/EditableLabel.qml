@@ -62,12 +62,19 @@ Item {
         text: root.labelText != "" ? root.labelText : root.placeholderText
     }
 
+    property bool customClicking: false
+
+    function edit() {
+        editing = true
+        textField.forceActiveFocus()
+    }
+
     MouseArea {
+        visible: !parent.customClicking
         anchors.fill: parent
 
         onClicked: {
-            editing = true
-            textField.forceActiveFocus()
+            edit()
         }
     }
 
