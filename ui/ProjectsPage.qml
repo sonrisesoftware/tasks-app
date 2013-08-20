@@ -73,6 +73,23 @@ Page {
         flickableItem: flickable
     }
 
+    states: [
+        State {
+            when: showToolbar
+            PropertyChanges {
+                target: root.tools
+                locked: true
+                opened: true
+            }
+
+            PropertyChanges {
+                target: root.parent
+                anchors.bottomMargin: units.gu(-2)
+            }
+        }
+
+    ]
+
     tools: ToolbarItems {
         ToolbarButton {
             iconSource: icon("add")

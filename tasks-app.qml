@@ -28,6 +28,7 @@ import QtSystemInfo 5.0
 import "ui"
 import "components"
 import "backend"
+import "ubuntu-ui-extras"
 
 MainView {
     id: root
@@ -77,36 +78,14 @@ MainView {
                 }
             }
 
-            Tab {
+            HideableTab {
                 title: page.title
                 page: ProjectsPage {
                     id: projectsPage
 
                 }
 
-                property bool show: !wideAspect
-                onShowChanged: {
-                    parent.tabList = tabs.customUpdateTabList(parent)
-                }
-            }
-
-            function customUpdateTabList(tabsModel) {
-                var list = [];
-                for (var i=0; i < tabsModel.children.length; i++) {
-                    if (isTab(tabsModel.children[i])) list.push(tabsModel.children[i]);
-                }
-                return list
-            }
-
-            function isTab(item) {
-                if (item && item.hasOwnProperty("__isPageTreeNode")
-                        && item.__isPageTreeNode && item.hasOwnProperty("title")
-                        && item.hasOwnProperty("page")
-                        && (item.hasOwnProperty("show") ? item.show : true)) {
-                    return true;
-                } else {
-                    return false;
-                }
+                show: !wideAspect
             }
 
             visible: false
