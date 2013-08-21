@@ -64,4 +64,21 @@ Page {
 
         autoSize: true
     }
+
+    states: [
+        State {
+            when: showToolbar
+            PropertyChanges {
+                target: root.tools
+                locked: true
+                opened: true
+            }
+
+            PropertyChanges {
+                target: root.parent
+                anchors.bottomMargin: units.gu(-2)
+            }
+        }
+
+    ]
 }

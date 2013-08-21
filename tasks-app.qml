@@ -126,6 +126,8 @@ MainView {
         pageStack.pop()
         pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: null})
         pageStack.pop()
+        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: null})
+        pageStack.pop()
     }
 
     onWideAspectChanged: {
@@ -144,8 +146,7 @@ MainView {
             pageStack.push(addTaskPage, {task: task})
         } else if (viewing === "statistics") {
             var project = currentPage.project
-            goToProject(project)
-            pageStack.push(Qt.resolvedUrl("ui/StatisticsPage.qml"), {project: project})
+            showStatistics(project)
         } else {
             if (!(viewing === "upcoming" || viewing === "projects")) {
                 clearPageStack()
@@ -156,6 +157,11 @@ MainView {
             tabs.selectedTabIndex = 0
             homePage.currentProject = null
         }
+    }
+
+    function showStatistics(project) {
+        goToProject(project)
+        pageStack.push(statisticsPage, {project: project})
     }
 
     function goToTask(task, viewing) {
@@ -228,6 +234,8 @@ MainView {
         defaults: {
             showCompletedTasks: "false"
             runBefore: "false"
+            width: units.gu(100)
+            height: units.gu(75)
         }
     }
 
@@ -276,6 +284,9 @@ MainView {
 
     Component.onCompleted: {
         reloadSettings()
+        //width = getSetting("windowWidth")
+        //height = getSetting("windowHeight")
+
         for (var i = 0; i < backendModels.length; i++) {
             backendModels[i].load()
         }
@@ -288,6 +299,8 @@ MainView {
     }
 
     Component.onDestruction: {
+        //saveSetting("windowWidth", width)
+        //saveSetting("windowHeight", height)
         saveProjects()
     }
 
@@ -449,7 +462,7 @@ MainView {
 
             id: confirmDeleteTaskDialogItem
             title: i18n.tr("Delete Task")
-            text: i18n.tr("Are you sure you want to delete '%1'?").arg(task.title)
+            text: i18n.tr("Are you sure you want to delete '%1'?").arg(task.name)
 
             onAccepted: {
                 var task = root.task

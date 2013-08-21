@@ -1,0 +1,1 @@
+/usr/bin/qmlscene $@ tasks-app.qml

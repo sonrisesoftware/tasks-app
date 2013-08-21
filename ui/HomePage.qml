@@ -140,6 +140,15 @@ Page {
     ]
 
     tools: ToolbarItems {
+        back: ToolbarButton {
+            iconSource: icon("add")
+            text: i18n.tr("New")
+            visible: sidebar.expanded
+
+            onTriggered: {
+                PopupUtils.open(newProjectDialog, caller)
+            }
+        }
 
         ToolbarButton {
             iconSource: icon("add")
@@ -149,16 +158,6 @@ Page {
 
             onTriggered: {
                 pageStack.push(addTaskPage, { project: currentProject })
-            }
-        }
-
-        ToolbarButton {
-            iconSource: icon("add")
-            text: i18n.tr("New")
-            visible: sidebar.expanded
-
-            onTriggered: {
-                PopupUtils.open(newProjectDialog, caller)
             }
         }
 
@@ -192,7 +191,7 @@ Page {
             visible: currentProject != null
 
             onTriggered: {
-                pageStack.push(Qt.resolvedUrl("StatisticsPage.qml"), {project: currentProject})
+                showStatistics(currentProject)
             }
         }
 
