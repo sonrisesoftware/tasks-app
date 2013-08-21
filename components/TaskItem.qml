@@ -69,7 +69,7 @@ Flickable {
                     anchors {
                         left: parent.left
                         right: completedCheckBox.visible ? completedCheckBox.left : parent.right
-                        rightMargin: completedCheckBox.visible ? units.gu(2) : 0
+                        rightMargin: completedCheckBox.visible ? units.gu(1) : 0
                     }
 
                     fontSize: "large"
@@ -88,7 +88,7 @@ Flickable {
                         right: parent.right
                     }
 
-                    visible: !creating
+                    visible: !creating// && !titleLabel.editing
                     __acceptEvents: task.canComplete
 
 
@@ -99,7 +99,7 @@ Flickable {
                 Label {
                     anchors.centerIn: completedCheckBox
                     text: task.percent + "%"
-                    visible: !task.canComplete && !task.completed
+                    visible: !task.canComplete && !task.completed && completedCheckBox.visible
                 }
             }
 
