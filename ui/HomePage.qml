@@ -140,19 +140,9 @@ Page {
     ]
 
     tools: ToolbarItems {
-        back: ToolbarButton {
-            iconSource: icon("add")
-            text: i18n.tr("New")
-            visible: sidebar.expanded
-
-            onTriggered: {
-                PopupUtils.open(newProjectDialog, caller)
-            }
-        }
-
         ToolbarButton {
             iconSource: icon("add")
-            text: i18n.tr("Add")
+            text: i18n.tr("Task")
 
             visible: currentProject !== null
 
@@ -162,8 +152,18 @@ Page {
         }
 
         ToolbarButton {
+            iconSource: icon("add")
+            text: i18n.tr("Project")
+            visible: sidebar.expanded
+
+            onTriggered: {
+                PopupUtils.open(newProjectDialog, caller)
+            }
+        }
+
+        ToolbarButton {
             iconSource: icon("edit")
-            text: i18n.tr("Rename")
+            text: i18n.tr("Project")
             visible: currentProject !== null
 
             onTriggered: {
@@ -175,7 +175,7 @@ Page {
 
         ToolbarButton {
             iconSource: icon("delete")
-            text: i18n.tr("Delete")
+            text: i18n.tr("Project")
             visible: currentProject !== null
 
             onTriggered: {
