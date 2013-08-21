@@ -69,6 +69,10 @@ Item {
         textField.forceActiveFocus()
     }
 
+    function done() {
+        textField.focus = false
+    }
+
     MouseArea {
         visible: !parent.customClicking
         anchors.fill: parent
@@ -83,7 +87,8 @@ Item {
 
         anchors {
             left: parent.left
-            right: parent.right
+            right: okButton.visible ? okButton.left : parent.right
+            rightMargin: okButton.visible ? units.gu(1) : 0
             verticalCenter: parent.verticalCenter
         }
 
@@ -107,11 +112,27 @@ Item {
 
         onCursorVisibleChanged: {
             if (cursorVisible === false)
-                focus = false
+                done()
         }
 
-        Keys.onEscapePressed: focus = false
+        Keys.onEscapePressed: done()
 
-        onAccepted: focus = false
+        onAccepted: done()
+    }
+
+    Button {
+        id: okButton
+        visible: editing
+
+        anchors {
+            right: parent.right
+            top: textField.top
+            bottom: textField.bottom
+        }
+
+        text: i18n.tr("Apply")
+        onClicked: {
+            done()
+        }
     }
 }

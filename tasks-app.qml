@@ -91,6 +91,52 @@ MainView {
             visible: false
         }
 
+//        Page {
+//            id: testPage
+
+//            UbuntuShape {
+//                anchors.centerIn: parent
+//                width: childrenRect.width
+//                height: childrenRect.height
+//                color: Qt.rgba(0.2,0.2,0.2,0.4)
+//                //gradientColor: Qt.rgba(0.2,0.2,0.2,0.4)
+
+//                Item {
+//                    width: units.gu(20)
+//                    height: units.gu(30)
+
+//                    Spinner {
+//                        anchors {
+//                            left: parent.left
+//                            right: parent.horizontalCenter
+//                            top: parent.top
+//                            bottom: parent.bottom
+//                        }
+
+//                        minValue: 1
+//                        value: 3
+//                        maxValue: 12
+//                    }
+//                    VerticalDivider {
+//                        anchors.horizontalCenter: parent.horizontalCenter
+//                        anchors.margins: 1
+//                    }
+
+//                    Spinner {
+//                        anchors {
+//                            left: parent.horizontalCenter
+//                            right: parent.right
+//                            top: parent.top
+//                            bottom: parent.bottom
+//                        }
+
+//                        minValue: 0
+//                        maxValue: 59
+//                    }
+//                }
+//            }
+//        }
+
         Component.onCompleted: {
             pageStack.push(tabs)
             clearPageStack()
@@ -465,7 +511,6 @@ MainView {
             text: i18n.tr("Are you sure you want to delete '%1'?").arg(task.name)
 
             onAccepted: {
-                var task = root.task
                 PopupUtils.close(confirmDeleteTaskDialogItem)
                 goToProject(task.project)
                 task.remove()

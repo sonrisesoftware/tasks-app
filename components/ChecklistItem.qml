@@ -44,8 +44,6 @@ Empty {
         CheckBox {
             id: checkBox
 
-            //width: units.gu(3)
-            //height: width
             anchors.verticalCenter: parent.verticalCenter
 
             checked: checklist[itemIndex].completed
@@ -68,20 +66,9 @@ Empty {
 
             customClicking: true
         }
-
-//        Button {
-//            id: deleteButton
-//            visible: label.editing
-//            iconSource: icon("delete")
-//            color: "red"
-//            height: label.height
-//            width: height
-//            onClicked: {
-//                task.checklist.splice(itemIndex,1)
-//                task.checklist = task.checklist
-//            }
-//        }
     }
+
+    highlightWhenPressed: false
 
     removable: true
     onItemRemoved: {
