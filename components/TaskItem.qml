@@ -161,6 +161,11 @@ Item {
                 width: parent.width
             }
 
+            Header {
+                text: i18n.tr("Options")
+                visible: !sidebar.expanded
+            }
+
             TaskItemOptions {
                 visible: !sidebar.expanded
                 width: parent.width
@@ -178,9 +183,20 @@ Item {
         mode: "right"
         expanded: wideAspect
 
+        Header {
+            id: optionsHeader
+            text: i18n.tr("Options")
+        }
+
         Flickable {
             id: optionsFlickable
-            anchors.fill: parent
+            anchors {
+                top: optionsHeader.bottom
+                left: parent.left
+                right: parent.right
+                bottom: parent.bottom
+            }
+
             clip: true
 
             contentHeight: options.height

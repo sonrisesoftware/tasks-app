@@ -84,7 +84,7 @@ Page {
 
             PropertyChanges {
                 target: root.parent
-                anchors.bottomMargin: units.gu(-2)
+                anchors.bottomMargin: toolbarMargin
             }
         }
 

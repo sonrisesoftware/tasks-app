@@ -31,9 +31,9 @@ Column {
 
     property var task
 
-    Header {
-        text: i18n.tr("Options")
-    }
+//    Header {
+//        text: i18n.tr("Options")
+//    }
 
     Standard {
         visible: !task.hasChecklist

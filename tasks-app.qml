@@ -150,6 +150,7 @@ MainView {
     }
 
     property var showToolbar: wideAspect ? true : undefined
+    property int toolbarMargin: -root.toolbar.triggerSize/2
 
     property Page currentPage: pageStack.currentPage.hasOwnProperty("currentPage")
                                ? pageStack.currentPage.currentPage
