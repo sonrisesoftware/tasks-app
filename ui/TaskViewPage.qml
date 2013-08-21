@@ -68,11 +68,6 @@ Page {
                 locked: true
                 opened: true
             }
-
-            PropertyChanges {
-                target: root.parent
-                anchors.bottomMargin: toolbarMargin
-            }
         }
     ]
 
