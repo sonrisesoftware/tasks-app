@@ -43,6 +43,7 @@ Page {
         id: taskItem
         visible: task !== null
         task: root.task
+        page: root
         anchors.fill: parent
     }
 
@@ -57,10 +58,6 @@ Page {
             text: i18n.tr("No task selected")
             opacity: 0.5
         }
-    }
-
-    Scrollbar {
-        flickableItem: taskItem
     }
 
     states: [

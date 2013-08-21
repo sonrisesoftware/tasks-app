@@ -24,250 +24,178 @@ import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
 import "../components"
+import "../ubuntu-ui-extras"
 
-Flickable {
-    id: root
+Item {
+    id: taskItem
 
     property var task
 
     property bool editing: false
     property bool creating: false
+    property var page
 
-    contentHeight: column.height
-    contentWidth: width
+    property var flickable: flickable
 
-    clip: true
+    Flickable {
+        id: flickable
+        contentHeight: column.height
+        contentWidth: width
 
-    Column {
-        id: column
+        clip: true
+
         anchors {
+            top: parent.top
             left: parent.left
-            right: parent.right
+            right: sidebar.left
+            bottom: parent.bottom
         }
 
-        Item {
-            height: headerItem.height + descriptionTextArea.height + units.gu(6)
-            width: parent.width
+        Column {
+            id: column
+
+            width: flickable.width
 
             Item {
-                id: headerItem
-                anchors {
-                    top: parent.top
-                    left: parent.left
-                    right: parent.right
-                    margins: units.gu(2)
-                }
+//                height: textDivider.visible
+//                        ? headerItem.height + descriptionTextArea.height + units.gu(6)
+//                        : root.height
+                height: headerItem.height + descriptionTextArea.height + units.gu(6)
 
-                height: completedCheckBox.visible
-                        ? Math.max(titleLabel.height, completedCheckBox.height)
-                        : titleLabel.height
+//                Behavior on height {
+//                    UbuntuNumberAnimation {}
+//                }
 
-                EditableLabel {
-                    id: titleLabel
+                width: parent.width
 
-                    anchors.verticalCenter: parent.verticalCenter
+                Item {
+                    id: headerItem
                     anchors {
+                        top: parent.top
                         left: parent.left
-                        right: completedCheckBox.visible ? completedCheckBox.left : parent.right
-                        rightMargin: completedCheckBox.visible ? units.gu(1) : 0
-                    }
-
-                    fontSize: "large"
-                    bold: true
-                    text: task.name
-                    placeholderText: i18n.tr("Title")
-                    parentEditing: root.editing
-
-                    onTextChanged: task.name = text
-                }
-
-                CheckBox {
-                    id: completedCheckBox
-                    anchors {
-                        verticalCenter: parent.verticalCenter
                         right: parent.right
+                        margins: units.gu(2)
                     }
 
-                    visible: !creating// && !titleLabel.editing
-                    __acceptEvents: task.canComplete
+                    height: completedCheckBox.visible
+                            ? Math.max(titleLabel.height, completedCheckBox.height)
+                            : titleLabel.height
+
+                    EditableLabel {
+                        id: titleLabel
+
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors {
+                            left: parent.left
+                            right: completedCheckBox.visible ? completedCheckBox.left : parent.right
+                            rightMargin: completedCheckBox.visible ? units.gu(1) : 0
+                        }
+
+                        fontSize: "large"
+                        bold: true
+                        text: task.name
+                        placeholderText: i18n.tr("Title")
+                        parentEditing: taskItem.editing
+
+                        onTextChanged: {
+                            if (task.name !== text) {
+                                task.name = text
+                                text = Qt.binding(function() { return task.name })
+                            }
+                        }
+                    }
+
+                    CheckBox {
+                        id: completedCheckBox
+                        anchors {
+                            verticalCenter: parent.verticalCenter
+                            right: parent.right
+                        }
+
+                        visible: !creating && !titleLabel.editing
+                        __acceptEvents: task.canComplete
 
 
-                    checked: task.completed
-                    onCheckedChanged: task.completed = checked
+                        checked: task.completed
+                        onCheckedChanged: task.completed = checked
+                    }
+
+                    Label {
+                        anchors.centerIn: completedCheckBox
+                        text: task.percent + "%"
+                        visible: !task.canComplete && !task.completed && completedCheckBox.visible
+                    }
                 }
 
-                Label {
-                    anchors.centerIn: completedCheckBox
-                    text: task.percent + "%"
-                    visible: !task.canComplete && !task.completed && completedCheckBox.visible
+                TextArea {
+                    id: descriptionTextArea
+                    anchors {
+                        top: headerItem.bottom
+                        left: parent.left
+                        right: parent.right
+                        margins: units.gu(2)
+                    }
+
+                    Component.onCompleted: __styleInstance.color = "white"
+
+                    onFocusChanged: {
+                        __styleInstance.color = (focus ? Theme.palette.normal.overlayText : "white")
+                    }
+
+                    text: task.description
+                    placeholderText: i18n.tr("Description")
+
+                    onTextChanged: task.description = text
                 }
             }
 
-            TextArea {
-                id: descriptionTextArea
-                anchors {
-                    top: headerItem.bottom
-                    left: parent.left
-                    right: parent.right
-                    margins: units.gu(2)
-                }
+            ThinDivider {
+                id: textDivider
+                visible: task.hasChecklist
+            }
 
-                Component.onCompleted: __styleInstance.color = "white"
+            Checklist {
+                visible: task.hasChecklist
+                task: taskItem.task
 
-                onFocusChanged: focus ? __styleInstance.color = Theme.palette.normal.overlayText : __styleInstance.color = "white"
+                width: parent.width
+            }
 
-                text: task.description
-                placeholderText: i18n.tr("Description")
+            TaskItemOptions {
+                visible: !sidebar.expanded
+                width: parent.width
+                task: taskItem.task
+            }
+        }
+    }
 
-                onTextChanged: task.description = text
+    Scrollbar {
+        flickableItem: flickable
+    }
+
+    Sidebar {
+        id: sidebar
+        mode: "right"
+        expanded: wideAspect
+
+        Flickable {
+            id: optionsFlickable
+            anchors.fill: parent
+            clip: true
+
+            contentHeight: options.height
+            contentWidth: width
+
+            TaskItemOptions {
+                id: options
+                width: parent.width
+
+                task: taskItem.task
             }
         }
 
-        ThinDivider {}
-
-        Checklist {
-            visible: task.hasChecklist
-            task: root.task
-
-            width: parent.width
+        Scrollbar {
+            flickableItem: optionsFlickable
         }
-
-        Header {
-            text: i18n.tr("Options")
-        }
-
-        Standard {
-            visible: !task.hasChecklist
-
-            text: i18n.tr("Add Checklist...")
-            onClicked: {
-                task.hasChecklist = true
-                task.checklist = [{completed: false, text: "New Item"}]
-            }
-        }
-
-        ValueSelector {
-            id: prioritySelector
-
-            text: i18n.tr("Priority")
-
-    //        Row {
-    //            spacing: units.gu(1)
-
-    //            anchors {
-    //                left: parent.left
-    //                leftMargin: units.gu(2)
-    //                top: parent.top
-    //                topMargin: units.gu(1.5)
-    //            }
-
-    //            UbuntuShape {
-    //                color: labelColor(task.label)
-    //                width: units.gu(3)
-    //                height: width
-    //                anchors.verticalCenter: parent.verticalCenter
-    //            }
-
-    //            Label {
-    //                anchors.verticalCenter: parent.verticalCenter
-    //                text: i18n.tr("Priority")
-    //            }
-    //        }
-
-            selectedIndex: values.indexOf(priorityName(task.priority))
-
-            values: {
-                var values = []
-
-                for (var i = 0; i < priorities.length; i++) {
-                    values.push(priorityName(priorities[i]))
-                }
-
-                return values
-            }
-
-            onSelectedIndexChanged: {
-                task.priority = priorities[selectedIndex]
-            }
-        }
-
-//        ValueSelector {
-//            id: projectSelector
-
-//            text: i18n.tr("Project")
-//            selectedIndex: {
-//                for (var i = 0; i < localProjectsModel.projects.count; i++) {
-//                    if (task.project === localProjectsModel.projects.get(i).modelData)
-//                        return i
-//                }
-//                return -1
-//            }
-
-//            values: {
-//                var values = []
-//                for (var i = 0; i < localProjectsModel.projects.count; i++) {
-//                    values.push(localProjectsModel.projects.get(i).modelData.name)
-//                }
-//                values.push(i18n.tr("<i>Create New Project</i>"))
-//                return values
-//            }
-
-//            onSelectedIndexChanged: {
-//                print(selectedIndex,values.length)
-//                if (selectedIndex === values.length - 1) {
-//                    // Create a new category
-//                    PopupUtils.open(newCategoryDialog, root)
-//                    selectedIndex = values.indexOf(task.category != "" ? task.category : "Uncategorized")
-//                } else if (selectedIndex === values.length - 2) {
-//                    task.category = ""
-//                } else {
-//                    task.category = values[selectedIndex]
-//                }
-//            }
-//        }
-
-        SingleValue {
-            id: dueDateField
-
-            text: i18n.tr("Due Date")
-
-            value: task.dueDateInfo
-            visible: task.hasOwnProperty("dueDate")
-
-            onClicked: PopupUtils.open(Qt.resolvedUrl("DatePicker.qml"), dueDateField, {
-                                           task: task
-                                       })
-        }
-
-        ValueSelector {
-            id: repeatSelector
-            text: i18n.tr("Repeat")
-            visible: task.hasOwnProperty("repeat")
-
-            values: [i18n.tr("Never"), i18n.tr("Daily"), i18n.tr("Weekly"), i18n.tr("Monthly"), i18n.tr("Yearly")]
-            selectedIndex: {
-                if (task.repeat === "never") return 0
-                else if (task.repeat === "daily") return 1
-                else if (task.repeat === "weekly") return 2
-                else if (task.repeat === "monthly") return 3
-                else if (task.repeat === "yearly") return 4
-            }
-
-            onSelectedIndexChanged: {
-                if (selectedIndex === 0) task.repeat = "never"
-                else if (selectedIndex === 1) task.repeat = "daily"
-                else if (selectedIndex === 2) task.repeat = "weekly"
-                else if (selectedIndex === 3) task.repeat = "monthly"
-                else if (selectedIndex === 4) task.repeat = "yearly"
-            }
-        }
-
-//        MultiValue {
-//            id: tagsSelector
-
-//            text: i18n.tr("Tags")
-
-//            values: task.tags
-//        }
     }
 }

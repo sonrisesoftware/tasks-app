@@ -29,6 +29,7 @@ Item {
 
     property string labelText: text
     property var text
+
     property bool editing
 
     onEditingChanged: {
@@ -122,7 +123,7 @@ Item {
 
     Button {
         id: okButton
-        visible: editing
+        visible: editing && !parentEditing
 
         anchors {
             right: parent.right

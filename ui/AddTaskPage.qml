@@ -48,10 +48,6 @@ Page {
         creating: true
     }
 
-    Scrollbar {
-        flickableItem: taskItem
-    }
-
     tools: ToolbarItems {
         locked: true
         opened: true

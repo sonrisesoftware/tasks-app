@@ -137,6 +137,12 @@ MainView {
 //            }
 //        }
 
+        TaskViewPage {
+            id: taskViewPage
+
+            visible: false
+        }
+
         Component.onCompleted: {
             pageStack.push(tabs)
             clearPageStack()
@@ -220,14 +226,14 @@ MainView {
             tabs.selectedTabIndex = 0
             if (viewing === "project")
                 homePage.currentProject = task.project
-            pageStack.push(Qt.resolvedUrl("ui/TaskViewPage.qml"), {task: task})
+            pageStack.push(taskViewPage, {task: task})
         } else {
             if (viewing === "project") {
                 tabs.selectedTabIndex = 1
                 pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: task.project})
             }
 
-            pageStack.push(Qt.resolvedUrl("ui/TaskViewPage.qml"), {task: task})
+            pageStack.push(taskViewPage, {task: task})
         }
     }
 
