@@ -87,3 +87,8 @@ Day 14 - 8/20/2013
  * Better removal of checklist items
  * Upcoming view shows tasks due this week
  * Toolbar locked and opened in wide mode
+
+Day 15 - 8/21/2013
+ * Improved home page toolbar buttons
+ * Move task options into sidebar in wide aspect mode
+ * Added apply button to editable labels
