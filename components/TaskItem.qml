@@ -77,6 +77,20 @@ Item {
                         margins: units.gu(2)
                     }
 
+                    UbuntuShape {
+                        id: priorityShape
+                        anchors {
+                            left: parent.left
+                            //top: parent.top
+                            //bottom: parent.bottom
+                            verticalCenter: headerItem.verticalCenter
+                        }
+                        visible: !creating && !titleLabel.editing
+                        width: units.gu(3)
+                        height: width
+                        color: priorityColor(task.priority)
+                    }
+
                     height: completedCheckBox.visible
                             ? Math.max(titleLabel.height, completedCheckBox.height)
                             : titleLabel.height
@@ -86,7 +100,8 @@ Item {
 
                         anchors.verticalCenter: parent.verticalCenter
                         anchors {
-                            left: parent.left
+                            left: priorityShape.visible ? priorityShape.right : parent.left
+                            leftMargin: priorityShape.visible ? units.gu(2) : 0
                             right: completedCheckBox.visible ? completedCheckBox.left : parent.right
                             rightMargin: completedCheckBox.visible ? units.gu(1) : 0
                         }
