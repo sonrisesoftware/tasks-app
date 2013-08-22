@@ -46,8 +46,8 @@ Item {
 
         anchors {
             top: parent.top
-            left: parent.left
-            right: sidebar.left
+            left: sidebar.mode === "left" ? sidebar.right : parent.left
+            right: sidebar.mode === "left" ? parent.right : sidebar.left
             bottom: parent.bottom
         }
 

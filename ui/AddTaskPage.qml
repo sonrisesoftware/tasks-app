@@ -57,7 +57,6 @@ Page {
             iconSource: icon("back")
 
             onTriggered: {
-                taskItem.task.destroy()
                 pageStack.pop()
             }
         }

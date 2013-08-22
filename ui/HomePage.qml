@@ -138,8 +138,6 @@ Page {
             iconSource: icon("add")
             text: i18n.tr("Task")
 
-            visible: currentProject !== null
-
             onTriggered: {
                 pageStack.push(addTaskPage, { project: currentProject })
             }
@@ -148,7 +146,7 @@ Page {
         ToolbarButton {
             iconSource: icon("add")
             text: i18n.tr("Project")
-            visible: sidebar.expanded
+            visible:  sidebar.expanded || currentProject === null
 
             onTriggered: {
                 PopupUtils.open(newProjectDialog, caller)

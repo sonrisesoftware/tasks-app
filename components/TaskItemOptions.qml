@@ -95,40 +95,42 @@ Column {
         }
     }
 
-//        ValueSelector {
-//            id: projectSelector
+        ValueSelector {
+            id: projectSelector
 
-//            text: i18n.tr("Project")
-//            selectedIndex: {
-//                for (var i = 0; i < localProjectsModel.projects.count; i++) {
-//                    if (task.project === localProjectsModel.projects.get(i).modelData)
-//                        return i
-//                }
-//                return -1
-//            }
+            text: i18n.tr("Project")
+            selectedIndex: getSelectedProject()
 
-//            values: {
-//                var values = []
-//                for (var i = 0; i < localProjectsModel.projects.count; i++) {
-//                    values.push(localProjectsModel.projects.get(i).modelData.name)
-//                }
-//                values.push(i18n.tr("<i>Create New Project</i>"))
-//                return values
-//            }
+            function getSelectedProject() {
+                for (var i = 0; i < localProjectsModel.projects.count; i++) {
+                    if (task.project === localProjectsModel.projects.get(i).modelData)
+                        return i
+                }
+                return -1
+            }
 
-//            onSelectedIndexChanged: {
-//                print(selectedIndex,values.length)
-//                if (selectedIndex === values.length - 1) {
-//                    // Create a new category
-//                    PopupUtils.open(newCategoryDialog, root)
-//                    selectedIndex = values.indexOf(task.category != "" ? task.category : "Uncategorized")
-//                } else if (selectedIndex === values.length - 2) {
-//                    task.category = ""
-//                } else {
-//                    task.category = values[selectedIndex]
-//                }
-//            }
-//        }
+            values: {
+                var values = []
+                for (var i = 0; i < localProjectsModel.projects.count; i++) {
+                    values.push(localProjectsModel.projects.get(i).modelData.name)
+                }
+                values.push(i18n.tr("<i>Create New Project</i>"))
+                return values
+            }
+
+            onSelectedIndexChanged: {
+                print(selectedIndex,values.length)
+                if (selectedIndex === values.length - 1) {
+                    PopupUtils.open(newProjectDialog, root)
+                    selectedIndex = values.length - 1
+                }
+
+                var newProject = localProjectsModel.projects.get(selectedIndex).modelData
+                if (task.project !== newProject)
+                    task.moveTo(newProject)
+                selectedIndex = Qt.binding(getSelectedProject)
+            }
+        }
 
     SingleValue {
         id: dueDateField

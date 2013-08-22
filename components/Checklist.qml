@@ -24,13 +24,16 @@ import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
 
-Column {
+ListView {
     id: root
 
+    height: contentHeight
+    interactive: false
+
     property var task
+    model: task.checklist
 
-
-    Header {
+    header: Header {
         Label {
             id: checklistLabel
             text: i18n.tr("Checklist")
@@ -62,23 +65,17 @@ Column {
         }
     }
 
+    delegate: ChecklistItem {
+        itemIndex: index
+        checklist: task.checklist
 
-    Repeater {
-        id: repeater
-        model: task.checklist
-
-        delegate: ChecklistItem {
-            itemIndex: index
-            checklist: task.checklist
-
-            anchors {
-                left: parent.left
-                right: parent.right
-            }
+        anchors {
+            left: parent.left
+            right: parent.right
         }
     }
 
-    Standard {
+    footer: Standard {
         anchors {
             left: parent.left
             right: parent.right
