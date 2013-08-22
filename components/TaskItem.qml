@@ -169,11 +169,41 @@ Item {
                 visible: task.hasChecklist
             }
 
-            Checklist {
-                visible: task.hasChecklist
-                task: taskItem.task
-
+            Item {
+                id: checklistItem
+                scale: visible ? 1 : 0
+                height: checklist.height + checklist.y
                 width: parent.width
+                clip: true
+
+                Checklist {
+                    id: checklist
+                    visible: task.hasChecklist
+                    task: taskItem.task
+
+                    PropertyAnimation {
+                        id: checklistPhoneAnimation
+                        target: checklist
+                        property: "y"
+                        from: -height
+                        to: 0
+                        duration: 300
+                    }
+
+                    function show() {
+                        if (wideAspect) {
+
+                        } else {
+                            ch
+                        }
+                    }
+
+                    width: parent.width
+
+    //                Behavior on height {
+    //                    UbuntuNumberAnimation {}
+    //                }
+                }
             }
 
             Header {

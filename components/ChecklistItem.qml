@@ -23,6 +23,7 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
+import "../ubuntu-ui-extras"
 
 Empty {
     id: root
@@ -76,22 +77,11 @@ Empty {
         task.checklist = task.checklist
     }
 
-    backgroundIndicator: Rectangle {
-        anchors.fill: parent
-        color: Qt.rgba(0.2,0.2,0.2,0.3)
-        clip: true
+    backgroundIndicator: ListItemBackground {
+        iconSource: icon("delete-white")
+        text: i18n.tr("Delete")
 
-        Image {
-            source: icon("delete-white")
-            anchors {
-                top: parent.top
-                horizontalCenter: parent.horizontalCenter
-                bottom: parent.bottom
-                margins: units.gu(1)
-            }
-
-            width: height
-        }
+        state: swipingState
     }
 
     onClicked: label.edit()

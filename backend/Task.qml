@@ -38,12 +38,11 @@ QtObject {
     property var tags: []
     property var checklist: []
 
-    property bool hasChecklist: false
+    property bool hasChecklist: checklist.length > 0
 
     onChecklistChanged: {
         if (checklist.length === 0) {
             if (hasChecklist) {
-                hasChecklist = false
                 completed = false
             }
         } else {
@@ -107,8 +106,7 @@ QtObject {
             completionDate: completionDate,
             priority: priority,
             tags: tags,
-            checklist: checklist,
-            hasChecklist: hasChecklist
+            checklist: checklist
         }
     }
 
