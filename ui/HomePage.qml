@@ -136,16 +136,7 @@ Page {
     tools: ToolbarItems {
         ToolbarButton {
             iconSource: icon("add")
-            text: i18n.tr("Task")
-
-            onTriggered: {
-                pageStack.push(addTaskPage, { project: currentProject })
-            }
-        }
-
-        ToolbarButton {
-            iconSource: icon("add")
-            text: i18n.tr("Project")
+            text: i18n.tr("New Project")
             visible:  sidebar.expanded || currentProject === null
 
             onTriggered: {
@@ -153,9 +144,23 @@ Page {
             }
         }
 
+        Item {
+            height: parent.height
+            width: units.gu(0.5)
+        }
+
+        ToolbarButton {
+            iconSource: icon("add")
+            text: i18n.tr("Add Task")
+
+            onTriggered: {
+                pageStack.push(addTaskPage, { project: currentProject })
+            }
+        }
+
         ToolbarButton {
             iconSource: icon("edit")
-            text: i18n.tr("Project")
+            text: i18n.tr("Rename")
             visible: currentProject !== null
 
             onTriggered: {
@@ -167,7 +172,7 @@ Page {
 
         ToolbarButton {
             iconSource: icon("delete")
-            text: i18n.tr("Project")
+            text: i18n.tr("Delete")
             visible: currentProject !== null
 
             onTriggered: {

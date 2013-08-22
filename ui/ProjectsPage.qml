@@ -87,7 +87,7 @@ Page {
     tools: ToolbarItems {
         ToolbarButton {
             iconSource: icon("add")
-            text: i18n.tr("New")
+            text: i18n.tr("New Project")
 
             onTriggered: {
                 PopupUtils.open(newProjectDialog, caller)
