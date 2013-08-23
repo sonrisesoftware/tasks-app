@@ -67,7 +67,7 @@ Page {
                             }
 
                             visible: running
-                            running: modelData.loading
+                            running: modelData.loading > 0
                         }
                     }
 

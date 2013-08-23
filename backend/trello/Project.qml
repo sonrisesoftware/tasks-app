@@ -35,18 +35,18 @@ GenericProject {
         name = json.name
         boardID = json.id
         archived = json.closed
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>LOADING", name)
     }
 
     function refresh(json) {
         var tasks = json.tasks
         if (tasks === undefined)
             tasks = []
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>REFRESHING", name, "has", tasks)
+
         for (var i = 0; i < tasks.length; i++) {
             newTask(tasks[i])
         }
 
+        backend.loading++
         Trello.call("/boards/" + boardID + "/cards", [], loadCards)
     }
 
@@ -74,6 +74,7 @@ GenericProject {
             if (!found)
                 tasks.remove(k)
         }
+        backend.loading--
     }
 
     function getCard(cardID) {
@@ -94,7 +95,6 @@ GenericProject {
             json.tasks.push(tasks.get(i).modelData.save())
         }
 
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>SAVING", name,  json.tasks)
         return json
     }
 

@@ -36,7 +36,7 @@ Item {
 
     property string name: "Trello Boards"
     property bool requiresInternet: true
-    property bool loading: true
+    property int loading: 0
     property var database
     property string token: ""
     enabled: token !== "" && trelloIntegration
@@ -87,6 +87,7 @@ Item {
     }
 
     function authorized() {
+        loading++
         Trello.call("/members/my/boards", [], onBoardsLoaded)
     }
 
@@ -117,7 +118,7 @@ Item {
                 projects.remove(k)
         }
 
-        loading = false
+        loading--
     }
 
     function save() {

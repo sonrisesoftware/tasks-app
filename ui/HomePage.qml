@@ -78,7 +78,7 @@ Page {
                                 }
 
                                 visible: running
-                                running: modelData.loading
+                                running: modelData.loading > 0
                             }
                         }
 
@@ -130,7 +130,7 @@ Page {
 
     QuickAddBar {
         id: addBar
-        expanded: !upcoming
+        expanded: currentProject !== null && currentProject.editable
         anchors.left: sidebar.right
     }
 

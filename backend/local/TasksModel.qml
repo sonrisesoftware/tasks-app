@@ -32,7 +32,7 @@ Item {
     property string name: "Projects"
     property bool requiresInternet: false
     property var database
-    property bool loading: false
+    property int loading: 0
 
     property var list: []
 

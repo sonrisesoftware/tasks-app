@@ -130,7 +130,7 @@ Empty {
         }
 
         checked: task.completed
-        __acceptEvents: task.canComplete
+        __acceptEvents: task.canComplete && task.editable
 
         onCheckedChanged: showCompletedTasks ? task.completed = checked : hideAnimation.start()
 
