@@ -25,7 +25,8 @@ import U1db 1.0 as U1db
 Item {
     id: root
 
-    property bool canRemoveTasks: true
+    property bool editable: true
+    enabled: true
 
     property ListModel tasks: ListModel {
         id: tasks
@@ -33,51 +34,9 @@ Item {
         onCountChanged: update()
     }
 
-    function update() {
-        for (var i = 0; i < tasks.count; i++) {
-            var task = tasks.get(i).modelData
-            if (task.overdue)
-                overdueCount++
-        }
-    }
-
-    property var upcomingTasks: filteredTasks(function(task) {
-        return task.upcoming
-    }, "Upcoming")
-
-    property var uncompletedTasks: filteredTasks(function(task) {
-        return !task.completed
-    }, "Uncompleted")
-
-    property var model: showCompletedTasks ? tasks : uncompletedTasks
-
-    function filteredTasks(filter, name) {
-        //print("Running filter:", name)
-        var list = []
-
-        for (var i = 0; i < tasks.count; i++) {
-            if (filter(tasks.get(i).modelData))
-                list.push(tasks.get(i).modelData)
-        }
-
-        //print("Count:", list.length)
-        return list
-    }
-
-    function countTasks(filter) {
-        //print("Counting tasks...")
-        var count = 0
-
-        for (var i = 0; i < tasks.count; i++) {
-            if (filter(tasks.get(i).modelData))
-                count++
-        }
-
-        return count
-    }
-
     property var backend
     property var taskComponent
+    property bool archived: false
 
     property string name
     property int count: tasks.count
@@ -128,5 +87,48 @@ Item {
 
     function remove() {
         backend.removeProject(root)
+    }
+
+    function update() {
+        for (var i = 0; i < tasks.count; i++) {
+            var task = tasks.get(i).modelData
+            if (task.overdue)
+                overdueCount++
+        }
+    }
+
+    property var upcomingTasks: filteredTasks(function(task) {
+        return task.upcoming
+    }, "Upcoming")
+
+    property var uncompletedTasks: filteredTasks(function(task) {
+        return !task.completed
+    }, "Uncompleted")
+
+    property var model: showCompletedTasks ? tasks : uncompletedTasks
+
+    function filteredTasks(filter, name) {
+        //print("Running filter:", name)
+        var list = []
+
+        for (var i = 0; i < tasks.count; i++) {
+            if (filter(tasks.get(i).modelData))
+                list.push(tasks.get(i).modelData)
+        }
+
+        //print("Count:", list.length)
+        return list
+    }
+
+    function countTasks(filter) {
+        //print("Counting tasks...")
+        var count = 0
+
+        for (var i = 0; i < tasks.count; i++) {
+            if (filter(tasks.get(i).modelData))
+                count++
+        }
+
+        return count
     }
 }

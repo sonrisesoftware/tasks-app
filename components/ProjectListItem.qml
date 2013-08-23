@@ -38,9 +38,11 @@ SingleValue {
     }
 
     selected: currentProject === project
+    enabled: project.enabled
+    visible: !project.archived
 
     onPressAndHold: {
-        if (project !== null)
+        if (project !== null && project.editable)
             PopupUtils.open(projectActionsPopover, root, {
                                 project: project
                             })

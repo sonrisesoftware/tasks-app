@@ -105,7 +105,7 @@ Item {
         id: tasksDocument
 
         database: root.database
-        docId: 'trello'
+        docId: 'tasks'
         create: true
 
         defaults: {

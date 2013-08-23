@@ -33,7 +33,7 @@ function post(address, callback) {
 }
 
 function authenticate(name) {
-    Qt.openUrlExternally("https://trello.com/1/authorize?" + /*"key=" +
-                         key +*/
+    Qt.openUrlExternally("https://trello.com/1/authorize?" + "key=" +
+                         key +
                          "&name=" + name.replace(" ", "+") + "&expiration=30days&response_type=token")
 }

@@ -36,6 +36,7 @@ GenericTask {
     function load(json) {
         name = json.name
         completed = json.closed
+        description = json.badges.description ? json.desc : ""
     }
 
     function remove() {

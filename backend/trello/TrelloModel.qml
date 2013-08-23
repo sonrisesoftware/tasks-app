@@ -37,6 +37,7 @@ Item {
     property string name: "Trello Boards"
     property bool requiresInternet: true
     property bool loading: true
+    property var database
 
     property var list: []
 
@@ -51,7 +52,10 @@ Item {
     }
 
     function getBoard(boardID) {
-
+        for (var i = 0; i < projects.count; i++) {
+            if (projects.get(i).modelData.boardID === boardID)
+                return projects.get(i).modelData
+        }
     }
 
     function onError() {
@@ -78,6 +82,17 @@ Item {
 //            }
             PopupUtils.open(trelloAuthentication, root)
         } else {
+            var json = JSON.parse(tasksDocument.contents.tasks)
+
+            if (runBefore) {
+                print("LOADING...")
+                for (var i = 0; i < json.length; i++) {
+                    var project = newProject(json[i].name)
+                    project.load(json[i])
+                    project.refresh()
+                }
+            }
+
             authorized()
         }
     }
@@ -91,14 +106,30 @@ Item {
         var json = JSON.parse(response)
         for (var i = 0; i < json.length; i++) {
             print("Board:", json[i].name)
-            var project = newProject(json[i].name)
-            project.load(json[i])
+            var board = getBoard(json[i].id)
+            if (board === undefined) {
+                board = newProject(json[i].name)
+                board.load(json[i])
+                board.refresh()
+            } else {
+                board.load(json[i])
+            }
         }
         loading = false
     }
 
     function save() {
+        var json = []
 
+        for (var i = 0; i < projects.count; i++) {
+            json.push(projects.get(i).modelData.save())
+        }
+
+        var tempDocument = tasksDocument
+        var tempContents = {}
+        tempContents.tasks = JSON.stringify(json)
+        tempDocument.contents = tempContents
+        tasksDocument = tempDocument
     }
 
     function newProject(name) {
@@ -139,6 +170,18 @@ Item {
 
         TrelloAuthenticationDialog {
             onAccepted: authorized()
+        }
+    }
+
+    U1db.Document {
+        id: tasksDocument
+
+        database: root.database
+        docId: 'trello'
+        create: true
+
+        defaults: {
+            tasks: ""
         }
     }
 }

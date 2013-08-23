@@ -26,8 +26,6 @@ import ".."
 GenericProject {
     id: root
 
-    canRemoveTasks: true
-
     function load(json) {
         name = json.name
         var tasks = json.tasks

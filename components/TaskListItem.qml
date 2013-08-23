@@ -159,8 +159,9 @@ Empty {
     }
 
     onPressAndHold: {
-        PopupUtils.open(taskActionsPopover, root, {
-                            task: root.task
-                        })
+        if (task.ediable)
+            PopupUtils.open(taskActionsPopover, root, {
+                                task: root.task
+                            })
     }
 }

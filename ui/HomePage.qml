@@ -163,6 +163,8 @@ Page {
         ToolbarButton {
             iconSource: icon("add")
             text: i18n.tr("Add Task")
+            visible: currentProject !== null
+            enabled: currentProject !== null && currentProject.editable
 
             onTriggered: {
                 pageStack.push(addTaskPage, { project: currentProject })
@@ -173,6 +175,7 @@ Page {
             iconSource: icon("edit")
             text: i18n.tr("Rename")
             visible: currentProject !== null
+            enabled: currentProject !== null && currentProject.editable
 
             onTriggered: {
                 PopupUtils.open(renameProjectDialog, caller, {
@@ -185,6 +188,7 @@ Page {
             iconSource: icon("delete")
             text: i18n.tr("Delete")
             visible: currentProject !== null
+            enabled: currentProject !== null && currentProject.editable
 
             onTriggered: {
                 PopupUtils.open(confirmDeleteProjectDialog, caller, {

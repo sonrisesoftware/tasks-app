@@ -28,11 +28,16 @@ GenericProject {
     id: root
 
     property var boardID
-    canRemoveTasks: false
+    editable: false
+    enabled: false
 
     function load(json) {
         name = json.name
         boardID = json.id
+        archived = json.closed
+    }
+
+    function refresh() {
         Trello.call("/boards/" + boardID + "/cards", [], loadCards)
 
 //        var tasks = json.tasks
@@ -43,15 +48,19 @@ GenericProject {
 
     function loadCards(response) {
         var json = JSON.parse(response)
+
         for (var i = 0; i < json.length; i++) {
             var task = newTask()
             task.load(json[i])
         }
+        enabled = true
     }
 
     function save() {
         var json = {}
         json.name = name
+        json.id = boardID
+        json.closed =archived
 //        json.tasks = []
 
 //        for (var i = 0; i < tasks.count; i++) {

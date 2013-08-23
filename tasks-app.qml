@@ -270,6 +270,7 @@ MainView {
 
     TrelloBackend.TrelloModel {
         id: trelloModel
+        database: storage
     }
 
     property var backendModels: [
@@ -290,7 +291,7 @@ MainView {
 
     U1db.Database {
         id: storage
-        path: "tasks-app.db"
+        path: "tasks-app"
     }
 
     U1db.Document {
@@ -636,6 +637,7 @@ MainView {
                     id: moveAction
 
                     text: i18n.tr("Move")
+                    enabled: task.editable
                     onTriggered: {
                         PopupUtils.open(projectsPopover, caller, {
                                             task: task
@@ -645,6 +647,7 @@ MainView {
 
                 Action {
                     id: deleteAction
+                    enabled: task.editable
 
                     text: i18n.tr("Delete")
                     onTriggered: task.remove()
