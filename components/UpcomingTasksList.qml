@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <spencers1993@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -28,7 +28,7 @@ import "../ui"
 Item {
     id: root
 
-    property int count: overdue.count + today.count
+    property int count: length(upcomingTasks)
     property var model: upcomingTasks
 
     Flickable {
@@ -70,9 +70,27 @@ Item {
             Repeater {
                 id: today
                 //model: upcomingTasks
-                model: filteredTasks(upcomingTasks, function(task) { return !task.overdue}, "Upcoming ONLY")
+                model: filteredTasks(upcomingTasks, function(task) { return task.isDueToday()}, "Upcoming ONLY")
                 delegate: TaskListItem {
-                    objectName: "upcomingTask" + index
+                    objectName: "todayTask" + index
+
+                    task: modelData
+                }
+            }
+
+            Header {
+                text: i18n.tr("This Week")
+                visible: week.count > 0
+            }
+
+            Repeater {
+                id: week
+                //model: upcomingTasks
+                model: filteredTasks(upcomingTasks, function(task) {
+                    return !task.overdue && !task.isDueToday() && task.isDueThisWeek()
+                }, "Upcoming this week")
+                delegate: TaskListItem {
+                    objectName: "weekTask" + index
 
                     task: modelData
                 }

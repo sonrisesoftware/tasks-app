@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <spencers1993@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -29,6 +29,7 @@ Item {
 
     property string labelText: text
     property var text
+
     property bool editing
 
     onEditingChanged: {
@@ -62,12 +63,23 @@ Item {
         text: root.labelText != "" ? root.labelText : root.placeholderText
     }
 
+    property bool customClicking: false
+
+    function edit() {
+        editing = true
+        textField.forceActiveFocus()
+    }
+
+    function done() {
+        textField.focus = false
+    }
+
     MouseArea {
+        visible: !parent.customClicking
         anchors.fill: parent
 
         onClicked: {
-            editing = true
-            textField.forceActiveFocus()
+            edit()
         }
     }
 
@@ -76,7 +88,8 @@ Item {
 
         anchors {
             left: parent.left
-            right: parent.right
+            right: okButton.visible ? okButton.left : parent.right
+            rightMargin: okButton.visible ? units.gu(1) : 0
             verticalCenter: parent.verticalCenter
         }
 
@@ -100,11 +113,27 @@ Item {
 
         onCursorVisibleChanged: {
             if (cursorVisible === false)
-                focus = false
+                done()
         }
 
-        Keys.onEscapePressed: focus = false
+        Keys.onEscapePressed: done()
 
-        onAccepted: focus = false
+        onAccepted: done()
+    }
+
+    Button {
+        id: okButton
+        visible: editing && !parentEditing
+
+        anchors {
+            right: parent.right
+            top: textField.top
+            bottom: textField.bottom
+        }
+
+        text: i18n.tr("Apply")
+        onClicked: {
+            done()
+        }
     }
 }

@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <spencers1993@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -23,6 +23,7 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
+import "../ubuntu-ui-extras"
 
 Empty {
     id: root
@@ -44,8 +45,6 @@ Empty {
         CheckBox {
             id: checkBox
 
-            //width: units.gu(3)
-            //height: width
             anchors.verticalCenter: parent.verticalCenter
 
             checked: checklist[itemIndex].completed
@@ -58,29 +57,32 @@ Empty {
         EditableLabel {
             id: label
             anchors.verticalCenter: parent.verticalCenter
-            width: editing ? parent.width - checkBox.width - deleteButton.width - parent.spacing * 2
-                           : parent.width - checkBox.width - parent.spacing
+            width: parent.width - checkBox.width - parent.spacing
 
             text: checklist[itemIndex].text
             onTextChanged: {
                 checklist[itemIndex].text = text
                 task.checklist = checklist
             }
-        }
 
-        Button {
-            id: deleteButton
-            visible: label.editing
-            iconSource: icon("delete")
-            color: "red"
-            height: label.height
-            width: height
-            onClicked: {
-                task.checklist.splice(itemIndex,1)
-                task.checklist = task.checklist
-            }
+            customClicking: true
         }
     }
 
-    //onClicked: label.focus = false
+    highlightWhenPressed: false
+
+    removable: true
+    onItemRemoved: {
+        task.checklist.splice(itemIndex,1)
+        task.checklist = task.checklist
+    }
+
+    backgroundIndicator: ListItemBackground {
+        iconSource: icon("delete-white")
+        text: i18n.tr("Delete")
+
+        state: swipingState
+    }
+
+    onClicked: label.edit()
 }

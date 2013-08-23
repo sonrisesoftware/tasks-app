@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <spencers1993@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -33,13 +33,29 @@ Empty {
 
     clip: true
 
+    UbuntuShape {
+        id: priorityShape
+        anchors {
+            left: parent.left
+            //top: parent.top
+            //bottom: parent.bottom
+            verticalCenter: parent.verticalCenter
+            margins: units.gu(2)
+        }
+        width: units.gu(3)
+        height: width
+        color: priorityColor(task.priority)
+    }
+
     Label {
         id: titleLabel
         anchors {
             top: subLabel.visible ? parent.top : undefined
             topMargin: units.gu(0.7)
-            left: parent.left
-            leftMargin: units.gu(2)
+            //left: parent.left
+            left: priorityShape.right
+            leftMargin: units.gu(1)
+            //leftMargin: units.gu(2)
             right: doneCheckBox.left
             rightMargin: units.gu(2)
             verticalCenter: subLabel.visible ? undefined : parent.verticalCenter
@@ -57,8 +73,7 @@ Empty {
             //topMargin: units.gu(0.2)
             bottom: parent.bottom
             bottomMargin: units.gu(0.7)
-            left: parent.left
-            leftMargin: units.gu(2)
+            left: titleLabel.left
             right: doneCheckBox.left
             rightMargin: units.gu(2)
         }
@@ -72,37 +87,37 @@ Empty {
         elide: Text.ElideRight
     }
 
-    Rectangle {
-        id: priority
+//    Rectangle {
+//        id: priority
 
-        anchors {
-            top: parent.top
-            left: parent.left
-            bottom: parent.bottom
-            topMargin: units.gu(1)
-            bottomMargin: units.gu(1)
-            leftMargin: units.gu(0.5)
-        }
-
-        radius: units.gu(0.4)
-        smooth: true
-
-        width: units.gu(0.8)
-
-        color: priorityColor(task.priority)
-
-//        gradient: Gradient {
-//            GradientStop {
-//                position: 0
-//                color: Qt.lighter(task.priority, 1.2)
-//            }
-
-//            GradientStop {
-//                position: 1
-//                color: Qt.darker(task.priority, 1.2)
-//            }
+//        anchors {
+//            top: parent.top
+//            left: parent.left
+//            bottom: parent.bottom
+//            topMargin: units.gu(1)
+//            bottomMargin: units.gu(1)
+//            leftMargin: units.gu(0.5)
 //        }
-    }
+
+//        radius: units.gu(0.4)
+//        smooth: true
+
+//        width: units.gu(0.8)
+
+//        color: priorityColor(task.priority)
+
+////        gradient: Gradient {
+////            GradientStop {
+////                position: 0
+////                color: Qt.lighter(task.priority, 1.2)
+////            }
+
+////            GradientStop {
+////                position: 1
+////                color: Qt.darker(task.priority, 1.2)
+////            }
+////        }
+//    }
 
 
     CheckBox {

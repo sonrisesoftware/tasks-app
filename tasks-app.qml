@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <spencers1993@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -28,6 +28,7 @@ import QtSystemInfo 5.0
 import "ui"
 import "components"
 import "backend"
+import "ubuntu-ui-extras"
 
 MainView {
     id: root
@@ -52,9 +53,9 @@ MainView {
     property bool wideAspect: width > units.gu(80)
 
     // Colors from Calculator app
-    headerColor: currentPage.hasOwnProperty("headerColor") ? currentPage.headerColor : "#323A5D"
-    backgroundColor: currentPage.hasOwnProperty("backgroundColor") ? currentPage.backgroundColor : "#6A6AA1"
-    footerColor: currentPage.hasOwnProperty("footerColor") ? currentPage.footerColor : "#6899D7"
+    headerColor: currentPage && currentPage.hasOwnProperty("headerColor") ? currentPage.headerColor : "#323A5D"
+    backgroundColor: currentPage && currentPage.hasOwnProperty("backgroundColor") ? currentPage.backgroundColor : "#6A6AA1"
+    footerColor: currentPage && currentPage.hasOwnProperty("footerColor") ? currentPage.footerColor : "#6899D7"
 
     //backgroundColor: "#FCFF95"
     //backgroundColor: "#FFFFBB"
@@ -77,37 +78,67 @@ MainView {
                 }
             }
 
-            Tab {
+            HideableTab {
                 title: page.title
                 page: ProjectsPage {
                     id: projectsPage
 
                 }
 
-                property bool show: !wideAspect
-                onShowChanged: {
-                    parent.tabList = tabs.customUpdateTabList(parent)
-                }
+                show: !wideAspect
             }
 
-            function customUpdateTabList(tabsModel) {
-                var list = [];
-                for (var i=0; i < tabsModel.children.length; i++) {
-                    if (isTab(tabsModel.children[i])) list.push(tabsModel.children[i]);
-                }
-                return list
-            }
+            visible: false
+        }
 
-            function isTab(item) {
-                if (item && item.hasOwnProperty("__isPageTreeNode")
-                        && item.__isPageTreeNode && item.hasOwnProperty("title")
-                        && item.hasOwnProperty("page")
-                        && (item.hasOwnProperty("show") ? item.show : true)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
+//        Page {
+//            id: testPage
+
+//            UbuntuShape {
+//                anchors.centerIn: parent
+//                width: childrenRect.width
+//                height: childrenRect.height
+//                color: Qt.rgba(0.2,0.2,0.2,0.4)
+//                //gradientColor: Qt.rgba(0.2,0.2,0.2,0.4)
+
+//                Item {
+//                    width: units.gu(20)
+//                    height: units.gu(30)
+
+//                    Spinner {
+//                        anchors {
+//                            left: parent.left
+//                            right: parent.horizontalCenter
+//                            top: parent.top
+//                            bottom: parent.bottom
+//                        }
+
+//                        minValue: 1
+//                        value: 3
+//                        maxValue: 12
+//                    }
+//                    VerticalDivider {
+//                        anchors.horizontalCenter: parent.horizontalCenter
+//                        anchors.margins: 1
+//                    }
+
+//                    Spinner {
+//                        anchors {
+//                            left: parent.horizontalCenter
+//                            right: parent.right
+//                            top: parent.top
+//                            bottom: parent.bottom
+//                        }
+
+//                        minValue: 0
+//                        maxValue: 59
+//                    }
+//                }
+//            }
+//        }
+
+        TaskViewPage {
+            id: taskViewPage
 
             visible: false
         }
@@ -120,14 +151,25 @@ MainView {
 
     property var showToolbar: wideAspect ? true : undefined
 
+    states: [
+        State {
+            when: showToolbar
+
+            PropertyChanges {
+                target: taskViewPage.parent
+                anchors.bottomMargin: -root.toolbar.triggerSize
+            }
+        }
+    ]
+
     property Page currentPage: pageStack.currentPage.hasOwnProperty("currentPage")
                                ? pageStack.currentPage.currentPage
                                : pageStack.currentPage
 
-    property var currentProject: currentPage.hasOwnProperty("currentProject") ? currentPage.currentProject : null
-    property var currentTask: currentPage.hasOwnProperty("task") ? currentPage.task : null
+    property var currentProject: currentPage && currentPage.hasOwnProperty("currentProject") ? currentPage.currentProject : null
+    property var currentTask: currentPage && currentPage.hasOwnProperty("task") ? currentPage.task : null
 
-    property string viewing: currentPage.hasOwnProperty("type")
+    property string viewing: currentPage && currentPage.hasOwnProperty("type")
                              ? currentPage.type
                              : currentTask !== null
                                ? "task"
@@ -147,6 +189,8 @@ MainView {
         pageStack.pop()
         pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: null})
         pageStack.pop()
+        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: null})
+        pageStack.pop()
     }
 
     onWideAspectChanged: {
@@ -163,6 +207,9 @@ MainView {
             var task = currentTask
             goToProject(task.project)
             pageStack.push(addTaskPage, {task: task})
+        } else if (viewing === "statistics") {
+            var project = currentPage.project
+            showStatistics(project)
         } else {
             if (!(viewing === "upcoming" || viewing === "projects")) {
                 clearPageStack()
@@ -175,6 +222,11 @@ MainView {
         }
     }
 
+    function showStatistics(project) {
+        goToProject(project)
+        pageStack.push(statisticsPage, {project: project})
+    }
+
     function goToTask(task, viewing) {
         if (viewing === undefined)
             viewing = root.viewing
@@ -185,14 +237,14 @@ MainView {
             tabs.selectedTabIndex = 0
             if (viewing === "project")
                 homePage.currentProject = task.project
-            pageStack.push(Qt.resolvedUrl("ui/TaskViewPage.qml"), {task: task})
+            pageStack.push(taskViewPage, {task: task})
         } else {
             if (viewing === "project") {
                 tabs.selectedTabIndex = 1
                 pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: task.project})
             }
 
-            pageStack.push(Qt.resolvedUrl("ui/TaskViewPage.qml"), {task: task})
+            pageStack.push(taskViewPage, {task: task})
         }
     }
 
@@ -245,6 +297,8 @@ MainView {
         defaults: {
             showCompletedTasks: "false"
             runBefore: "false"
+            width: units.gu(100)
+            height: units.gu(75)
         }
     }
 
@@ -293,6 +347,9 @@ MainView {
 
     Component.onCompleted: {
         reloadSettings()
+        //width = getSetting("windowWidth")
+        //height = getSetting("windowHeight")
+
         for (var i = 0; i < backendModels.length; i++) {
             backendModels[i].load()
         }
@@ -305,6 +362,8 @@ MainView {
     }
 
     Component.onDestruction: {
+        //saveSetting("windowWidth", width)
+        //saveSetting("windowHeight", height)
         saveProjects()
     }
 
@@ -466,10 +525,9 @@ MainView {
 
             id: confirmDeleteTaskDialogItem
             title: i18n.tr("Delete Task")
-            text: i18n.tr("Are you sure you want to delete '%1'?").arg(task.title)
+            text: i18n.tr("Are you sure you want to delete '%1'?").arg(task.name)
 
             onAccepted: {
-                var task = root.task
                 PopupUtils.close(confirmDeleteTaskDialogItem)
                 goToProject(task.project)
                 task.remove()

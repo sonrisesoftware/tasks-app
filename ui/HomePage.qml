@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <spencers1993@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -24,6 +24,7 @@ import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
 import "../components"
+import "../ubuntu-ui-extras"
 
 Page {
     id: root
@@ -67,6 +68,17 @@ Page {
                         width: parent.width
                         Header {
                             text: modelData.name
+
+                            ActivityIndicator {
+                                anchors {
+                                    verticalCenter: parent.verticalCenter
+                                    right: parent.right
+                                    rightMargin: units.gu(0.5)
+                                }
+
+                                visible: running
+                                running: modelData.loading
+                            }
                         }
 
                         Repeater {
@@ -121,43 +133,39 @@ Page {
         anchors.left: sidebar.right
     }
 
-//    states: [
-//        State {
-//            when: showToolbar
-//            PropertyChanges {
-//                target: root.tools
-//                locked: true
-//                opened: true
-//            }
-
-//            PropertyChanges {
-//                target: root.parent
-//                anchors.bottomMargin: units.gu(-2)
-//            }
-//        }
-
-//    ]
+    states: [
+        State {
+            when: showToolbar
+            PropertyChanges {
+                target: root.tools
+                locked: true
+                opened: true
+            }
+        }
+    ]
 
     tools: ToolbarItems {
-
         ToolbarButton {
             iconSource: icon("add")
-            text: i18n.tr("Add")
-
-            visible: currentProject !== null
+            text: i18n.tr("New Project")
+            visible:  sidebar.expanded || currentProject === null
 
             onTriggered: {
-                pageStack.push(addTaskPage, { project: currentProject })
+                PopupUtils.open(newProjectDialog, caller)
             }
+        }
+
+        Item {
+            height: parent.height
+            width: units.gu(0.5)
         }
 
         ToolbarButton {
             iconSource: icon("add")
-            text: i18n.tr("New")
-            visible: sidebar.expanded
+            text: i18n.tr("Add Task")
 
             onTriggered: {
-                PopupUtils.open(newProjectDialog, caller)
+                pageStack.push(addTaskPage, { project: currentProject })
             }
         }
 
@@ -182,6 +190,16 @@ Page {
                 PopupUtils.open(confirmDeleteProjectDialog, caller, {
                                     project: currentProject
                                 })
+            }
+        }
+
+        ToolbarButton {
+            text: i18n.tr("Statistics")
+            iconSource: icon("graphs")
+            visible: currentProject != null
+
+            onTriggered: {
+                showStatistics(currentProject)
             }
         }
 
