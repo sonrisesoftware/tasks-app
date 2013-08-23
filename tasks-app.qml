@@ -27,7 +27,8 @@ import QtSystemInfo 5.0
 
 import "ui"
 import "components"
-import "backend"
+import "backend/local" as LocalBackend
+import "backend/trello" as TrelloBackend
 import "ubuntu-ui-extras"
 
 MainView {
@@ -262,13 +263,18 @@ MainView {
 
     /* TASK MANAGEMENT */
 
-    TasksModel {
+    LocalBackend.TasksModel {
         id: localProjectsModel
         database: storage
     }
 
+    TrelloBackend.TrelloModel {
+        id: trelloModel
+    }
+
     property var backendModels: [
-        localProjectsModel
+        localProjectsModel,
+        trelloModel
     ]
 
     property var upcomingTasks: localProjectsModel.upcomingTasks
@@ -306,10 +312,14 @@ MainView {
         PopupUtils.open(settingsSheet)
     }
 
-    function getSetting(name) {
+    function getSetting(name, def) {
         var tempContents = {};
         tempContents = settings.contents
-        return tempContents.hasOwnProperty(name) ? tempContents[name] : settings.defaults[name]
+        return tempContents.hasOwnProperty(name)
+                ? tempContents[name]
+                : settings.defaults.hasOwnProperty(name)
+                  ? settings.defaults[name]
+                  : def
     }
 
     function saveSetting(name, value) {

@@ -109,14 +109,13 @@ Item {
                         fontSize: "large"
                         bold: true
                         text: task.name
+                        editable: task.editable
                         placeholderText: i18n.tr("Title")
                         parentEditing: taskItem.editing
 
-                        onTextChanged: {
-                            if (task.name !== text) {
-                                task.name = text
-                                text = Qt.binding(function() { return task.name })
-                            }
+                        onDoneEditing: {
+                            task.name = text
+                            text = Qt.binding(function() { return task.name })
                         }
                     }
 
@@ -128,7 +127,7 @@ Item {
                         }
 
                         visible: !creating && !titleLabel.editing
-                        __acceptEvents: task.canComplete
+                        __acceptEvents: task.canComplete && task.editable
 
 
                         checked: task.completed
@@ -157,6 +156,7 @@ Item {
                         __styleInstance.color = (focus ? Theme.palette.normal.overlayText : "white")
                     }
 
+                    readOnly: !task.editable
                     text: task.description
                     placeholderText: i18n.tr("Description")
 

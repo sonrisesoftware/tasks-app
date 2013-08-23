@@ -31,6 +31,7 @@ Item {
     property var text
 
     property bool editing
+    property bool editable
 
     onEditingChanged: {
         if (editing)
@@ -39,13 +40,18 @@ Item {
 
     property bool parentEditing
 
-    onParentEditingChanged: editing = parentEditing
+    onParentEditingChanged: {
+        if (parentEditing)
+            edit()
+    }
 
     height: childrenRect.height
 
     property alias fontSize: label.fontSize
     property alias placeholderText: textField.placeholderText
     property bool bold
+
+    signal doneEditing()
 
     Label {
         id: label
@@ -66,8 +72,9 @@ Item {
     property bool customClicking: false
 
     function edit() {
-        editing = true
-        textField.forceActiveFocus()
+        if (editable)
+            editing = true
+            textField.forceActiveFocus()
     }
 
     function done() {
@@ -109,6 +116,7 @@ Item {
             } else {
                 text = root.text
             }
+            doneEditing()
         }
 
         onCursorVisibleChanged: {

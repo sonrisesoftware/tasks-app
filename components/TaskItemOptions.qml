@@ -36,7 +36,7 @@ Column {
 //    }
 
     Standard {
-        visible: !task.hasChecklist
+        visible: !task.hasChecklist && task.editable
 
         text: i18n.tr("Add Checklist...")
         onClicked: {
@@ -49,6 +49,7 @@ Column {
         id: prioritySelector
 
         text: i18n.tr("Priority")
+        enabled: task.editable
 
 //        Row {
 //            spacing: units.gu(1)
@@ -95,47 +96,49 @@ Column {
         }
     }
 
-        ValueSelector {
-            id: projectSelector
+    ValueSelector {
+        id: projectSelector
 
-            text: i18n.tr("Project")
-            selectedIndex: getSelectedProject()
+        text: i18n.tr("Project")
+        selectedIndex: getSelectedProject()
+        enabled: task.editable
 
-            function getSelectedProject() {
-                for (var i = 0; i < localProjectsModel.projects.count; i++) {
-                    if (task.project === localProjectsModel.projects.get(i).modelData)
-                        return i
-                }
-                return -1
+        function getSelectedProject() {
+            for (var i = 0; i < localProjectsModel.projects.count; i++) {
+                if (task.project === localProjectsModel.projects.get(i).modelData)
+                    return i
             }
-
-            values: {
-                var values = []
-                for (var i = 0; i < localProjectsModel.projects.count; i++) {
-                    values.push(localProjectsModel.projects.get(i).modelData.name)
-                }
-                values.push(i18n.tr("<i>Create New Project</i>"))
-                return values
-            }
-
-            onSelectedIndexChanged: {
-                print(selectedIndex,values.length)
-                if (selectedIndex === values.length - 1) {
-                    PopupUtils.open(newProjectDialog, root)
-                    selectedIndex = values.length - 1
-                }
-
-                var newProject = localProjectsModel.projects.get(selectedIndex).modelData
-                if (task.project !== newProject)
-                    task.moveTo(newProject)
-                selectedIndex = Qt.binding(getSelectedProject)
-            }
+            return -1
         }
+
+        values: {
+            var values = []
+            for (var i = 0; i < localProjectsModel.projects.count; i++) {
+                values.push(localProjectsModel.projects.get(i).modelData.name)
+            }
+            values.push(i18n.tr("<i>Create New Project</i>"))
+            return values
+        }
+
+        onSelectedIndexChanged: {
+            print(selectedIndex,values.length)
+            if (selectedIndex === values.length - 1) {
+                PopupUtils.open(newProjectDialog, root)
+                selectedIndex = values.length - 1
+            }
+
+            var newProject = localProjectsModel.projects.get(selectedIndex).modelData
+            if (task.project !== newProject)
+                task.moveTo(newProject)
+            selectedIndex = Qt.binding(getSelectedProject)
+        }
+    }
 
     SingleValue {
         id: dueDateField
 
         text: i18n.tr("Due Date")
+        enabled: task.editable
 
         value: task.dueDateInfo
         visible: task.hasOwnProperty("dueDate")
@@ -149,6 +152,7 @@ Column {
         id: repeatSelector
         text: i18n.tr("Repeat")
         visible: task.hasOwnProperty("repeat")
+        enabled: task.editable
 
         values: [i18n.tr("Never"), i18n.tr("Daily"), i18n.tr("Weekly"), i18n.tr("Monthly"), i18n.tr("Yearly")]
         selectedIndex: getSelectedIndex()

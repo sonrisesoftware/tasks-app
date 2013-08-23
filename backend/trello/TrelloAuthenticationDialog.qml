@@ -23,15 +23,18 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
+import "Trello.js" as Trello
 
 Dialog {
     id: root
 
-    signal accepted
-    signal rejected
-
     property alias value: textField.text
     property alias placeholderText: textField.placeholderText
+
+    signal accepted()
+    signal rejected()
+
+    title: i18n.tr("Authenticate Trello")
 
     TextField {
         id: textField
@@ -46,11 +49,17 @@ Dialog {
         id: okButton
         objectName: "okButton"
 
-        text: i18n.tr("Ok")
-        enabled: textField.acceptableInput
+        text: textField.acceptableInput ? i18n.tr("Ok") : i18n.tr("Authenticate")
 
         onClicked: {
-            PopupUtils.close(root)
+            if (textField.acceptableInput) {
+                PopupUtils.close(root)
+                Trello.token = value
+                saveSetting("trello-token", value)
+            } else {
+                Trello.authenticate("Ubuntu Tasks")
+            }
+
             accepted()
         }
     }

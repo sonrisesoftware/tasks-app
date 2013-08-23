@@ -20,60 +20,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.    *
  ***************************************************************************/
 import QtQuick 2.0
+import QtWebKit 3.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
+import "Trello.js" as Trello
 
-Dialog {
-    id: root
+Page {
+    id: webPage
+    property string token: ""
 
-    signal accepted
-    signal rejected
-
-    property alias value: textField.text
-    property alias placeholderText: textField.placeholderText
-
-    TextField {
-        id: textField
-
-        onAccepted: okButton.clicked()
-        validator: RegExpValidator {
-            regExp: /.+/
-        }
-    }
-
-    Button {
-        id: okButton
-        objectName: "okButton"
-
-        text: i18n.tr("Ok")
-        enabled: textField.acceptableInput
-
-        onClicked: {
-            PopupUtils.close(root)
-            accepted()
-        }
-    }
-
-    Button {
-        objectName: "cancelButton"
-        text: i18n.tr("Cancel")
-
-        gradient: Gradient {
-            GradientStop {
-                position: 0
-                color: "gray"
-            }
-
-            GradientStop {
-                position: 1
-                color: "lightgray"
-            }
-        }
-
-        onClicked: {
-            PopupUtils.close(root)
-            rejected()
+    WebView {
+        anchors.fill: parent
+        url: webPage.visible ? "https://trello.com/" : ""
+        onUrlChanged: {
+            console.log("Oauth token getter url is now : " + url)
+            console.log("Oauth token getter url is now : " + typeof url.toString())
+            print ("RETURNED URL: ", url.toString())
+//            if (url.toString().substring(0, 32) === "https://api.github.com/zen?code=") {
+//                webPage.token = url.toString().substring(32)
+//                // move this to a database?
+//                console.log("Oauth token is now : " + webPage.token)
+//                pageStack.pop();
+//            }
         }
     }
 }
