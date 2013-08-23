@@ -30,7 +30,9 @@ SingleValue {
 
     property var project
 
-    text: project === null ? i18n.tr("Upcoming") : project.name
+    text: project === null
+          ? i18n.tr("Upcoming")
+          : project.name
 
     onClicked: {
         currentProject = project
@@ -39,7 +41,7 @@ SingleValue {
 
     selected: currentProject === project
     enabled: project.enabled
-    visible: !project.archived
+    visible: !project.archived || showArchivedProjects
 
     onPressAndHold: {
         if (project !== null && project.editable)

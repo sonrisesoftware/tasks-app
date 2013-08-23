@@ -38,6 +38,9 @@ Item {
     property bool requiresInternet: true
     property bool loading: true
     property var database
+    property string token: ""
+    enabled: token !== "" && trelloIntegration
+    onEnabledChanged: print(">>>>>>>>>>>>>>>>>>>>>>>>>ENABLED:", enabled)
 
     property var list: []
 
@@ -63,25 +66,11 @@ Item {
     }
 
     function load() {
-        Trello.token = getSetting("trello-token", "")
+        Trello.token = getSetting("trelloToken", "")
+        token = Trello.token
+        print("Trello token:", Trello.token, trelloIntegration)
 
-        if (Trello.token === "") {
-//            https://trello.com/1/OAuthGetRequestToken
-//            https://trello.com/1/OAuthAuthorizeToken
-//            https://trello.com/1/OAuthGetAccessToken
-//            var message = {
-//                consumerKey: Trello.key,
-//                consumerSecret: Trello.secret,
-//                serviceProvider: {
-//                    signatureMethod: "HMAC-SHA1",
-//                    requestTokenURL: "https://trello.com/1/OAuthGetRequestToken",
-//                    userAuthorizationURL: "https://trello.com/1/OAuthAuthorizeToken",
-//                    accessTokenURL: "https://trello.com/1/OAuthGetAccessToken"/*,
-//                    echoURL: "http://localhost/oauth-provider/echo"*/
-//                }
-//            }
-            PopupUtils.open(trelloAuthentication, root)
-        } else {
+        if (Trello.token != "" && trelloIntegration) {
             var json = JSON.parse(tasksDocument.contents.tasks)
 
             if (runBefore) {
@@ -162,14 +151,6 @@ Item {
 
         Project {
 
-        }
-    }
-
-    Component {
-        id: trelloAuthentication
-
-        TrelloAuthenticationDialog {
-            onAccepted: authorized()
         }
     }
 

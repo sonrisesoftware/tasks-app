@@ -66,6 +66,7 @@ Page {
 
                     delegate: Column {
                         width: parent.width
+                        visible: modelData.enabled
                         Header {
                             text: modelData.name
 
@@ -151,7 +152,7 @@ Page {
             visible:  sidebar.expanded || currentProject === null
 
             onTriggered: {
-                PopupUtils.open(newProjectDialog, caller)
+                PopupUtils.open(newProjectDialog, root)
             }
         }
 
@@ -178,7 +179,7 @@ Page {
             enabled: currentProject !== null && currentProject.editable
 
             onTriggered: {
-                PopupUtils.open(renameProjectDialog, caller, {
+                PopupUtils.open(renameProjectDialog, root, {
                                     project: currentProject
                                 })
             }
@@ -191,7 +192,7 @@ Page {
             enabled: currentProject !== null && currentProject.editable
 
             onTriggered: {
-                PopupUtils.open(confirmDeleteProjectDialog, caller, {
+                PopupUtils.open(confirmDeleteProjectDialog, root, {
                                     project: currentProject
                                 })
             }
@@ -208,12 +209,12 @@ Page {
         }
 
         ToolbarButton {
+            id: optionsButton
             text: i18n.tr("Options")
             iconSource: icon("settings")
-            visible: currentProject !== null
 
             onTriggered: {
-                PopupUtils.open(optionsPopover, caller)
+                PopupUtils.open(optionsPopover, optionsButton)
             }
         }
     }

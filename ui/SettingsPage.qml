@@ -23,69 +23,56 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
+import "../components"
+import "../backend/trello" as Trello
 
-Popover {
+Page {
+    id: root
 
-    Column {
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: parent.top
-        }
+    title: i18n.tr("Settings")
 
-        Standard {
-            //FIXME: Hack because of Suru theme!
-            Label {
-                anchors {
-                    verticalCenter: parent.verticalCenter
-                    left: parent.left
-                    margins: units.gu(2)
+    property string type: "settings"
+
+    Flickable {
+        id: flickable
+        anchors.fill: parent
+
+        // FIXME: REALLY uggly hack (no idea why)
+        anchors.topMargin: -1
+        topMargin: 1
+
+        contentHeight: column.height
+        contentWidth: width
+        //clip: true
+
+        Column {
+            id: column
+            width: parent.width
+
+            Standard {
+                text: i18n.tr("Connect to Trello")
+
+                control: Switch {
+                    checked: trelloIntegration
+                    onCheckedChanged: {
+                        saveSetting("trelloIntegration", checked ? "true" : "false")
+                        if (trelloIntegration && getSetting("trelloToken", "") === "")
+                            PopupUtils.open(trelloAuthentication, root)
+                    }
                 }
-
-                text: i18n.tr("Show Completed Tasks")
-                fontSize: "medium"
-                color: Theme.palette.normal.overlayText
             }
-
-            visible: currentProject !== null
-
-            control: CheckBox {
-                checked: showCompletedTasks
-                onCheckedChanged: saveSetting("showCompletedTasks", checked ? "true" : "false")
-            }
-
-            showDivider: false
         }
+    }
 
-        Standard {
-            //FIXME: Hack because of Suru theme!
-            Label {
-                anchors {
-                    verticalCenter: parent.verticalCenter
-                    left: parent.left
-                    margins: units.gu(2)
-                }
+    Scrollbar {
+        flickableItem: flickable
+    }
 
-                text: i18n.tr("Show Archived Projects")
-                fontSize: "medium"
-                color: Theme.palette.normal.overlayText
-            }
+    Component {
+        id: trelloAuthentication
 
-            control: CheckBox {
-                checked: showArchivedProjects
-                onCheckedChanged: saveSetting("showArchivedProjects", checked ? "true" : "false")
-            }
-
-            showDivider: false
+        Trello.TrelloAuthenticationDialog {
+            onAccepted: trelloModel.load()
         }
-
-//        ValueSelector {
-//            text: i18n.tr("Sort By")
-//            values: [
-//                "Due Date",
-//                "Relevence",
-//                "Importance"
-//            ]
-//        }
     }
 }

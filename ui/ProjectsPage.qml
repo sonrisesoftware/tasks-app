@@ -32,6 +32,8 @@ Page {
 
     property string type: "projects"
 
+    property var currentProject: null
+
     Flickable {
         id: flickable
         anchors.fill: parent
@@ -52,9 +54,21 @@ Page {
                 model: backendModels
 
                 delegate: Column {
+                    visible: modelData.enabled
                     width: parent.width
                     Header {
                         text: modelData.name
+
+                        ActivityIndicator {
+                            anchors {
+                                verticalCenter: parent.verticalCenter
+                                right: parent.right
+                                rightMargin: units.gu(0.5)
+                            }
+
+                            visible: running
+                            running: modelData.loading
+                        }
                     }
 
                     Repeater {
@@ -90,7 +104,17 @@ Page {
             text: i18n.tr("New Project")
 
             onTriggered: {
-                PopupUtils.open(newProjectDialog, caller)
+                PopupUtils.open(newProjectDialog, root)
+            }
+        }
+
+        ToolbarButton {
+            id: optionsButton
+            text: i18n.tr("Options")
+            iconSource: icon("settings")
+
+            onTriggered: {
+                PopupUtils.open(optionsPopover, optionsButton)
             }
         }
     }

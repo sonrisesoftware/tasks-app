@@ -89,6 +89,13 @@ MainView {
                 show: !wideAspect
             }
 
+            Tab {
+                title: page.title
+                page: SettingsPage {
+                    id: settingsPage
+                }
+            }
+
             visible: false
         }
 
@@ -283,6 +290,8 @@ MainView {
     /* SETTINGS */
 
     property bool showCompletedTasks
+    property bool showArchivedProjects
+    property bool trelloIntegration
     property bool runBefore
 
     /* CHECKING FOR INTERNET */
@@ -303,6 +312,8 @@ MainView {
 
         defaults: {
             showCompletedTasks: "false"
+            showArchivedProjects: "false"
+            trelloIntegration: "false"
             runBefore: "false"
             width: units.gu(100)
             height: units.gu(75)
@@ -339,7 +350,9 @@ MainView {
         //showVerse = getSetting("showVerse") === "true" ? true : false
         //print("showVerse <=", showVerse)
 
-        showCompletedTasks = getSetting("showCompletedTasks") === "true" ? true : false
+        showCompletedTasks = getSetting("showCompletedTasks") === "true"
+        showArchivedProjects = getSetting("showArchivedProjects") === "true"
+        trelloIntegration = getSetting("trelloIntegration") === "true"
         runBefore = getSetting("runBefore") === "true" ? true : false
     }
 
@@ -601,6 +614,7 @@ MainView {
             actions: ActionList {
                 Action {
                     text: i18n.tr("Rename")
+                    enabled: project.editable
                     onTriggered: {
                         PopupUtils.open(renameProjectDialog, caller, {
                                             project: project
@@ -609,6 +623,15 @@ MainView {
                 }
 
                 Action {
+                    text: project.archived ? i18n.tr("Unarchive") : i18n.tr("Archive")
+                    enabled: project.editable
+                    onTriggered: {
+                        project.archived = !project.archived
+                    }
+                }
+
+                Action {
+                    enabled: project.editable
                     text: i18n.tr("Delete")
                     onTriggered: {
                         PopupUtils.open(confirmDeleteProjectDialog, root, {project: project})

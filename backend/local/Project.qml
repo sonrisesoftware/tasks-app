@@ -28,6 +28,7 @@ GenericProject {
 
     function load(json) {
         name = json.name
+        archived = json.archived
         var tasks = json.tasks
         for (var i = 0; i < tasks.length; i++) {
             newTask(tasks[i])
@@ -38,6 +39,7 @@ GenericProject {
         var json = {}
         json.name = name
         json.tasks = []
+        json.archived = archived
 
         for (var i = 0; i < tasks.count; i++) {
             json.tasks.push(tasks.get(i).modelData.save())

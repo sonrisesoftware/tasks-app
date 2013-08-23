@@ -55,7 +55,7 @@ Dialog {
             if (textField.acceptableInput) {
                 PopupUtils.close(root)
                 Trello.token = value
-                saveSetting("trello-token", value)
+                saveSetting("trelloToken", value)
             } else {
                 Trello.authenticate("Ubuntu Tasks")
             }
