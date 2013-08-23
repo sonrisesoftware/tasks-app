@@ -300,7 +300,7 @@ MainView {
 
     U1db.Database {
         id: storage
-        path: "tasks-app"
+        path: "tasks-app.db"
     }
 
     U1db.Document {

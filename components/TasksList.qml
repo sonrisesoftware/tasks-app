@@ -29,9 +29,12 @@ Item {
     id: root
 
     property alias showAddBar: addBar.visible
+    property var filter: function(task) {
+        return !task.completed || showCompletedTasks
+    }
 
     property string noneMessage: i18n.tr("No tasks")
-    property var model: project === null ? upcomingTasks : project.model
+    property var model: project.tasks
     property var project
 
     property alias addBarColor: addBar.color
@@ -58,6 +61,7 @@ Item {
             objectName: "task" + index
 
             task: modelData
+            show: filter(task)
         }
     }
 

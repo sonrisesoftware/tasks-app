@@ -37,33 +37,13 @@ QtObject {
     property date completionDate
     property string priority: "low"
     property var tags: []
-    property var checklist: []
+    property Checklist checklist: Checklist {
+
+    }
 
     property bool hasChecklist: checklist.length > 0
 
-    onChecklistChanged: {
-        if (checklist.length === 0) {
-            if (hasChecklist) {
-                completed = false
-            }
-        } else {
-            progress = 0
-            for (var i = 0; i < checklist.length; i++) {
-                if (checklist[i].completed)
-                    progress += 1;
-            }
-
-            if (progress === checklist.length)
-                completed = true
-            else
-                completed = false
-        }
-    }
-
     property bool canComplete: !hasChecklist
-    property var progress: 0
-
-    property int percent: progress * 100/checklist.length
 
     onCompletedChanged: {
         if (completed) {
@@ -108,8 +88,28 @@ QtObject {
             completionDate: completionDate,
             priority: priority,
             tags: tags,
-            checklist: checklist
+            checklist: checklist.save()
         }
+    }
+
+    function save() {
+        return json
+    }
+
+    function load(json) {
+        index = json.index
+        name = json.name
+        description = json.description
+        creationDate = json.creationDate
+        if (json.dueDate !== null)
+            dueDate = json.dueDate
+        repeat = json.repeat
+        completed = json.completed
+        if (json.completionDate !== null)
+            completionDate = json.completionDate
+        priority = json.priority
+        tags = json.tags
+        checklist.load(json.checklist)
     }
 
     onJsonChanged: {
@@ -168,12 +168,6 @@ QtObject {
         date.setDate(date.getDate() + 7)
 
         return dateIsBeforeOrSame(dueDate, date)
-    }
-
-    function addChecklistItem(name, completed) {
-        var list = checklist
-        list.push({completed: completed, text: name})
-        checklist = list
     }
 
     function remove() {

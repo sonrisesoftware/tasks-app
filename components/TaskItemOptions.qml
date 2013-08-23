@@ -36,8 +36,7 @@ Column {
 
         text: i18n.tr("Add Checklist...")
         onClicked: {
-            task.hasChecklist = true
-            task.checklist = [{completed: false, text: "New Item"}]
+            task.checklist.add(i18n.tr("New Item"))
         }
     }
 

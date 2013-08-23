@@ -31,7 +31,8 @@ GenericProject {
         archived = json.archived
         var tasks = json.tasks
         for (var i = 0; i < tasks.length; i++) {
-            newTask(tasks[i])
+            var task = newTask()
+            task.load(tasks[i])
         }
     }
 

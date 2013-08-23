@@ -43,7 +43,8 @@ GenericProject {
             tasks = []
 
         for (var i = 0; i < tasks.length; i++) {
-            var task = newTask(tasks[i])
+            var task = newTask()
+            task.load(json[i])
             task.refresh()
         }
 
@@ -58,7 +59,7 @@ GenericProject {
             var task = getCard(json[i].id)
             if (task === undefined) {
                 task = newTask()
-                task.load(json[i])
+                task.loadTrello(json[i])
                 task.refresh()
             } else {
                 task.load(json[i])

@@ -31,7 +31,22 @@ Empty {
 
     property var task
 
+    height: opacity === 0 ? 0 : implicitHeight
+
+    Behavior on height {
+        UbuntuNumberAnimation {}
+    }
+
+    //onHeightChanged: print("HEIGHT CHANGED:", height)
+
     clip: true
+    opacity: show ? 1 : 0
+
+    property bool show: true
+
+    Behavior on opacity {
+        UbuntuNumberAnimation {}
+    }
 
     UbuntuShape {
         id: priorityShape
@@ -132,25 +147,12 @@ Empty {
         checked: task.completed
         __acceptEvents: task.canComplete && task.editable
 
-        onCheckedChanged: showCompletedTasks ? task.completed = checked : hideAnimation.start()
-
-        SequentialAnimation {
-            id: hideAnimation
-
-
-            NumberAnimation { target: root; property: "opacity"; to: 0; duration: 500 }
-            NumberAnimation { target: root; property: "height"; to: 0; duration: 250 }
-            PropertyAnimation {
-                target: root.task; property: "completed"; to: true
-            }
-        }
-
-
+        onCheckedChanged: task.completed = checked
     }
 
     Label {
         anchors.centerIn: doneCheckBox
-        text: task.percent + "%"
+        text: task.checklist.percent + "%"
         visible: !task.canComplete && !task.completed
     }
 

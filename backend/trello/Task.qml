@@ -30,11 +30,7 @@ GenericTask {
 
     property string checklistID: ""
 
-    function save() {
-        return json
-    }
-
-    function load(json) {
+    function loadTrello(json) {
         name = json.name
         completed = json.closed
         index = json.id

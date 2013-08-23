@@ -136,7 +136,7 @@ Item {
 
                     Label {
                         anchors.centerIn: completedCheckBox
-                        text: task.percent + "%"
+                        text: task.checklist.percent + "%"
                         visible: !task.canComplete && !task.completed && completedCheckBox.visible
                     }
                 }

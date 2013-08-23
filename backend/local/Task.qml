@@ -25,10 +25,6 @@ import ".."
 GenericTask {
     id: task
 
-    function save() {
-        return json
-    }
-
     function remove() {
         project.removeTask(task)
     }

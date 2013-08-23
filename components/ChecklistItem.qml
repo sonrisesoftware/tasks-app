@@ -28,8 +28,6 @@ import "../ubuntu-ui-extras"
 Empty {
     id: root
 
-    property alias completed: checkBox.checked
-    property var checklist
     property int itemIndex
 
     Row {
@@ -48,10 +46,9 @@ Empty {
             anchors.verticalCenter: parent.verticalCenter
 
             __acceptEvents: task.editable
-            checked: checklist[itemIndex].completed
+            checked: modelData.completed
             onCheckedChanged: {
-                checklist[itemIndex].completed = checked
-                task.checklist = checklist
+                task.checklist.setCompletion(itemIndex, checked)
             }
         }
 
@@ -61,10 +58,9 @@ Empty {
             width: parent.width - checkBox.width - parent.spacing
 
             editable: task.editable
-            text: checklist[itemIndex].text
+            text: modelData.name
             onTextChanged: {
-                checklist[itemIndex].text = text
-                task.checklist = checklist
+                task.checklist.setName(itemIndex, text)
             }
 
             customClicking: true
@@ -75,8 +71,7 @@ Empty {
 
     removable: true
     onItemRemoved: {
-        task.checklist.splice(itemIndex,1)
-        task.checklist = task.checklist
+        task.checklist.remove(index)
     }
 
     backgroundIndicator: ListItemBackground {

@@ -31,12 +31,12 @@ ListView {
     interactive: false
 
     property var task
-    model: task.checklist
+    model: task.checklist.items
 
     header: Header {
         Label {
             id: checklistLabel
-            text: i18n.tr("Checklist")
+            text: task.checklist.name
 
             anchors {
                 left: parent.left
@@ -59,15 +59,14 @@ ListView {
 
             height: units.gu(2.5)
 
-            value: task.progress
+            value: task.checklist.progress
             minimumValue: 0
-            maximumValue: task.checklist.length
+            maximumValue: root.count
         }
     }
 
     delegate: ChecklistItem {
         itemIndex: index
-        checklist: task.checklist
 
         anchors {
             left: parent.left
@@ -85,8 +84,7 @@ ListView {
         enabled: task.editable
 
         onClicked: {
-            task.addChecklistItem(i18n.tr("New Item"), false)
-            //repeater.children.get(repeater.model.length - 1).editing = true
+            task.checklist.add(i18n.tr("New Item"))
         }
     }
 }
