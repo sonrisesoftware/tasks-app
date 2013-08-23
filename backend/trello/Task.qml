@@ -21,11 +21,14 @@
  ***************************************************************************/
 import QtQuick 2.0
 import ".."
+import "Trello.js" as Trello
 
 GenericTask {
     id: task
 
     editable: false
+
+    property string checklistID: ""
 
     function save() {
         return json
@@ -35,7 +38,35 @@ GenericTask {
         name = json.name
         completed = json.closed
         index = json.id
+        if (json.idChecklists.length > 0)
+            checklistID = json.idChecklists[0] // FIXME: support more than one checklist!
+        else
+            checklistID = ""
         description = json.badges.description ? json.desc : ""
+    }
+
+    function refresh() {
+
+    }
+
+    onChecklistIDChanged: {
+        if (checklistID !== "") {
+            loading++
+            Trello.call("/checklists/" + checklistID, [], loadChecklist)
+        }
+    }
+
+    function loadChecklist(response) {
+        var json = JSON.parse(response)
+        print("CHECKLIST>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+        var items = json.checkItems
+        checklist = []
+        for (var i = 0; i < items.length; i++) {
+            addChecklistItem(items[i].name, items[i].state === "complete")
+        }
+
+        loading--
     }
 
     function remove() {

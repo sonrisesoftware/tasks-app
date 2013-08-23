@@ -43,7 +43,8 @@ GenericProject {
             tasks = []
 
         for (var i = 0; i < tasks.length; i++) {
-            newTask(tasks[i])
+            var task = newTask(tasks[i])
+            task.refresh()
         }
 
         backend.loading++
@@ -57,9 +58,11 @@ GenericProject {
             var task = getCard(json[i].id)
             if (task === undefined) {
                 task = newTask()
+                task.load(json[i])
+                task.refresh()
+            } else {
+                task.load(json[i])
             }
-
-            task.load(json[i])
         }
 
         for (var k = 0; k < tasks.count; k++) {

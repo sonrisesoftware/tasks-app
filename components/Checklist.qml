@@ -82,11 +82,10 @@ ListView {
         }
 
         text: i18n.tr("Add item")
+        enabled: task.editable
 
         onClicked: {
-            var list = task.checklist
-            list.push({completed: false, text: "New Item"})
-            task.checklist = list
+            task.addChecklistItem(i18n.tr("New Item"), false)
             //repeater.children.get(repeater.model.length - 1).editing = true
         }
     }

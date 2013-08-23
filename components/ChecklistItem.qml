@@ -47,6 +47,7 @@ Empty {
 
             anchors.verticalCenter: parent.verticalCenter
 
+            __acceptEvents: task.editable
             checked: checklist[itemIndex].completed
             onCheckedChanged: {
                 checklist[itemIndex].completed = checked
@@ -59,6 +60,7 @@ Empty {
             anchors.verticalCenter: parent.verticalCenter
             width: parent.width - checkBox.width - parent.spacing
 
+            editable: task.editable
             text: checklist[itemIndex].text
             onTextChanged: {
                 checklist[itemIndex].text = text

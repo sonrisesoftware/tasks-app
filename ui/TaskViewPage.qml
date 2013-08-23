@@ -74,6 +74,7 @@ Page {
     tools: ToolbarItems {
         ToolbarButton {
             text: i18n.tr("Delete")
+            enabled: task.editable
             iconSource: icon("delete")
             onTriggered: PopupUtils.open(confirmDeleteTaskDialog, root, {task: task})
         }

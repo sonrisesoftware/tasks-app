@@ -170,6 +170,12 @@ QtObject {
         return dateIsBeforeOrSame(dueDate, date)
     }
 
+    function addChecklistItem(name, completed) {
+        var list = checklist
+        list.push({completed: completed, text: name})
+        checklist = list
+    }
+
     function remove() {
         // Do something...
     }
