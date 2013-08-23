@@ -24,7 +24,7 @@ import QtQuick 2.0
 QtObject {
     id: task
 
-    property int index
+    property string index: ""
     property var project
     property bool editable: true
 
@@ -98,6 +98,7 @@ QtObject {
 
     property var json: {
         return {
+            index: index,
             name: name,
             description: description,
             creationDate: creationDate,

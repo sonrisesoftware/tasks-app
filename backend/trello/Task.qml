@@ -26,8 +26,6 @@ GenericTask {
     id: task
 
     editable: false
-    property int index
-    property var project
 
     function save() {
         return json
@@ -36,6 +34,7 @@ GenericTask {
     function load(json) {
         name = json.name
         completed = json.closed
+        index = json.id
         description = json.badges.description ? json.desc : ""
     }
 

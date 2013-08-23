@@ -78,7 +78,7 @@ Item {
                 for (var i = 0; i < json.length; i++) {
                     var project = newProject(json[i].name)
                     project.load(json[i])
-                    project.refresh()
+                    project.refresh(json[i])
                 }
             }
 
@@ -99,11 +99,24 @@ Item {
             if (board === undefined) {
                 board = newProject(json[i].name)
                 board.load(json[i])
-                board.refresh()
+                board.refresh(json[i])
             } else {
                 board.load(json[i])
             }
         }
+        for (var k = 0; k < projects.count; k++) {
+            var found = false
+            for (var j = 0; j < json.length; j++) {
+                if (projects.get(k).modelData.boardID === json[j].id) {
+                    found = true
+                    break
+                }
+            }
+
+            if (!found)
+                projects.remove(k)
+        }
+
         loading = false
     }
 

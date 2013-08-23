@@ -29,31 +29,58 @@ GenericProject {
 
     property var boardID
     editable: false
-    enabled: false
+    enabled: true
 
     function load(json) {
         name = json.name
         boardID = json.id
         archived = json.closed
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>LOADING", name)
     }
 
-    function refresh() {
-        Trello.call("/boards/" + boardID + "/cards", [], loadCards)
+    function refresh(json) {
+        var tasks = json.tasks
+        if (tasks === undefined)
+            tasks = []
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>REFRESHING", name, "has", tasks)
+        for (var i = 0; i < tasks.length; i++) {
+            newTask(tasks[i])
+        }
 
-//        var tasks = json.tasks
-//        for (var i = 0; i < tasks.length; i++) {
-//            newTask(tasks[i])
-//        }
+        Trello.call("/boards/" + boardID + "/cards", [], loadCards)
     }
 
     function loadCards(response) {
         var json = JSON.parse(response)
 
         for (var i = 0; i < json.length; i++) {
-            var task = newTask()
+            var task = getCard(json[i].id)
+            if (task === undefined) {
+                task = newTask()
+            }
+
             task.load(json[i])
         }
-        enabled = true
+
+        for (var k = 0; k < tasks.count; k++) {
+            var found = false
+            for (var j = 0; j < json.length; j++) {
+                if (tasks.get(k).modelData.index === json[j].id) {
+                    found = true
+                    break
+                }
+            }
+
+            if (!found)
+                tasks.remove(k)
+        }
+    }
+
+    function getCard(cardID) {
+        for (var i = 0; i < tasks.count; i++) {
+            if (tasks.get(i).modelData.index === cardID)
+                return tasks.get(i).modelData
+        }
     }
 
     function save() {
@@ -61,12 +88,13 @@ GenericProject {
         json.name = name
         json.id = boardID
         json.closed =archived
-//        json.tasks = []
+        json.tasks = []
 
-//        for (var i = 0; i < tasks.count; i++) {
-//            json.tasks.push(tasks.get(i).modelData.save())
-//        }
+        for (var i = 0; i < tasks.count; i++) {
+            json.tasks.push(tasks.get(i).modelData.save())
+        }
 
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>SAVING", name,  json.tasks)
         return json
     }
 
