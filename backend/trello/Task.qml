@@ -29,16 +29,28 @@ GenericTask {
     editable: false
 
     property string checklistID: ""
+    property string listID: ""
+
+    property var list: project.getList(listID)
+
+    onListChanged: {
+        if (list !== undefined && list.name === "Done")
+            completed = true
+    }
 
     function loadTrello(json) {
+        index = json.id
         name = json.name
         completed = json.closed
-        index = json.id
+        listID = json.idList
         if (json.idChecklists.length > 0)
             checklistID = json.idChecklists[0] // FIXME: support more than one checklist!
         else
             checklistID = ""
         description = json.badges.description ? json.desc : ""
+
+        if (name === "Create PPA")
+            Trello.put("/cards/" + index + "/actions/comments", ["text=Hello from jsfiddle.net!"])
     }
 
     function refresh() {
@@ -47,22 +59,18 @@ GenericTask {
 
     onChecklistIDChanged: {
         if (checklistID !== "") {
-            loading++
             Trello.call("/checklists/" + checklistID, [], loadChecklist)
         }
     }
 
     function loadChecklist(response) {
         var json = JSON.parse(response)
-        print("CHECKLIST>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
         var items = json.checkItems
         checklist.clear()
         for (var i = 0; i < items.length; i++) {
             checklist.add(items[i].name, items[i].state === "complete")
         }
-
-        loading--
     }
 
     function remove() {

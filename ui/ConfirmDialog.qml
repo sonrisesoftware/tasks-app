@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -58,17 +58,7 @@ Dialog {
         objectName: "cancelButton"
         text: i18n.tr("Cancel")
 
-        gradient: Gradient {
-            GradientStop {
-                position: 0
-                color: "gray"
-            }
-
-            GradientStop {
-                position: 1
-                color: "lightgray"
-            }
-        }
+        gradient: UbuntuColors.greyGradient
 
         onClicked: {
             PopupUtils.close(root)

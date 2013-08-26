@@ -35,12 +35,12 @@ Item {
     }
 
     property string name: "Trello Boards"
+    property string newName: "Trello Board"
     property bool requiresInternet: true
     property int loading: 0
     property var database
     property string token: ""
     enabled: token !== "" && trelloIntegration
-    onEnabledChanged: print(">>>>>>>>>>>>>>>>>>>>>>>>>ENABLED:", enabled)
 
     property var list: []
 
@@ -66,6 +66,7 @@ Item {
     }
 
     function load() {
+        Trello.model = root
         Trello.token = getSetting("trelloToken", "")
         token = Trello.token
         print("Trello token:", Trello.token, trelloIntegration)
@@ -76,7 +77,7 @@ Item {
             if (runBefore) {
                 print("LOADING...")
                 for (var i = 0; i < json.length; i++) {
-                    var project = newProject(json[i].name)
+                    var project = internal_newProject(json[i].name)
                     project.load(json[i])
                     project.refresh(json[i])
                 }
@@ -87,18 +88,15 @@ Item {
     }
 
     function authorized() {
-        loading++
         Trello.call("/members/my/boards", [], onBoardsLoaded)
     }
 
     function onBoardsLoaded(response) {
-        print("BOARDS:", response)
         var json = JSON.parse(response)
         for (var i = 0; i < json.length; i++) {
-            print("Board:", json[i].name)
             var board = getBoard(json[i].id)
             if (board === undefined) {
-                board = newProject(json[i].name)
+                board = internal_newProject(json[i].name)
                 board.load(json[i])
                 board.refresh(json[i])
             } else {
@@ -117,8 +115,6 @@ Item {
             if (!found)
                 projects.remove(k)
         }
-
-        loading--
     }
 
     function save() {
@@ -136,6 +132,18 @@ Item {
     }
 
     function newProject(name) {
+        var board = internal_newProject(name)
+        Trello.post("/boards", ["name=" + name], onNewProject)
+        return board
+    }
+
+    function onNewProject(response) {
+        var json = JSON.parse(response)
+        board.load(json[i])
+        board.refresh(json[i])
+    }
+
+    function internal_newProject(name) {
         var project = newProjectComponent.createObject(root)
         project.backend = root
 

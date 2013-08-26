@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -72,6 +72,14 @@ ListView {
             left: parent.left
             right: parent.right
         }
+    }
+
+    populate: Transition {
+        UbuntuNumberAnimation {}
+    }
+
+    add: Transition {
+        UbuntuNumberAnimation {}
     }
 
     footer: Standard {

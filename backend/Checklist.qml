@@ -29,16 +29,13 @@ QtObject {
             else
                 completed = false
         }
-        print("Progress", progress)
     }
 
     function load(json) {
         name = json.name
         items.clear()
-        print("LOADING CHECKLIST:", name, json.items.length)
 
         for (var i = 0; i < json.items.length; i++) {
-            print("   ", json.items[i])
             items.append({modelData: json.items[i]})
         }
         updateChecklistStatus()
@@ -52,7 +49,6 @@ QtObject {
         for (var i = 0; i < items.count; i++) {
             json.items.push(items.get(i).modelData)
         }
-        print("SAVING CHECKLIST:", json)
         return json
     }
 
@@ -73,7 +69,6 @@ QtObject {
     }
 
     function setCompletion(index, completion) {
-        print("Completed", index, completion)
         var item = items.get(index).modelData
         item.completed = completion
         items.set(index, {modelData: item})

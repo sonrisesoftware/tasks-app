@@ -92,3 +92,10 @@ Day 15 - 8/21/2013
  * Improved home page toolbar buttons
  * Move task options into sidebar in wide aspect mode
  * Added apply button to editable labels
+
+Day 17 - 8/23/2013
+ * Began Trello backend
+
+Day 20 - 8/26/2013
+ * Redesigned checklists
+ * Continued work on Trello backend

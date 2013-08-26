@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -22,8 +22,10 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.Popups 0.1
+import Ubuntu.Components.ListItems 0.1 as ListItem
 import U1db 1.0 as U1db
 import QtSystemInfo 5.0
+import Ubuntu.OnlineAccounts 0.1
 
 import "ui"
 import "components"
@@ -102,45 +104,31 @@ MainView {
 //        Page {
 //            id: testPage
 
-//            UbuntuShape {
-//                anchors.centerIn: parent
-//                width: childrenRect.width
-//                height: childrenRect.height
-//                color: Qt.rgba(0.2,0.2,0.2,0.4)
-//                //gradientColor: Qt.rgba(0.2,0.2,0.2,0.4)
+//            title: "Trello Login"
 
-//                Item {
-//                    width: units.gu(20)
-//                    height: units.gu(30)
+//            AccountServiceModel {
+//                id: accounts
+//                service: "trello-boards"
+//            }
+//            ListView {
+//                id: listView
+//                anchors.fill: parent
+//                model: accounts
+//                header: ListItem.Header {
+//                    text: i18n.tr("Trello Accounts")
+//                }
 
-//                    Spinner {
-//                        anchors {
-//                            left: parent.left
-//                            right: parent.horizontalCenter
-//                            top: parent.top
-//                            bottom: parent.bottom
+//                delegate: ListItem.Standard {
+//                    Item {
+//                        AccountService {
+//                            id: accts
+//                            objectHandle: accountServiceHandle
+//                            onAuthenticated: { console.log("Access token is " + reply.AccessToken) }
+//                            onAuthenticationError: { console.log("Authentication failed, code " + error.code) }
 //                        }
-
-//                        minValue: 1
-//                        value: 3
-//                        maxValue: 12
 //                    }
-//                    VerticalDivider {
-//                        anchors.horizontalCenter: parent.horizontalCenter
-//                        anchors.margins: 1
-//                    }
-
-//                    Spinner {
-//                        anchors {
-//                            left: parent.horizontalCenter
-//                            right: parent.right
-//                            top: parent.top
-//                            bottom: parent.bottom
-//                        }
-
-//                        minValue: 0
-//                        maxValue: 59
-//                    }
+//                    text: providerName + ": " + displayName
+//                    onClicked: accts.authenticate(null)
 //                }
 //            }
 //        }
@@ -153,7 +141,8 @@ MainView {
 
         Component.onCompleted: {
             pageStack.push(tabs)
-            clearPageStack()
+            //pageStack.push(testPage)
+            //clearPageStack()
         }
     }
 
@@ -599,9 +588,50 @@ MainView {
         id: newProjectDialog
 
         InputDialog {
-            title: i18n.tr("New Project")
-            placeholderText: i18n.tr("Project name")
-            onAccepted: localProjectsModel.newProject(value)
+            property var backend
+
+            title: i18n.tr("New %1").arg(backend.newName)
+            onAccepted: backend.newProject(value)
+        }
+    }
+
+    Component {
+        id: newProjectPopover
+
+        Popover {
+            id: newProjectPopoverItem
+            Column {
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: parent.top
+                }
+
+                Repeater {
+                    model: backendModels
+                    delegate: ListItem.Standard {
+                        //FIXME: Hack because of Suru theme!
+                        Label {
+                            anchors {
+                                verticalCenter: parent.verticalCenter
+                                left: parent.left
+                                margins: units.gu(2)
+                            }
+
+                            text: modelData.newName
+                            fontSize: "medium"
+                            color: Theme.palette.normal.overlayText
+                        }
+
+                        onClicked: {
+                            PopupUtips.close(newProjectPopoverItem)
+                            PopupUtils.open(newProjectDialog, root, {backend: modelData})
+                        }
+
+                        //showDivider: index < count - 1
+                    }
+                }
+            }
         }
     }
 

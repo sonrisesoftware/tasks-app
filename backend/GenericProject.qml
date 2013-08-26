@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,13 +20,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.    *
  ***************************************************************************/
 import QtQuick 2.0
+import Ubuntu.Components 0.1
 import U1db 1.0 as U1db
 
-Item {
+Object {
     id: root
 
     property bool editable: true
-    enabled: true
+    property bool enabled: true
 
     property ListModel tasks: ListModel {
         id: tasks
@@ -76,7 +77,7 @@ Item {
     }
 
     function removeTask(task) {
-        if (!canRemoveTasks)
+        if (!editable)
             return
         for (var i = 0; i < tasks.count; i++) {
             if (tasks.get(i).modelData === task) {

@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -228,35 +228,13 @@ Item {
         mode: "right"
         expanded: wideAspect
 
-        Header {
-            id: optionsHeader
-            text: i18n.tr("Options")
-        }
+        header: i18n.tr("Options")
 
-        Flickable {
-            id: optionsFlickable
-            anchors {
-                top: optionsHeader.bottom
-                left: parent.left
-                right: parent.right
-                bottom: parent.bottom
-            }
+        TaskItemOptions {
+            id: options
+            width: parent.width
 
-            clip: true
-
-            contentHeight: options.height
-            contentWidth: width
-
-            TaskItemOptions {
-                id: options
-                width: parent.width
-
-                task: taskItem.task
-            }
-        }
-
-        Scrollbar {
-            flickableItem: optionsFlickable
+            task: taskItem.task
         }
     }
 }

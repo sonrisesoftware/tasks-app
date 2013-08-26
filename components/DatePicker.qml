@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -38,7 +38,7 @@ Dialog {
 
         text: Qt.formatDate(task.dueDate)
 
-        placeholderText: i18n.tr("Date")
+        placeholderText: i18n.tr("MM/DD/YYYY")
 
         onAccepted: okButton.clicked()
     }
