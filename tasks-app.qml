@@ -610,6 +610,8 @@ MainView {
                 Repeater {
                     model: backendModels
                     delegate: ListItem.Standard {
+                        visible: modelData.editable
+
                         //FIXME: Hack because of Suru theme!
                         Label {
                             anchors {
@@ -624,7 +626,7 @@ MainView {
                         }
 
                         onClicked: {
-                            PopupUtips.close(newProjectPopoverItem)
+                            PopupUtils.close(newProjectPopoverItem)
                             PopupUtils.open(newProjectDialog, root, {backend: modelData})
                         }
 

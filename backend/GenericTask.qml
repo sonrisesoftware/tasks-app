@@ -22,7 +22,7 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 
-Object {
+Item {
     id: task
 
     property string index: ""
