@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -109,14 +109,13 @@ Item {
                         fontSize: "large"
                         bold: true
                         text: task.name
+                        editable: task.editable
                         placeholderText: i18n.tr("Title")
                         parentEditing: taskItem.editing
 
-                        onTextChanged: {
-                            if (task.name !== text) {
-                                task.name = text
-                                text = Qt.binding(function() { return task.name })
-                            }
+                        onDoneEditing: {
+                            task.name = text
+                            text = Qt.binding(function() { return task.name })
                         }
                     }
 
@@ -128,7 +127,7 @@ Item {
                         }
 
                         visible: !creating && !titleLabel.editing
-                        __acceptEvents: task.canComplete
+                        __acceptEvents: task.canComplete && task.editable
 
 
                         checked: task.completed
@@ -137,7 +136,7 @@ Item {
 
                     Label {
                         anchors.centerIn: completedCheckBox
-                        text: task.percent + "%"
+                        text: task.checklist.percent + "%"
                         visible: !task.canComplete && !task.completed && completedCheckBox.visible
                     }
                 }
@@ -157,6 +156,7 @@ Item {
                         __styleInstance.color = (focus ? Theme.palette.normal.overlayText : "white")
                     }
 
+                    readOnly: !task.editable
                     text: task.description
                     placeholderText: i18n.tr("Description")
 
@@ -169,11 +169,41 @@ Item {
                 visible: task.hasChecklist
             }
 
-            Checklist {
-                visible: task.hasChecklist
-                task: taskItem.task
-
+            Item {
+                id: checklistItem
+                scale: visible ? 1 : 0
+                height: checklist.height + checklist.y
                 width: parent.width
+                clip: true
+
+                Checklist {
+                    id: checklist
+                    visible: task.hasChecklist
+                    task: taskItem.task
+
+                    PropertyAnimation {
+                        id: checklistPhoneAnimation
+                        target: checklist
+                        property: "y"
+                        from: -height
+                        to: 0
+                        duration: 300
+                    }
+
+                    function show() {
+                        if (wideAspect) {
+
+                        } else {
+                            ch
+                        }
+                    }
+
+                    width: parent.width
+
+    //                Behavior on height {
+    //                    UbuntuNumberAnimation {}
+    //                }
+                }
             }
 
             Header {
@@ -198,35 +228,13 @@ Item {
         mode: "right"
         expanded: wideAspect
 
-        Header {
-            id: optionsHeader
-            text: i18n.tr("Options")
-        }
+        header: i18n.tr("Options")
 
-        Flickable {
-            id: optionsFlickable
-            anchors {
-                top: optionsHeader.bottom
-                left: parent.left
-                right: parent.right
-                bottom: parent.bottom
-            }
+        TaskItemOptions {
+            id: options
+            width: parent.width
 
-            clip: true
-
-            contentHeight: options.height
-            contentWidth: width
-
-            TaskItemOptions {
-                id: options
-                width: parent.width
-
-                task: taskItem.task
-            }
-        }
-
-        Scrollbar {
-            flickableItem: optionsFlickable
+            task: taskItem.task
         }
     }
 }

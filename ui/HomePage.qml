@@ -4,8 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
- *                                                                         *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
  * the Free Software Foundation, either version 3 of the License, or       *
@@ -40,53 +39,47 @@ Page {
 
     Sidebar {
         id: sidebar
-        anchors {
-            top: parent.top
-            bottom: parent.bottom
-        }
 
-        Flickable {
-            id: flickable
-            anchors.fill: parent
+        Column {
+            id: column
+            width: parent.width
 
-            contentHeight: column.height
-            contentWidth: width
-            clip: true
+            ProjectListItem {
+                project: null
+            }
 
-            Column {
-                id: column
-                width: parent.width
+            Repeater {
+                model: backendModels
 
-                ProjectListItem {
-                    project: null
-                }
+                delegate: Column {
+                    width: parent.width
+                    visible: modelData.enabled
+                    Header {
+                        text: modelData.name
 
-                Repeater {
-                    model: backendModels
-
-                    delegate: Column {
-                        width: parent.width
-                        Header {
-                            text: modelData.name
-                        }
-
-                        Repeater {
-                            model: modelData.projects
-
-                            delegate: ProjectListItem {
-                                project: modelData
+                        ActivityIndicator {
+                            anchors {
+                                verticalCenter: parent.verticalCenter
+                                right: parent.right
+                                rightMargin: units.gu(2)
                             }
+
+                            visible: running
+                            running: modelData.loading > 0
+                        }
+                    }
+
+                    Repeater {
+                        model: modelData.projects
+
+                        delegate: ProjectListItem {
+                            project: modelData
                         }
                     }
                 }
             }
         }
 
-        Scrollbar {
-            flickableItem: flickable
-        }
-
-        //width: units.gu(40)
         expanded: wideAspect
     }
 
@@ -109,38 +102,32 @@ Page {
         TasksList {
             id: list
 
-            showAddBar: false
             anchors.fill: parent
-            project: currentProject
             visible: !upcoming
+
+            showAddBar: false
+            project: currentProject
         }
     }
 
     QuickAddBar {
         id: addBar
-        expanded: !upcoming
+        expanded: currentProject !== null && currentProject.editable
         anchors.left: sidebar.right
     }
 
-    states: [
-        State {
-            when: showToolbar
-            PropertyChanges {
-                target: root.tools
-                locked: true
-                opened: true
-            }
-        }
-    ]
-
     tools: ToolbarItems {
         ToolbarButton {
+            id: newProjectButton
             iconSource: icon("add")
             text: i18n.tr("New Project")
             visible:  sidebar.expanded || currentProject === null
 
             onTriggered: {
-                PopupUtils.open(newProjectDialog, caller)
+                if (backendModels.length > 1)
+                    PopupUtils.open(newProjectPopover, newProjectButton)
+                else
+                    PopupUtils.open(newProjectDialog, root)
             }
         }
 
@@ -152,6 +139,8 @@ Page {
         ToolbarButton {
             iconSource: icon("add")
             text: i18n.tr("Add Task")
+            visible: currentProject !== null
+            enabled: currentProject !== null && currentProject.editable
 
             onTriggered: {
                 pageStack.push(addTaskPage, { project: currentProject })
@@ -162,9 +151,10 @@ Page {
             iconSource: icon("edit")
             text: i18n.tr("Rename")
             visible: currentProject !== null
+            enabled: currentProject !== null && currentProject.editable
 
             onTriggered: {
-                PopupUtils.open(renameProjectDialog, caller, {
+                PopupUtils.open(renameProjectDialog, root, {
                                     project: currentProject
                                 })
             }
@@ -174,9 +164,10 @@ Page {
             iconSource: icon("delete")
             text: i18n.tr("Delete")
             visible: currentProject !== null
+            enabled: currentProject !== null && currentProject.editable
 
             onTriggered: {
-                PopupUtils.open(confirmDeleteProjectDialog, caller, {
+                PopupUtils.open(confirmDeleteProjectDialog, root, {
                                     project: currentProject
                                 })
             }
@@ -193,12 +184,12 @@ Page {
         }
 
         ToolbarButton {
+            id: optionsButton
             text: i18n.tr("Options")
             iconSource: icon("settings")
-            visible: currentProject !== null
 
             onTriggered: {
-                PopupUtils.open(optionsPopover, caller)
+                PopupUtils.open(optionsPopover, optionsButton)
             }
         }
     }

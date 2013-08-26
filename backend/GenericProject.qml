@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,15 +20,74 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.    *
  ***************************************************************************/
 import QtQuick 2.0
+import Ubuntu.Components 0.1
 import U1db 1.0 as U1db
 
-Item {
+Object {
     id: root
+
+    property bool editable: true
+    property bool enabled: true
 
     property ListModel tasks: ListModel {
         id: tasks
 
         onCountChanged: update()
+    }
+
+    property var backend
+    property var taskComponent
+    property bool archived: false
+
+    property string name
+    property int count: tasks.count
+    property int overdueCount: 0
+
+    function load(json) {
+        // Implementation specific
+    }
+
+    function save() {
+        // Implementation specific
+    }
+
+    function newTask(args) {
+        var task = createTask(args)
+
+        addTask(task)
+        return task
+    }
+
+    function createTask(args) {
+        if (args === undefined)
+            args = {}
+        //print("CREATING TASK...")
+        var task = taskComponent.createObject(root, args)
+
+        if (task === null) {
+            console.log("Unable to create task!")
+        }
+
+        task.project = root
+        return task
+    }
+
+    function addTask(task) {
+        tasks.append({"modelData": task})
+    }
+
+    function removeTask(task) {
+        if (!editable)
+            return
+        for (var i = 0; i < tasks.count; i++) {
+            if (tasks.get(i).modelData === task) {
+                tasks.remove(i)
+            }
+        }
+    }
+
+    function remove() {
+        backend.removeProject(root)
     }
 
     function update() {
@@ -72,76 +131,5 @@ Item {
         }
 
         return count
-    }
-
-    property var backend
-
-    property string name
-    property int count: tasks.count
-    property int overdueCount: 0
-
-    function load(json) {
-        name = json.name
-        var tasks = json.tasks
-        for (var i = 0; i < tasks.length; i++) {
-            newTask(tasks[i])
-        }
-    }
-
-    function save() {
-        var json = {}
-        json.name = name
-        json.tasks = []
-
-        for (var i = 0; i < tasks.count; i++) {
-            json.tasks.push(tasks.get(i).modelData.save())
-        }
-
-        return json
-    }
-
-    function newTask(args) {
-        var task = createTask(args)
-
-        addTask(task)
-        return task
-    }
-
-    function createTask(args) {
-        if (args === undefined)
-            args = {}
-        //print("CREATING TASK...")
-        var task = taskComponent.createObject(root, args)
-
-        if (task === null) {
-            console.log("Unable to create task!")
-        }
-
-        task.project = root
-        return task
-    }
-
-    function addTask(task) {
-        tasks.append({"modelData": task})
-    }
-
-    function removeTask(task) {
-        for (var i = 0; i < tasks.count; i++) {
-            if (tasks.get(i).modelData === task) {
-                tasks.remove(i)
-            }
-        }
-    }
-
-    function remove() {
-        backend.removeProject(root)
-    }
-
-    Component {
-        id: taskComponent
-
-        Task {
-
-        }
     }
 }

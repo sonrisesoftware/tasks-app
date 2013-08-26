@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -32,6 +32,8 @@ Page {
 
     property string type: "projects"
 
+    property var currentProject: null
+
     Flickable {
         id: flickable
         anchors.fill: parent
@@ -52,9 +54,21 @@ Page {
                 model: backendModels
 
                 delegate: Column {
+                    visible: modelData.enabled
                     width: parent.width
                     Header {
                         text: modelData.name
+
+                        ActivityIndicator {
+                            anchors {
+                                verticalCenter: parent.verticalCenter
+                                right: parent.right
+                                rightMargin: units.gu(2)
+                            }
+
+                            visible: running
+                            running: modelData.loading > 0
+                        }
                     }
 
                     Repeater {
@@ -73,24 +87,23 @@ Page {
         flickableItem: flickable
     }
 
-    states: [
-        State {
-            when: showToolbar
-            PropertyChanges {
-                target: root.tools
-                locked: true
-                opened: true
-            }
-        }
-    ]
-
     tools: ToolbarItems {
         ToolbarButton {
             iconSource: icon("add")
             text: i18n.tr("New Project")
 
             onTriggered: {
-                PopupUtils.open(newProjectDialog, caller)
+                PopupUtils.open(newProjectDialog, root)
+            }
+        }
+
+        ToolbarButton {
+            id: optionsButton
+            text: i18n.tr("Options")
+            iconSource: icon("settings")
+
+            onTriggered: {
+                PopupUtils.open(optionsPopover, optionsButton)
             }
         }
     }

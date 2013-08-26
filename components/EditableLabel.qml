@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -31,6 +31,7 @@ Item {
     property var text
 
     property bool editing
+    property bool editable
 
     onEditingChanged: {
         if (editing)
@@ -39,13 +40,20 @@ Item {
 
     property bool parentEditing
 
-    onParentEditingChanged: editing = parentEditing
+    onParentEditingChanged: {
+        if (parentEditing)
+            edit()
+    }
 
-    height: childrenRect.height
+    height: editing
+            ? textField.height
+            : label.height
 
     property alias fontSize: label.fontSize
     property alias placeholderText: textField.placeholderText
     property bool bold
+
+    signal doneEditing()
 
     Label {
         id: label
@@ -66,8 +74,9 @@ Item {
     property bool customClicking: false
 
     function edit() {
-        editing = true
-        textField.forceActiveFocus()
+        if (editable)
+            editing = true
+            textField.forceActiveFocus()
     }
 
     function done() {
@@ -109,6 +118,7 @@ Item {
             } else {
                 text = root.text
             }
+            doneEditing()
         }
 
         onCursorVisibleChanged: {

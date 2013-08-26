@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -30,7 +30,9 @@ SingleValue {
 
     property var project
 
-    text: project === null ? i18n.tr("Upcoming") : project.name
+    text: project === null
+          ? i18n.tr("Upcoming")
+          : project.name
 
     onClicked: {
         currentProject = project
@@ -38,9 +40,11 @@ SingleValue {
     }
 
     selected: currentProject === project
+    enabled: project === null || project.enabled
+    visible: project === null || !project.archived || showArchivedProjects
 
     onPressAndHold: {
-        if (project !== null)
+        if (project !== null && project.editable)
             PopupUtils.open(projectActionsPopover, root, {
                                 project: project
                             })

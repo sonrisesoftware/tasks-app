@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -47,9 +47,33 @@ Popover {
                 color: Theme.palette.normal.overlayText
             }
 
+            visible: currentProject !== null
+
             control: CheckBox {
                 checked: showCompletedTasks
                 onCheckedChanged: saveSetting("showCompletedTasks", checked ? "true" : "false")
+            }
+
+            showDivider: false
+        }
+
+        Standard {
+            //FIXME: Hack because of Suru theme!
+            Label {
+                anchors {
+                    verticalCenter: parent.verticalCenter
+                    left: parent.left
+                    margins: units.gu(2)
+                }
+
+                text: i18n.tr("Show Archived Projects")
+                fontSize: "medium"
+                color: Theme.palette.normal.overlayText
+            }
+
+            control: CheckBox {
+                checked: showArchivedProjects
+                onCheckedChanged: saveSetting("showArchivedProjects", checked ? "true" : "false")
             }
 
             showDivider: false

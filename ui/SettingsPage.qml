@@ -1,6 +1,6 @@
 /***************************************************************************
  * Whatsoever ye do in word or deed, do all in the name of the             *
- * Lord Jesus, giving thanks to okd and the Father by him.                 *
+ * Lord Jesus, giving thanks to God and the Father by him.                 *
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
@@ -23,46 +23,56 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
+import "../components"
+import "../backend/trello" as Trello
 
-Dialog {
+Page {
     id: root
 
-    signal accepted
-    signal rejected
+    title: i18n.tr("Settings")
 
-    Button {
-        id: okButton
-        objectName: "okButton"
+    property string type: "settings"
 
-//        gradient: Gradient {
-//            GradientStop {
-//                position: 0
-//                color: "green"//Qt.rgba(0,0.7,0,1)
-//            }
+    Flickable {
+        id: flickable
+        anchors.fill: parent
 
-//            GradientStop {
-//                position: 1
-//                color: Qt.rgba(0.3,0.7,0.3,1)
-//            }
-//        }
+        // FIXME: REALLY uggly hack (no idea why)
+        anchors.topMargin: -1
+        topMargin: 1
 
-        text: i18n.tr("Ok")
+        contentHeight: column.height
+        contentWidth: width
+        //clip: true
 
-        onClicked: {
-            PopupUtils.close(root)
-            accepted()
+        Column {
+            id: column
+            width: parent.width
+
+            Standard {
+                text: i18n.tr("Connect to Trello")
+
+                control: Switch {
+                    checked: trelloIntegration
+                    onCheckedChanged: {
+                        saveSetting("trelloIntegration", checked ? "true" : "false")
+                        if (trelloIntegration && getSetting("trelloToken", "") === "")
+                            PopupUtils.open(trelloAuthentication, root)
+                    }
+                }
+            }
         }
     }
 
-    Button {
-        objectName: "cancelButton"
-        text: i18n.tr("Cancel")
+    Scrollbar {
+        flickableItem: flickable
+    }
 
-        gradient: UbuntuColors.greyGradient
+    Component {
+        id: trelloAuthentication
 
-        onClicked: {
-            PopupUtils.close(root)
-            rejected()
+        Trello.TrelloAuthenticationDialog {
+            onAccepted: trelloModel.load()
         }
     }
 }

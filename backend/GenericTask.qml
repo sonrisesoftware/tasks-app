@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <spencers1993@gmail.com>             *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,12 +20,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.    *
  ***************************************************************************/
 import QtQuick 2.0
+import Ubuntu.Components 0.1
 
-QtObject {
+Object {
     id: task
 
-    property int index
+    property string index: ""
     property var project
+    property bool editable: true
 
     property string name
     property string description
@@ -36,38 +38,17 @@ QtObject {
     property date completionDate
     property string priority: "low"
     property var tags: []
-    property var checklist: []
+    property Checklist checklist: Checklist {
 
-    property bool hasChecklist: false
-
-    onChecklistChanged: {
-        if (checklist.length === 0) {
-            if (hasChecklist) {
-                hasChecklist = false
-                completed = false
-            }
-        } else {
-            progress = 0
-            for (var i = 0; i < checklist.length; i++) {
-                if (checklist[i].completed)
-                    progress += 1;
-            }
-
-            if (progress === checklist.length)
-                completed = true
-            else
-                completed = false
-        }
     }
 
-    property bool canComplete: !hasChecklist
-    property var progress: 0
+    property bool hasChecklist: checklist.length > 0
 
-    property int percent: progress * 100/checklist.length
-    
+    property bool canComplete: !hasChecklist
+
     onCompletedChanged: {
         if (completed) {
-            var json = task.json
+            var json = task.save()
 
             // If the task has never been completed before
             // Then create the repeat of it
@@ -96,8 +77,9 @@ QtObject {
         }
     }
 
-    property var json: {
+    function save() {
         return {
+            index: index,
             name: name,
             description: description,
             creationDate: creationDate,
@@ -107,14 +89,24 @@ QtObject {
             completionDate: completionDate,
             priority: priority,
             tags: tags,
-            checklist: checklist,
-            hasChecklist: hasChecklist
+            checklist: checklist.save()
         }
     }
 
-    onJsonChanged: {
-        if (project !== undefined)
-            project.update()
+    function load(json) {
+        index = json.index
+        name = json.name
+        description = json.description
+        creationDate = json.creationDate
+        if (json.dueDate !== null)
+            dueDate = json.dueDate
+        repeat = json.repeat
+        completed = json.completed
+        if (json.completionDate !== null)
+            completionDate = json.completionDate
+        priority = json.priority
+        tags = json.tags
+        checklist.load(json.checklist)
     }
 
     property bool upcoming: (overdue || isDueThisWeek()) && !completed
@@ -138,10 +130,6 @@ QtObject {
                                    : task.overdue
                                      ? i18n.tr("Overdue (due %1)").arg(formattedDate(task.dueDate))
                                      : formattedDate(task.dueDate)
-
-    function save() {
-        return json
-    }
 
     function completedBy(date) {
         return (completed && dateIsBeforeOrSame(completionDate, date)) && existedBy(date)
@@ -175,12 +163,11 @@ QtObject {
     }
 
     function remove() {
-        project.removeTask(task)
+        // Do something...
     }
 
     function moveTo(project) {
-        task.project.removeTask(task)
-        task.project = project
-        project.addTask(task)
+        // Do something...
     }
 }
+

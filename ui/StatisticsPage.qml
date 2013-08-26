@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -47,20 +47,23 @@ Page {
         values: {
             var list = []
             var dates = []
+            var max = 0
             for (var i = count - 1; i >= 0; i--) {
                 var day = new Date()
                 day.setDate(day.getDate() - i)
                 var overdue = length(project.filteredTasks(function(task) { return task.overdueBy(day)}, "Overdue ONLY"))
                 var other = length(project.filteredTasks(function(task) { return task.notCompletedBy(day) && !task.overdueBy(day)}, "Not completed"))
-                var total = length(project.filteredTasks(function(task) { return task.existedBy(day)}, "Existed"))
-                list.push([other * 10/total, overdue * 10/total])
+                var total = overdue + other
+                if (total > max)
+                    max = total
+
+                list.push([other, overdue])
                 dates.push(formattedDate(day))
             }
+            maxValue = max + 1
             labels = dates
             return list
         }
-
-        maxValue: 10
 
         autoSize: true
     }

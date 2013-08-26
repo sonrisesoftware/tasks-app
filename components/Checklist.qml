@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -31,12 +31,12 @@ ListView {
     interactive: false
 
     property var task
-    model: task.checklist
+    model: task.checklist.items
 
     header: Header {
         Label {
             id: checklistLabel
-            text: i18n.tr("Checklist")
+            text: task.checklist.name
 
             anchors {
                 left: parent.left
@@ -59,20 +59,27 @@ ListView {
 
             height: units.gu(2.5)
 
-            value: task.progress
+            value: task.checklist.progress
             minimumValue: 0
-            maximumValue: task.checklist.length
+            maximumValue: root.count
         }
     }
 
     delegate: ChecklistItem {
         itemIndex: index
-        checklist: task.checklist
 
         anchors {
             left: parent.left
             right: parent.right
         }
+    }
+
+    populate: Transition {
+        UbuntuNumberAnimation {}
+    }
+
+    add: Transition {
+        UbuntuNumberAnimation {}
     }
 
     footer: Standard {
@@ -82,12 +89,10 @@ ListView {
         }
 
         text: i18n.tr("Add item")
+        enabled: task.editable
 
         onClicked: {
-            var list = task.checklist
-            list.push({completed: false, text: "New Item"})
-            task.checklist = list
-            //repeater.children.get(repeater.model.length - 1).editing = true
+            task.checklist.add(i18n.tr("New Item"))
         }
     }
 }

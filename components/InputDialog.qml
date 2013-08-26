@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -45,18 +45,6 @@ Dialog {
     Button {
         id: okButton
         objectName: "okButton"
-
-//        gradient: Gradient {
-//            GradientStop {
-//                position: 0
-//                color: "green"//Qt.rgba(0,0.7,0,1)
-//            }
-
-//            GradientStop {
-//                position: 1
-//                color: Qt.rgba(0.3,0.7,0.3,1)
-//            }
-//        }
 
         text: i18n.tr("Ok")
         enabled: textField.acceptableInput

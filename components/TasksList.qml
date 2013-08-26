@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -29,9 +29,12 @@ Item {
     id: root
 
     property alias showAddBar: addBar.visible
+    property var filter: function(task) {
+        return !task.completed || showCompletedTasks
+    }
 
     property string noneMessage: i18n.tr("No tasks")
-    property var model: project === null ? upcomingTasks : project.model
+    property var model: project.tasks
     property var project
 
     property alias addBarColor: addBar.color
@@ -58,6 +61,7 @@ Item {
             objectName: "task" + index
 
             task: modelData
+            show: filter(task)
         }
     }
 

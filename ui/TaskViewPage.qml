@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -74,6 +74,7 @@ Page {
     tools: ToolbarItems {
         ToolbarButton {
             text: i18n.tr("Delete")
+            enabled: task.editable
             iconSource: icon("delete")
             onTriggered: PopupUtils.open(confirmDeleteTaskDialog, root, {task: task})
         }

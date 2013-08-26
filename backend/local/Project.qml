@@ -1,6 +1,6 @@
 /***************************************************************************
  * Whatsoever ye do in word or deed, do all in the name of the             *
- * Lord Jesus, giving thanks to okd and the Father by him.                 *
+ * Lord Jesus, giving thanks to God and the Father by him.                 *
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
@@ -20,49 +20,40 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.    *
  ***************************************************************************/
 import QtQuick 2.0
-import Ubuntu.Components 0.1
-import Ubuntu.Components.ListItems 0.1
-import Ubuntu.Components.Popups 0.1
+import U1db 1.0 as U1db
+import ".."
 
-Dialog {
+GenericProject {
     id: root
 
-    signal accepted
-    signal rejected
-
-    Button {
-        id: okButton
-        objectName: "okButton"
-
-//        gradient: Gradient {
-//            GradientStop {
-//                position: 0
-//                color: "green"//Qt.rgba(0,0.7,0,1)
-//            }
-
-//            GradientStop {
-//                position: 1
-//                color: Qt.rgba(0.3,0.7,0.3,1)
-//            }
-//        }
-
-        text: i18n.tr("Ok")
-
-        onClicked: {
-            PopupUtils.close(root)
-            accepted()
+    function load(json) {
+        name = json.name
+        archived = json.archived
+        var tasks = json.tasks
+        for (var i = 0; i < tasks.length; i++) {
+            var task = newTask()
+            task.load(tasks[i])
         }
     }
 
-    Button {
-        objectName: "cancelButton"
-        text: i18n.tr("Cancel")
+    function save() {
+        var json = {}
+        json.name = name
+        json.tasks = []
+        json.archived = archived
 
-        gradient: UbuntuColors.greyGradient
+        for (var i = 0; i < tasks.count; i++) {
+            json.tasks.push(tasks.get(i).modelData.save())
+        }
 
-        onClicked: {
-            PopupUtils.close(root)
-            rejected()
+        return json
+    }
+
+    taskComponent: Component {
+        id: taskComponent
+
+        Task {
+
         }
     }
 }

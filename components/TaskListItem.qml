@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -31,7 +31,22 @@ Empty {
 
     property var task
 
+    height: opacity === 0 ? 0 : implicitHeight
+
+    Behavior on height {
+        UbuntuNumberAnimation {}
+    }
+
+    //onHeightChanged: print("HEIGHT CHANGED:", height)
+
     clip: true
+    opacity: show ? 1 : 0
+
+    property bool show: true
+
+    Behavior on opacity {
+        UbuntuNumberAnimation {}
+    }
 
     UbuntuShape {
         id: priorityShape
@@ -130,27 +145,14 @@ Empty {
         }
 
         checked: task.completed
-        __acceptEvents: task.canComplete
+        __acceptEvents: task.canComplete && task.editable
 
-        onCheckedChanged: showCompletedTasks ? task.completed = checked : hideAnimation.start()
-
-        SequentialAnimation {
-            id: hideAnimation
-
-
-            NumberAnimation { target: root; property: "opacity"; to: 0; duration: 500 }
-            NumberAnimation { target: root; property: "height"; to: 0; duration: 250 }
-            PropertyAnimation {
-                target: root.task; property: "completed"; to: true
-            }
-        }
-
-
+        onCheckedChanged: task.completed = checked
     }
 
     Label {
         anchors.centerIn: doneCheckBox
-        text: task.percent + "%"
+        text: task.checklist.percent + "%"
         visible: !task.canComplete && !task.completed
     }
 
@@ -159,8 +161,9 @@ Empty {
     }
 
     onPressAndHold: {
-        PopupUtils.open(taskActionsPopover, root, {
-                            task: root.task
-                        })
+        if (task.ediable)
+            PopupUtils.open(taskActionsPopover, root, {
+                                task: root.task
+                            })
     }
 }

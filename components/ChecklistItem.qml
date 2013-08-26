@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>             *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -23,12 +23,11 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
+import "../ubuntu-ui-extras"
 
 Empty {
     id: root
 
-    property alias completed: checkBox.checked
-    property var checklist
     property int itemIndex
 
     Row {
@@ -46,10 +45,10 @@ Empty {
 
             anchors.verticalCenter: parent.verticalCenter
 
-            checked: checklist[itemIndex].completed
+            __acceptEvents: task.editable
+            checked: modelData.completed
             onCheckedChanged: {
-                checklist[itemIndex].completed = checked
-                task.checklist = checklist
+                task.checklist.setCompletion(itemIndex, checked)
             }
         }
 
@@ -58,10 +57,10 @@ Empty {
             anchors.verticalCenter: parent.verticalCenter
             width: parent.width - checkBox.width - parent.spacing
 
-            text: checklist[itemIndex].text
+            editable: task.editable
+            text: modelData.name
             onTextChanged: {
-                checklist[itemIndex].text = text
-                task.checklist = checklist
+                task.checklist.setName(itemIndex, text)
             }
 
             customClicking: true
@@ -72,26 +71,14 @@ Empty {
 
     removable: true
     onItemRemoved: {
-        task.checklist.splice(itemIndex,1)
-        task.checklist = task.checklist
+        task.checklist.remove(index)
     }
 
-    backgroundIndicator: Rectangle {
-        anchors.fill: parent
-        color: Qt.rgba(0.2,0.2,0.2,0.3)
-        clip: true
+    backgroundIndicator: ListItemBackground {
+        iconSource: icon("delete-white")
+        text: i18n.tr("Delete")
 
-        Image {
-            source: icon("delete-white")
-            anchors {
-                top: parent.top
-                horizontalCenter: parent.horizontalCenter
-                bottom: parent.bottom
-                margins: units.gu(1)
-            }
-
-            width: height
-        }
+        state: swipingState
     }
 
     onClicked: label.edit()

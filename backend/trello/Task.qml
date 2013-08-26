@@ -4,7 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
+ * Copyright (C) 2013 Michael Spencer <spencers1993@gmail.com>             *
  *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
@@ -20,55 +20,66 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.    *
  ***************************************************************************/
 import QtQuick 2.0
-import Ubuntu.Components 0.1
-import Ubuntu.Components.ListItems 0.1
-import Ubuntu.Components.Popups 0.1
-import "../components"
+import ".."
+import "Trello.js" as Trello
 
-Page {
-    id: root
+GenericTask {
+    id: task
 
-    title: i18n.tr("Add Task")
+    editable: false
 
-    property string type: "add"
+    property string checklistID: ""
+    property string listID: ""
 
-    property var project
-    property var task: project.createTask()
+    property var list: project.getList(listID)
 
-//    property color headerColor: labelHeaderColor(taskItem.task.label)
-//    property color backgroundColor: labelColor(taskItem.task.label)
-//    property color footerColor: labelFooterColor(taskItem.task.label)
-
-    TaskItem {
-        id: taskItem
-        task: root.task
-        anchors.fill: parent
-
-        editing: true
-        creating: true
+    onListChanged: {
+        if (list !== undefined && list.name === "Done")
+            completed = true
     }
 
-    tools: ToolbarItems {
-        locked: true
-        opened: true
+    function loadTrello(json) {
+        index = json.id
+        name = json.name
+        completed = json.closed
+        listID = json.idList
+        if (json.idChecklists.length > 0)
+            checklistID = json.idChecklists[0] // FIXME: support more than one checklist!
+        else
+            checklistID = ""
+        description = json.badges.description ? json.desc : ""
 
-        back: ToolbarButton {
-            text: i18n.tr("Cancel")
-            iconSource: icon("back")
+        if (name === "Create PPA")
+            Trello.put("/cards/" + index + "/actions/comments", ["text=Hello from jsfiddle.net!"])
+    }
 
-            onTriggered: {
-                pageStack.pop()
-            }
+    function refresh() {
+
+    }
+
+    onChecklistIDChanged: {
+        if (checklistID !== "") {
+            Trello.call("/checklists/" + checklistID, [], loadChecklist)
         }
+    }
 
-        ToolbarButton {
-            text: i18n.tr("Create")
-            iconSource: icon("add")
+    function loadChecklist(response) {
+        var json = JSON.parse(response)
 
-            onTriggered: {
-                project.addTask(taskItem.task)
-                pageStack.pop()
-            }
+        var items = json.checkItems
+        checklist.clear()
+        for (var i = 0; i < items.length; i++) {
+            checklist.add(items[i].name, items[i].state === "complete")
         }
+    }
+
+    function remove() {
+        project.removeTask(task)
+    }
+
+    function moveTo(project) {
+        task.project.removeTask(task)
+        task.project = project
+        project.addTask(task)
     }
 }
