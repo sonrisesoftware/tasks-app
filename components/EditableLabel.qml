@@ -45,7 +45,9 @@ Item {
             edit()
     }
 
-    height: childrenRect.height
+    height: editing
+            ? textField.height
+            : label.height
 
     property alias fontSize: label.fontSize
     property alias placeholderText: textField.placeholderText

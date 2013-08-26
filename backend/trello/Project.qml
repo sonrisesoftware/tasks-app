@@ -44,7 +44,7 @@ GenericProject {
 
         for (var i = 0; i < tasks.length; i++) {
             var task = newTask()
-            task.load(json[i])
+            task.load(tasks[i])
             task.refresh()
         }
 
@@ -62,7 +62,7 @@ GenericProject {
                 task.loadTrello(json[i])
                 task.refresh()
             } else {
-                task.load(json[i])
+                task.loadTrello(json[i])
             }
         }
 

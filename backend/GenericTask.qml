@@ -76,7 +76,7 @@ QtObject {
         }
     }
 
-    property var json: {
+    function save() {
         return {
             index: index,
             name: name,
@@ -90,10 +90,6 @@ QtObject {
             tags: tags,
             checklist: checklist.save()
         }
-    }
-
-    function save() {
-        return json
     }
 
     function load(json) {
@@ -110,11 +106,6 @@ QtObject {
         priority = json.priority
         tags = json.tags
         checklist.load(json.checklist)
-    }
-
-    onJsonChanged: {
-        if (project !== undefined)
-            project.update()
     }
 
     property bool upcoming: (overdue || isDueThisWeek()) && !completed

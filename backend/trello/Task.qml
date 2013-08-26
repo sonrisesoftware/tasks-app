@@ -57,9 +57,9 @@ GenericTask {
         print("CHECKLIST>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
         var items = json.checkItems
-        checklist = []
+        checklist.clear()
         for (var i = 0; i < items.length; i++) {
-            addChecklistItem(items[i].name, items[i].state === "complete")
+            checklist.add(items[i].name, items[i].state === "complete")
         }
 
         loading--

@@ -17,14 +17,10 @@ QtObject {
     property string name: i18n.tr("Checklist")
 
     function updateChecklistStatus() {
-        if (length === 0) {
-            if (hasChecklist) {
-                completed = false
-            }
-        } else {
+        if (length > 0) {
             progress = 0
             for (var i = 0; i < length; i++) {
-                if (items.get(i).completed)
+                if (items.get(i).modelData.completed)
                     progress += 1
             }
 
@@ -33,15 +29,19 @@ QtObject {
             else
                 completed = false
         }
+        print("Progress", progress)
     }
 
     function load(json) {
         name = json.name
         items.clear()
+        print("LOADING CHECKLIST:", name, json.items.length)
 
-        for (var i = 0; i < json.items.count; i++) {
+        for (var i = 0; i < json.items.length; i++) {
+            print("   ", json.items[i])
             items.append({modelData: json.items[i]})
         }
+        updateChecklistStatus()
     }
 
     function save() {
@@ -52,29 +52,38 @@ QtObject {
         for (var i = 0; i < items.count; i++) {
             json.items.push(items.get(i).modelData)
         }
-        print("CHECKLIST:", json)
+        print("SAVING CHECKLIST:", json)
         return json
     }
 
-    function add(name) {
-        items.append({modelData: {name: name, completed: false}})
+    function clear() {
+        items.clear()
+    }
+
+    function add(name, completed) {
+        if (completed === undefined)
+            completed = false
+        items.append({modelData: {name: name, completed: completed}})
+        updateChecklistStatus()
     }
 
     function remove(index) {
         items.remove(index)
+        updateChecklistStatus()
     }
 
     function setCompletion(index, completion) {
+        print("Completed", index, completion)
         var item = items.get(index).modelData
-        items.set(index, {modelData: {}})
-        item.completion = completion
-        items.set(index, item)
+        item.completed = completion
+        items.set(index, {modelData: item})
+        updateChecklistStatus()
     }
 
     function setName(index, name) {
         var item = items.get(index).modelData
-        items.set(index, {modelData: {}})
         item.name = name
-        items.set(index, item)
+        items.set(index, {modelData: item})
+        updateChecklistStatus()
     }
 }

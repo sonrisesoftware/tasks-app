@@ -40,8 +40,8 @@ SingleValue {
     }
 
     selected: currentProject === project
-    enabled: project.enabled
-    visible: !project.archived || showArchivedProjects
+    enabled: project === null || project.enabled
+    visible: project === null || !project.archived || showArchivedProjects
 
     onPressAndHold: {
         if (project !== null && project.editable)
