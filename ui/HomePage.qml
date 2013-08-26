@@ -116,6 +116,17 @@ Page {
         anchors.left: sidebar.right
     }
 
+    states: [
+        State {
+            when: showToolbar
+            PropertyChanges {
+                target: root.tools
+                locked: true
+                opened: true
+            }
+        }
+    ]
+
     tools: ToolbarItems {
         ToolbarButton {
             id: newProjectButton
@@ -176,7 +187,7 @@ Page {
         ToolbarButton {
             text: i18n.tr("Statistics")
             iconSource: icon("graphs")
-            visible: currentProject != null
+            visible: currentProject != null && currentProject.backend.supportsStatistics
 
             onTriggered: {
                 showStatistics(currentProject)

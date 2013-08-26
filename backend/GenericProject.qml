@@ -23,11 +23,11 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import U1db 1.0 as U1db
 
-Object {
+Item {
     id: root
 
     property bool editable: true
-    property bool enabled: true
+    enabled: true
 
     property ListModel tasks: ListModel {
         id: tasks

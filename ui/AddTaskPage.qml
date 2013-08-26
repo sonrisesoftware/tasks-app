@@ -48,6 +48,17 @@ Page {
         creating: true
     }
 
+    states: [
+        State {
+            when: showToolbar
+            PropertyChanges {
+                target: root.tools
+                locked: true
+                opened: true
+            }
+        }
+    ]
+
     tools: ToolbarItems {
         locked: true
         opened: true

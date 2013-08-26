@@ -34,6 +34,8 @@ Item {
     property bool requiresInternet: false
     property var database
     property int loading: 0
+    property bool editable: true
+    property bool supportsStatistics: true
 
     property var list: []
 

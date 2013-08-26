@@ -20,6 +20,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.    *
  ***************************************************************************/
 import QtQuick 2.0
+import Ubuntu.Components 0.1
 import Ubuntu.Components.Popups 0.1
 import U1db 1.0 as U1db
 import "../../components"
@@ -41,6 +42,8 @@ Item {
     property var database
     property string token: ""
     enabled: token !== "" && trelloIntegration
+    property bool editable: false
+    property bool supportsStatistics: false
 
     property var list: []
 
