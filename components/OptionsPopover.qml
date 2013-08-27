@@ -53,8 +53,6 @@ Popover {
                 checked: showCompletedTasks
                 onCheckedChanged: saveSetting("showCompletedTasks", checked ? "true" : "false")
             }
-
-            showDivider: false
         }
 
         Standard {

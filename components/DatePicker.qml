@@ -23,25 +23,32 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
+import "../ubuntu-ui-extras" as Extra
 
 Dialog {
     id: root
 
     title: i18n.tr("Select Date")
 
-    text: i18n.tr("Please select a due date for '%1'").arg(task.title)
+    text: i18n.tr("Please select a due date for '%1'").arg(task.name)
 
     property var task
 
-    TextField {
-        id: dateField
+    Extra.DatePicker {
+        id: datePicker
 
-        text: Qt.formatDate(task.dueDate)
-
-        placeholderText: i18n.tr("MM/DD/YYYY")
-
-        onAccepted: okButton.clicked()
+        initialDate: Qt.formatDate(task.dueDate) === "" ? new Date() : task.dueDate
     }
+
+//    TextField {
+//        id: dateField
+
+//        text: Qt.formatDate(task.dueDate)
+
+//        placeholderText: i18n.tr("MM/DD/YYYY")
+
+//        onAccepted: okButton.clicked()
+//    }
 
     Button {
         id: okButton
@@ -60,21 +67,22 @@ Dialog {
 //        }
 
         text: i18n.tr("Ok")
-        enabled: dateField.acceptableInput
+        //enabled: dateField.acceptableInput
 
         onClicked: {
-            //print("User selected date:", dateField.text)
+            print("DATE:", datePicker.date)
+            task.dueDate = datePicker.date
 
-            if (dateField.text.toLowerCase() === i18n.tr("Today").toLowerCase()) {
-                var today = new Date()
-                today.setHours(0)
-                today.setMinutes(0)
-                today.setSeconds(0)
-                task.dueDate = today
-            } else {
-                task.dueDate = new Date(dateField.text)
-            }
+            PopupUtils.close(root)
+        }
+    }
 
+    Button {
+        objectName: "noneButton"
+        text: i18n.tr("No Due Date")
+
+        onClicked: {
+            task.dueDate = new Date("")
             PopupUtils.close(root)
         }
     }
