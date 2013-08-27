@@ -52,7 +52,7 @@ Item {
 
             // If the task has never been completed before
             // Then create the repeat of it
-            if (Qt.formatDate(task.completionDate) === "") {
+            if (repeat !== "never" && Qt.formatDate(task.completionDate) === "") {
 
                 do {
                     if (repeat === "daily") {

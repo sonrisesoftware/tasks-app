@@ -29,7 +29,9 @@ Page {
     id: root
 
     title: wideAspect ? i18n.tr("Tasks")
-                      : upcoming ? i18n.tr("Upcoming") : currentProject.name
+                      : projectName
+
+    property string projectName: upcoming ? i18n.tr("Upcoming") : currentProject.name
 
     property var type: upcoming ? "upcoming" : "project"
 

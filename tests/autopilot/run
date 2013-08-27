@@ -7,5 +7,5 @@ fi
 
 SCRIPTPATH=`dirname $0`
 pushd ${SCRIPTPATH}
-autopilot run tasks-app
+autopilot run ubuntu_tasks
 popd

@@ -142,7 +142,7 @@ MainView {
         Component.onCompleted: {
             pageStack.push(tabs)
             //pageStack.push(testPage)
-            //clearPageStack()
+            clearPageStack()
         }
     }
 
