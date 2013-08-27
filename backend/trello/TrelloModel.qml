@@ -25,8 +25,8 @@ import Ubuntu.Components.Popups 0.1
 import U1db 1.0 as U1db
 import "../../components"
 import "Trello.js" as Trello
-import "sha1.js" as SHA1
-import "oauth.js" as OAUTH
+//import "sha1.js" as SHA1
+//import "oauth.js" as OAUTH
 
 Item {
     id: root
