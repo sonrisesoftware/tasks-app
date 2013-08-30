@@ -16,18 +16,18 @@ Object {
 
     property var parent
 
-    Component.onCompleted: print("NEW DOCUMENT:", docId)
+    //Component.onCompleted: print("NEW DOCUMENT:", docId)
 
     onParentChanged: {
-        print("PARENT:", parent)
+        //print("PARENT:", parent)
         if (parent !== undefined) {
             print(parent)
-            print("Loading from parent:", docId, parent.docId)
+            //print("Loading from parent:", docId, parent.docId)
             if (parent.childrenDocs === undefined)
                 parent.childrenDocs = []
             parent.childrenDocs.push(root)
             if (!parent.children.hasOwnProperty(docId)) {
-                print("Creating child...")
+                //print("Creating child...")
                 parent.children[docId] = {}
             }
 
@@ -41,7 +41,7 @@ Object {
     }
 
     function lock(name, value) {
-        print("Locking", name, "with value", value)
+        //print("Locking", name, "with value", value)
         if (isLocked(name))
             locked.splice(locked.indexOf(name), 1)
         set(name, value)
@@ -49,13 +49,13 @@ Object {
     }
 
     function unlock(name) {
-        print("Unlocking", name)
+        //print("Unlocking", name)
         if (isLocked(name))
             locked.splice(locked.indexOf(name), 1)
     }
 
     function setLocked(name, locked) {
-        print("Setting lock to", locked, "for", name)
+        //print("Setting lock to", locked, "for", name)
         if (isLocked(name))
             locked.splice(locked.indexOf(name), 1)
         if (locked) {
@@ -80,20 +80,20 @@ Object {
         var json = values
 
         for (var i = 0; i < childrenDocs.length; i++) {
-            print("Found subdocument ", childrenDocs[i].docId, "for", docId)
+            //print("Found subdocument ", childrenDocs[i].docId, "for", docId)
             children[childrenDocs[i].docId] = childrenDocs[i].save()
         }
 
         if (listDocs().length > 0) {
             json.children = children
         }
-        print("Saving", docId, JSON.stringify(json))
+        //print("Saving", docId, JSON.stringify(json))
 
         return json
     }
 
     function load(json) {
-        print("Loading", docId, JSON.stringify(json))
+        //print("Loading", docId, JSON.stringify(json))
         values = json
         if (json.hasOwnProperty("children")) {
             children = json.children

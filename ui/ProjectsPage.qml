@@ -32,8 +32,11 @@ Page {
 
     property string type: "projects"
 
-    property var currentProject: null
     property bool showArchived: false
+
+    property bool hasProjects: filteredSum(backendModels, "projects", function(project) {
+        return showArchived === project.archived
+    }) > 0
 
     Flickable {
         id: flickable
@@ -55,10 +58,15 @@ Page {
                 model: backendModels
 
                 delegate: Column {
+                    id: modelColumn
                     visible: modelData.enabled
                     width: parent.width
                     Header {
+                        id: header
                         text: modelData.name
+                        visible: count(modelData.projects, function(project) {
+                            return showArchived === project.archived
+                        }) > 0
 
                         ActivityIndicator {
                             anchors {
@@ -82,6 +90,20 @@ Page {
                 }
             }
         }
+    }
+
+    Label {
+        id: noTasksLabel
+        objectName: "noProjectsLabel"
+
+        anchors.centerIn: parent
+
+        visible: !hasProjects
+        opacity: 0.5
+
+        fontSize: "large"
+
+        text: i18n.tr("No projects")
     }
 
     Scrollbar {

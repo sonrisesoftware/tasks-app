@@ -236,8 +236,58 @@ MainView {
 
     /* UTILITY FUNCTIONS */
 
+    function filter(tasks, filter, name) {
+        //print("Running filter:", name)
+        var list = []
+
+        for (var i = 0; i < length(tasks); i++) {
+            var task = get(tasks, i)
+            //print("Filtering:", task.name)
+            if (filter(task))
+                list.push(task)
+        }
+
+        print("Count:", list.length)
+        return list
+    }
+
+    function count(model, func, name) {
+        return filter(model, func, name).length
+    }
+
+    function filteredSum(list, prop, func, name) {
+        var value = 0
+
+        for (var i = 0; i < length(list); i++) {
+            var item = get(list, i)
+            value += count(item[prop], func, name)
+        }
+
+        print("Filtered sum:", value)
+        return value
+    }
+
+    function sum(list, prop) {
+        var value = 0
+
+        for (var i = 0; i < length(list); i++) {
+            var item = get(list, i)
+            value += item[prop]
+        }
+
+        return value
+    }
+
     function icon(name) {
         return "../icons/" + name + ".png"
+    }
+
+    function get(model, index) {
+        var item = model.hasOwnProperty("get") ? model.get(index) : model[index]
+        if (model.hasOwnProperty("get"))
+            item = item.modelData
+
+        return item
     }
 
     function length(model) {

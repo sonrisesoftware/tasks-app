@@ -35,6 +35,7 @@ Item {
     property bool editable: backend.editable
     property bool supportsLists: backend.supportsLists
     property var backend
+    property int uncompletedCount: sum(lists, "uncompletedCount")
 
     property int nextDocId: 0
     property var listComponent
