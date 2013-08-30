@@ -24,112 +24,61 @@ import Ubuntu.Components 0.1
 import U1db 1.0 as U1db
 
 Item {
-    id: root
+    id: project
 
-    property bool editable: true
-    enabled: true
+    /* Properties that define how the project works */
 
-    property ListModel tasks: ListModel {
-        id: tasks
-
-        onCountChanged: update()
-    }
-
+    property string docId               // The document ID used by U1db and optionally by other storage
+    property string name                // The name of the project
+    property string description         // The description of the project
+    property string editable            // Can the project be deleted or named, or have lists added?
     property var backend
-    property var taskComponent
-    property bool archived: false
 
-    property string name
-    property int count: tasks.count
-    property int overdueCount: 0
+    onNameChanged:  fieldChanged("name", name)
+    onDescriptionChanged: fieldChanged("description", description)
 
+    property bool updating: false       // Used to prevent sending changes to remote backend
+                                        // when loading changes from the remote or local backend
+
+    function fieldChanged(name, value) {
+        if (!updating)
+            document.lock(name, value)
+    }
+
+    property var lists: ListModel {
+        id: lists
+    }
+
+    /* To be called after the document changes,
+       either after loading from U1db or after loading from a remote model */
+    function reloadFields() {
+        print("Reloading...")
+        updating = true
+
+        name = document.get("name", "")
+        description = document.get("description", "")
+
+        updating = false
+        print("Done.")
+    }
+
+    /* U1db Storage */
+
+    Document {
+        id: document
+        parent: backend.database
+        docId: project.docId
+        reload: reloadFields
+    }
+
+    function loadU1db() {
+        //reloadFields()
+    }
+
+    // XXX: REMOVE - TEST ONLY
     function load(json) {
-        // Implementation specific
-    }
-
-    function save() {
-        // Implementation specific
-    }
-
-    function newTask(args) {
-        var task = createTask(args)
-
-        addTask(task)
-        return task
-    }
-
-    function createTask(args) {
-        if (args === undefined)
-            args = {}
-        //print("CREATING TASK...")
-        var task = taskComponent.createObject(root, args)
-
-        if (task === null) {
-            console.log("Unable to create task!")
-        }
-
-        task.project = root
-        return task
-    }
-
-    function addTask(task) {
-        tasks.append({"modelData": task})
-    }
-
-    function removeTask(task) {
-        if (!editable)
-            return
-        for (var i = 0; i < tasks.count; i++) {
-            if (tasks.get(i).modelData === task) {
-                tasks.remove(i)
-            }
-        }
-    }
-
-    function remove() {
-        backend.removeProject(root)
-    }
-
-    function update() {
-        for (var i = 0; i < tasks.count; i++) {
-            var task = tasks.get(i).modelData
-            if (task.overdue)
-                overdueCount++
-        }
-    }
-
-    property var upcomingTasks: filteredTasks(function(task) {
-        return task.upcoming
-    }, "Upcoming")
-
-    property var uncompletedTasks: filteredTasks(function(task) {
-        return !task.completed
-    }, "Uncompleted")
-
-    property var model: showCompletedTasks ? tasks : uncompletedTasks
-
-    function filteredTasks(filter, name) {
-        //print("Running filter:", name)
-        var list = []
-
-        for (var i = 0; i < tasks.count; i++) {
-            if (filter(tasks.get(i).modelData))
-                list.push(tasks.get(i).modelData)
-        }
-
-        //print("Count:", list.length)
-        return list
-    }
-
-    function countTasks(filter) {
-        //print("Counting tasks...")
-        var count = 0
-
-        for (var i = 0; i < tasks.count; i++) {
-            if (filter(tasks.get(i).modelData))
-                count++
-        }
-
-        return count
+        print("Loading from remote TEST")
+        document.set("name", json.name)
+        document.set("description", json.description)
     }
 }
