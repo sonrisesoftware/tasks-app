@@ -31,7 +31,8 @@ Item {
     property string docId               // The document ID used by U1db and optionally by other storage
     property string name                // The name of the project
     property string description         // The description of the project
-    property string editable            // Can the project be deleted or named, or have lists added?
+    property bool editable: backend.editable
+    property bool supportsLists: backend.supportsLists
     property var backend
 
     property int nextDocId: 0
@@ -47,7 +48,7 @@ Item {
 
     function fieldChanged(name, value) {
         if (!updating)
-            document.lock(name, value)
+            document.set(name, value)
     }
 
     property var lists: ListModel {
@@ -73,16 +74,27 @@ Item {
         id: document
         parent: backend.database
         docId: project.docId
-        reload: reloadFields
     }
 
     function loadU1db() {
         nextDocId = document.get("nextDocId", 0)
+        reloadFields()
+
         var list = document.listDocs()
         print("Child lists:", list)
 
         for (var i = 0; i < list.length; i++) {
             loadListU1db(list[i])
+        }
+
+        if (!supportsLists && lists.count !== 1) {
+            print("Creating default list...")
+            lists.clear()
+            var list = createList({
+                              docId: nextDocId++
+                          })
+            list.name = i18n.tr("Tasks")
+            internal_addList(list)
         }
     }
 
@@ -90,7 +102,17 @@ Item {
 
     // This is the front-end to creating new lists
     function newList(name) {
-        // For implementation by backend...
+        if (!supportsLists) {
+            console.log("FATAL: Creating lists is unsupported for", backend.name)
+            Qt.quit()
+        }
+        print("Adding new list...")
+        var list = createList({
+                          docId: nextDocId++
+                      })
+        list.name = name
+        internal_addList(list)
+        return list
     }
 
     // For loading a list from U1db

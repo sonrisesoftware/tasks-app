@@ -30,8 +30,13 @@ Item {
 
     property string docId               // The document ID used by U1db and optionally by other storage
     property string name                // The name of the list
-    property string editable            // Can the list be deleted or renamed, or have tasks added?
     property var project
+    property bool editable: project.editable
+
+    property int nextDocId
+    property var taskComponent
+
+    onNextDocIdChanged: document.set("nextDocId", nextDocId)
 
     onNameChanged:  fieldChanged("name", name)
 
@@ -40,11 +45,11 @@ Item {
 
     function fieldChanged(name, value) {
         if (!updating)
-            document.lock(name, value)
+            document.set(name, value)
     }
 
-    property var lists: ListModel {
-        id: lists
+    property var tasks: ListModel {
+        id: tasks
     }
 
     /* To be called after the document changes,
@@ -61,14 +66,84 @@ Item {
 
     /* U1db Storage */
 
-    Document {
+    property var document: Document {
         id: document
         parent: project.document
         docId: list.docId
-        reload: reloadFields
     }
 
     function loadU1db() {
-        // Implemented by individual backends...
+        nextDocId = document.get("nextDocId", 0)
+        reloadFields()
+
+        var list = document.listDocs()
+        print("Child tasks:", list)
+
+        for (var i = 0; i < list.length; i++) {
+            loadTaskU1db(list[i])
+        }
+    }
+
+    /* Creation of new tasks */
+
+    // This is the front-end to creating new tasks
+    function newTask(name) {
+        print("Adding new task...")
+        var task = createTask({
+                          docId: nextDocId++
+                      })
+        task.name = name
+        internal_addTask(task)
+        return task
+    }
+
+    // For loading a task from U1db
+    function loadTaskU1db(docId) {
+        var task = createTask({
+                                  docId: docId
+                              })
+        internal_addTask(task)
+        task.loadU1db()
+        return task
+    }
+
+    // Creates a new task object
+    function createTask(args) {
+        if (args === undefined)
+            args = {}
+
+        args.list = list
+
+        var task = taskComponent.createObject(project, args)
+
+        if (task === null) {
+            console.log("Unable to create:", newName)
+        }
+
+        return task
+    }
+
+    // This adds a task to the model
+    function internal_addTask(task) {
+        tasks.append({modelData: task})
+        print("TASKS", tasks.count)
+    }
+
+    /* Deletion of tasks */
+
+    // This is the front-end to removing tasks
+    function removeTask(task) {
+        // For implementation by backend...
+        internal_removeTask(task)
+    }
+
+    // This removes a task from the model
+    function internal_removeTask(task) {
+        print("Removing task...")
+        tasks.remove(task.docId)
+        for (var i = 0; i < tasks.count; i++) {
+            if (tasks.get(i).modelData === project)
+                tasks.remove(i)
+        }
     }
 }

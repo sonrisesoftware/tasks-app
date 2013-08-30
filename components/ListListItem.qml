@@ -25,77 +25,27 @@ import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
 import "../ui"
 
-Item {
+SingleValue {
     id: root
 
-    property alias showAddBar: addBar.visible
-    property var filter: function(task) {
-        return !task.completed || showCompletedTasks
-    }
-
-    property string noneMessage: i18n.tr("No tasks")
-    property var model: list.tasks
-    property var project: list.project
     property var list
 
-    property alias addBarColor: addBar.color
+    text: list.name
 
-    property var flickable: taskListView
-    property alias header: taskListView.header
-
-    ListView {
-        id: taskListView
-        objectName: "taskListView"
-
-        anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
-            bottom: addBar.top
-        }
-
-        clip: true
-
-        model: root.model
-
-        delegate: TaskListItem {
-            objectName: "task" + index
-
-            task: modelData
-            show: filter(task)
-        }
+    onClicked: {
+        print("LIST:", text)
+        //currentList = list
+        goToList(list)
     }
 
-    Scrollbar {
-        flickableItem: taskListView
+    selected: currentList === list
+    visible: !list.archived || showArchived
+
+    onPressAndHold: {
+        print("PRESS AND HOLD!")
     }
 
-    QuickAddBar {
-        id: addBar
-        anchors.bottomMargin: 0
-        height: expanded ? implicitHeight : 0
-    }
+    //property int count: project === null ? upcomingTasks.length : project.uncompletedTasks.length
 
-    Item {
-        anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
-            bottom: addBar.top
-        }
-
-        Label {
-            id: noTasksLabel
-            objectName: "noTasksLabel"
-
-            anchors.centerIn: parent
-
-            visible: length(model) === 0
-            opacity: 0.5
-
-            fontSize: "large"
-
-            text: root.noneMessage
-        }
-    }
+    //value: count === 0 ? "" : count
 }

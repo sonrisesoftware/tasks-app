@@ -16,7 +16,10 @@ Object {
 
     property var parent
 
+    Component.onCompleted: print("NEW DOCUMENT:", docId)
+
     onParentChanged: {
+        print("PARENT:", parent)
         if (parent !== undefined) {
             print(parent)
             print("Loading from parent:", docId, parent.docId)

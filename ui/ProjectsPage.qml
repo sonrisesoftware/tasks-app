@@ -104,8 +104,13 @@ Page {
             text: i18n.tr("New Project")
 
             onTriggered: {
-                PopupUtils.open(newProjectDialog, root)
+                newProject()
             }
+        }
+
+        Item {
+            height: parent.height
+            width: units.gu(0.5)
         }
 
         ToolbarButton {

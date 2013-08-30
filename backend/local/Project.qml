@@ -26,19 +26,9 @@ import ".."
 GenericProject {
     id: project
 
-    function newList(name) {
-        print("Adding new list...")
-        var list = createList({
-                          docId: nextDocId++
-                      })
-        list.name = name
-        internal_addList(list)
-        return list
-    }
-
     listComponent: Component {
 
-        GenericList {
+        List {
 
         }
     }

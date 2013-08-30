@@ -30,9 +30,10 @@ Item {
     property string name
     property string newName
     property string databaseName                // The database filename
-    property bool editable: true                // Can create new projects?
+    property bool editable: true                // Can projects/lists/tasks be edited/created/deleted?
     property bool requiresInternet: false       // Requires the internet to sync?
     property bool supportsStatistics: true      // Supports showing the statistics page?
+    property bool supportsLists: true           // Supports multiple tasks lists?
     property var projectComponent
 
     property int nextDocId: 0
@@ -59,7 +60,13 @@ Item {
 
     // This is the front-end to creating new projects
     function newProject(name) {
-        // For implementation by backend...
+        var project = createProject({
+                          docId: nextDocId++
+                      })
+        project.name = name
+        internal_addProject(project)
+        project.loadU1db()
+        return project
     }
 
     // For loading a project from U1db

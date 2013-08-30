@@ -25,9 +25,12 @@ import Ubuntu.Components 0.1
 Item {
     id: task
 
-    property string index: ""
-    property var project
-    property bool editable: true
+    property string docId
+    property var project: list.project
+    property var list
+    property bool editable: project.editable
+
+    /* Properties describing the task */
 
     property string name
     property string description
@@ -38,15 +41,42 @@ Item {
     property date completionDate
     property string priority: "low"
     property var tags: []
+    property var comments: []
+
+    onNameChanged:  fieldChanged("name", name)
+    onDescriptionChanged: fieldChanged("description", description)
+    onCreationDateChanged: fieldChanged("creationDate", creationDate)
+    onDueDateChanged: fieldChanged("dueDate", dueDate)
+    onRepeatChanged: fieldChanged("repeat", repeat)
+    onCompletedChanged: {
+        fieldChanged("completed", completed)
+        updateRepeat()
+    }
+    onCompletionDateChanged: fieldChanged("completionDate", completionDate)
+    onPriorityChanged: fieldChanged("priority", priority)
+    onTagsChanged: fieldChanged("tags", tags)
+    onCommentsChanged: fieldChanged("comments", comments)
+    //TODO: Add others...
+
+    property bool updating: false       // Used to prevent sending changes to remote backend
+                                        // when loading changes from the remote or local backend
+
+    function fieldChanged(name, value) {
+        if (!updating)
+            document.set(name, value)
+    }
+
+
     property Checklist checklist: Checklist {
 
     }
+
 
     property bool hasChecklist: checklist.length > 0
 
     property bool canComplete: !hasChecklist
 
-    onCompletedChanged: {
+    function updateRepeat() {
         if (completed) {
             var json = task.save()
 
@@ -77,36 +107,38 @@ Item {
         }
     }
 
-    function save() {
-        return {
-            index: index,
-            name: name,
-            description: description,
-            creationDate: creationDate,
-            dueDate: dueDate,
-            repeat: repeat,
-            completed: completed,
-            completionDate: completionDate,
-            priority: priority,
-            tags: tags,
-            checklist: checklist.save()
-        }
+    /* U1db Storage */
+
+    Document {
+        id: document
+        docId: task.docId
+        parent: list.document
     }
 
-    function load(json) {
-        index = json.index
-        name = json.name
-        description = json.description
-        creationDate = json.creationDate
-        if (json.dueDate !== null)
-            dueDate = json.dueDate
-        repeat = json.repeat
-        completed = json.completed
-        if (json.completionDate !== null)
-            completionDate = json.completionDate
-        priority = json.priority
-        tags = json.tags
-        checklist.load(json.checklist)
+    function reloadFields() {
+        updating = true
+
+        name = document.get("name", "")
+        description = document.get("description", "")
+        creationDate = document.get("creationDate", new Date())
+        dueDate = document.get("dueDate", new Date(""))
+        repeat = document.get("repeat", "never")
+        completed = document.get("completed", false)
+        completionDate = document.get("completionDate", new Date(""))
+        priority = document.get("priority", "low")
+        tags = document.get("tags", [])
+        checklist.load(document.get("checklist", {}))
+
+        updating = false
+    }
+
+    function saveU1db() {
+        document.set("checklist", checklist.save())
+    }
+
+    function loadU1db() {
+        reloadFields()
+        checklist.load(document.get("checklist"))
     }
 
     property bool upcoming: (overdue || isDueThisWeek()) && !completed
@@ -164,10 +196,11 @@ Item {
 
     function remove() {
         // Do something...
+        list.removeTask(task)
     }
 
     function moveTo(project) {
-        // Do something...
+        // TODO: Do something...
     }
 }
 

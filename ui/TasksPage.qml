@@ -28,96 +28,17 @@ import "../ubuntu-ui-extras"
 Page {
     id: root
 
-    title: wideAspect ? i18n.tr("Tasks")
-                      : projectName
+    title: currentProject.supportsLists ? currentList.name : currentProject.name
 
-    property string projectName: upcoming ? i18n.tr("Upcoming") : currentProject.name
+    property var currentList
+    property var currentProject: currentList.project
 
-    property var type: upcoming ? "upcoming" : "project"
+    TasksList {
+        id: list
 
-    property bool upcoming: currentProject === null
+        anchors.fill: parent
 
-    property var currentProject: null
-
-    property bool supportsLists: currentProject !== null && currentProject.supportsLists
-
-    Sidebar {
-        id: sidebar
-
-        Column {
-            id: column
-            width: parent.width
-
-            ProjectListItem {
-                project: null
-            }
-
-            Repeater {
-                model: backendModels
-
-                delegate: Column {
-                    width: parent.width
-                    visible: modelData.enabled
-                    Header {
-                        text: modelData.name
-
-                        ActivityIndicator {
-                            anchors {
-                                verticalCenter: parent.verticalCenter
-                                right: parent.right
-                                rightMargin: units.gu(2)
-                            }
-
-                            visible: running
-                            running: modelData.loading > 0
-                        }
-                    }
-
-                    Repeater {
-                        model: modelData.projects
-
-                        delegate: ProjectListItem {
-                            project: modelData
-                        }
-                    }
-                }
-            }
-        }
-
-        expanded: wideAspect
-    }
-
-
-    Item {
-        anchors {
-            top: parent.top
-            bottom: addBar.top//parent.bottom
-            right: parent.right
-            left: sidebar.right
-        }
-
-        UpcomingTasksList {
-            id: upcomingTasksList
-
-            anchors.fill: parent
-            visible: upcoming
-        }
-
-        TasksList {
-            id: list
-
-            anchors.fill: parent
-            visible: !upcoming
-
-            showAddBar: false
-            project: currentProject
-        }
-    }
-
-    QuickAddBar {
-        id: addBar
-        expanded: currentProject !== null && currentProject.editable
-        anchors.left: sidebar.right
+        list: currentList
     }
 
     states: [
@@ -133,29 +54,13 @@ Page {
 
     tools: ToolbarItems {
         ToolbarButton {
-            id: newProjectButton
             iconSource: icon("add")
-            text: i18n.tr("New Project")
-            visible:  sidebar.expanded || currentProject === null
-
-            onTriggered: {
-                newProject()
-            }
-        }
-
-        Item {
-            height: parent.height
-            width: units.gu(0.5)
-        }
-
-        ToolbarButton {
-            iconSource: icon("add")
-            text: i18n.tr("Add Task")
+            text: i18n.tr("New List")
             visible: currentProject !== null
             enabled: currentProject !== null && currentProject.editable
 
             onTriggered: {
-                pageStack.push(addTaskPage, { project: currentProject })
+                print("NEW LIST!!!!!")
             }
         }
 

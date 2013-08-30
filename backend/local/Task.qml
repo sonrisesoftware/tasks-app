@@ -24,14 +24,4 @@ import ".."
 
 GenericTask {
     id: task
-
-    function remove() {
-        project.removeTask(task)
-    }
-
-    function moveTo(project) {
-        task.project.removeTask(task)
-        task.project = project
-        project.addTask(task)
-    }
 }

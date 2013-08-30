@@ -51,11 +51,41 @@ MainView {
 
     anchorToKeyboard: true
     
-    width: units.gu(100)
+    width: units.gu(50)
     height: units.gu(75)
 
-    Page {
-        title: "Test"
+    property bool wideAspect: false//width > units.gu(80)
+
+    // Colors from Calculator app
+    headerColor: "#323A5D"
+    backgroundColor: "#6A6AA1"
+    footerColor: "#6899D7"
+
+    property var pageStack: pageStack
+
+    PageStack {
+        id: pageStack
+
+        ProjectsPage {
+            id: projectsPage
+            visible: false
+        }
+
+        Component.onCompleted: pageStack.push(projectsPage)
+    }
+
+    /* NAVIGATION */
+
+    function goToProject(project) {
+        if (project.supportsLists) {
+            pageStack.push(Qt.resolvedUrl("ui/ListsPage.qml"), {currentProject: project})
+        } else {
+            pageStack.push(Qt.resolvedUrl("ui/TasksPage.qml"), {currentList: project.lists.get(0).modelData})
+        }
+    }
+
+    function goToList(list) {
+        pageStack.push(Qt.resolvedUrl("ui/TasksPage.qml"), {currentList: list})
     }
 
     /* TASK MANAGEMENT */
@@ -169,23 +199,152 @@ MainView {
             saveSetting("runBefore", "true")
             firstRun()
         }
-
-        var project = localProjectsModel.newProject("Test")
-
-        project.newList("To do")
-        print("Lists", project.lists)
-
-        print("Documents:", localProjectsModel.projects.count)
     }
 
     Component.onDestruction: {
-        //saveSetting("windowWidth", width)
-        //saveSetting("windowHeight", height)
         saveProjects()
     }
 
     /* INITIAL WELCOME PROJECT */
 
     function firstRun() {
+    }
+
+    /* PRIORITY MANAGEMENT */
+
+    function priorityName(priority) {
+        if (priority === "low") {
+            return i18n.tr("Low")
+        } else if (priority === "medium") {
+            return i18n.tr("Medium")
+        } else if (priority === "high") {
+            return i18n.tr("High")
+        } else {
+            return i18n.tr("Unknown")
+        }
+    }
+
+    function priorityColor(priority) {
+        if (priority === "low") {
+            return "#59B159"
+        } else if (priority === "medium") {
+            return "#FFFF41"
+        } else if (priority === "high") {
+            return "#FF4141"
+        }
+    }
+
+    /* UTILITY FUNCTIONS */
+
+    function icon(name) {
+        return "../icons/" + name + ".png"
+    }
+
+    function length(model) {
+        return model.hasOwnProperty("count") ? model.count : model.length
+    }
+
+    function newProject() {
+        if (backendModels.length > 1)
+            PopupUtils.open(newProjectPopover, newProjectButton)
+        else
+            PopupUtils.open(newProjectDialog, root, {
+                                backend: backendModels[0]
+                            })
+    }
+
+    function formattedDate(date) {
+        if (isToday(date)) {
+            return i18n.tr("Today")
+        } else {
+            return Qt.formatDate(date)
+        }
+    }
+
+    function isToday(date) {
+        var today = new Date()
+
+        return date.getFullYear() === today.getFullYear() &&
+                date.getMonth() === today.getMonth() &&
+                date.getDate() === today.getDate()
+    }
+
+    property var today: {
+        var today = new Date()
+        today.setHours(0)
+        today.setMinutes(0)
+        today.setSeconds(0)
+        return today
+    }
+
+    function dateIsBefore(date1, date2) {
+        var ans = date1.getFullYear() < date2.getFullYear() ||
+                (date1.getFullYear() === date2.getFullYear() && date1.getMonth() < date2.getMonth()) ||
+                (date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth()
+                        && date1.getDate() < date2.getDate())
+        return ans
+    }
+
+    function dateIsBeforeOrSame(date1, date2) {
+        var ans = date1.getFullYear() < date2.getFullYear() ||
+                (date1.getFullYear() === date2.getFullYear() && date1.getMonth() < date2.getMonth()) ||
+                (date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth()
+                        && date1.getDate() <= date2.getDate())
+        return ans
+    }
+
+    /* COMPONENTS */
+
+    Component {
+        id: newProjectDialog
+
+        InputDialog {
+            property var backend
+
+            title: i18n.tr("New %1").arg(backend.newName)
+            onAccepted: backend.newProject(value)
+        }
+    }
+
+    Component {
+        id: newProjectPopover
+
+        Popover {
+            id: newProjectPopoverItem
+            Column {
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: parent.top
+                }
+
+                Repeater {
+                    model: backendModels
+                    delegate: ListItem.Standard {
+                        visible: modelData.editable
+
+                        //FIXME: Hack because of Suru theme!
+                        Label {
+                            anchors {
+                                verticalCenter: parent.verticalCenter
+                                left: parent.left
+                                margins: units.gu(2)
+                            }
+
+                            text: modelData.newName
+                            fontSize: "medium"
+                            color: Theme.palette.normal.overlayText
+                        }
+
+                        onClicked: {
+                            PopupUtils.close(newProjectPopoverItem)
+                            PopupUtils.open(newProjectDialog, root, {backend: modelData})
+                        }
+
+                        //showDivider: index < count - 1
+                    }
+                }
+            }
+        }
     }
 }

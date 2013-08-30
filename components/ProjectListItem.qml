@@ -44,6 +44,7 @@ SingleValue {
     visible: project === null || !project.archived || showArchivedProjects
 
     onPressAndHold: {
+        print("PRESS AND HOLD!")
         if (project !== null && project.editable)
             PopupUtils.open(projectActionsPopover, root, {
                                 project: project

@@ -29,15 +29,7 @@ GenericBackend {
     name: "Projects"
     newName: "Local Project"
     databaseName: "local-tasks"
-
-    function newProject(name) {
-        var project = createProject({
-                          docId: nextDocId++
-                      })
-        project.name = name
-        internal_addProject(project)
-        return project
-    }
+    supportsLists: false
 
     projectComponent: Component {
 

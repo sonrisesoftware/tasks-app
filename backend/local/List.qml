@@ -20,82 +20,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.    *
  ***************************************************************************/
 import QtQuick 2.0
-import Ubuntu.Components 0.1
-import Ubuntu.Components.ListItems 0.1
-import Ubuntu.Components.Popups 0.1
-import "../ui"
+import U1db 1.0 as U1db
+import ".."
 
-Item {
-    id: root
+GenericList {
+    id: list
 
-    property alias showAddBar: addBar.visible
-    property var filter: function(task) {
-        return !task.completed || showCompletedTasks
-    }
+    taskComponent: Component {
 
-    property string noneMessage: i18n.tr("No tasks")
-    property var model: list.tasks
-    property var project: list.project
-    property var list
+        Task {
 
-    property alias addBarColor: addBar.color
-
-    property var flickable: taskListView
-    property alias header: taskListView.header
-
-    ListView {
-        id: taskListView
-        objectName: "taskListView"
-
-        anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
-            bottom: addBar.top
-        }
-
-        clip: true
-
-        model: root.model
-
-        delegate: TaskListItem {
-            objectName: "task" + index
-
-            task: modelData
-            show: filter(task)
-        }
-    }
-
-    Scrollbar {
-        flickableItem: taskListView
-    }
-
-    QuickAddBar {
-        id: addBar
-        anchors.bottomMargin: 0
-        height: expanded ? implicitHeight : 0
-    }
-
-    Item {
-        anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
-            bottom: addBar.top
-        }
-
-        Label {
-            id: noTasksLabel
-            objectName: "noTasksLabel"
-
-            anchors.centerIn: parent
-
-            visible: length(model) === 0
-            opacity: 0.5
-
-            fontSize: "large"
-
-            text: root.noneMessage
         }
     }
 }
