@@ -50,7 +50,12 @@ class MainView(toolkit_emulators.MainView):
 class ProjectsPage(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
     
     def get_projects_count(self):
-        return len(self.select_many(ProjectListItem))
+        list = self.select_many(ProjectListItem)
+        count = 0
+        for item in list:
+            if item.visible:
+                count += 1
+        return count
         
     def get_project_by_index(self, index):
         item = self.select_many(ProjectListItem)[index]
