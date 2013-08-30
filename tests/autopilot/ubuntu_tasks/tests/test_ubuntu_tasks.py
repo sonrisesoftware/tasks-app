@@ -87,6 +87,29 @@ class MainTests(UbuntuTasksTestCase):
         self._confirm_dialog()
         
         self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
+        
+    def test_rename_project(self):
+        PROJECT_NAME = 'Test Project'
+        NEW_NAME = 'Renamed Project'
+        
+        projectsPage = self.main_view.get_projects_page()
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
+        
+        toolbar = self.main_view.open_toolbar()
+        toolbar.click_button('newProject')
+        self._confirm_dialog(PROJECT_NAME)
+        
+        projectItem = projectsPage.get_project_by_index(0)
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(1)))
+        self.assertThat(projectItem.get_name, Eventually(Equals(PROJECT_NAME)))
+        
+        self._do_action_on_project(projectItem, 'Rename')
+        self._confirm_dialog(NEW_NAME)
+        
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(1)))
+        self.assertThat(projectItem.get_name, Eventually(Equals(NEW_NAME)))
+        
+        
 
     def _do_action_on_project(self, project, action):
         project.open_actions_popover()
