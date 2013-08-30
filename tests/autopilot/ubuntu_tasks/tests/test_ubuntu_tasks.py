@@ -125,6 +125,65 @@ class MainTests(UbuntuTasksTestCase):
         self._do_action_on_project(projectItem, 'Archive')
         
         self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
+        
+    def test_unarchive_projects(self):
+        PROJECT_NAME = 'Test Project'
+        
+        projectsPage = self.main_view.get_projects_page()
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
+        
+        toolbar = self.main_view.open_toolbar()
+        toolbar.click_button('newProject')
+        self._confirm_dialog(PROJECT_NAME)
+        
+        projectItem = projectsPage.get_project_by_index(0)
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(1)))
+        
+        self._do_action_on_project(projectItem, 'Archive')
+        
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
+        
+        toolbar = self.main_view.open_toolbar()
+        toolbar.click_button('showArchive')
+        
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(1)))
+        
+        projectItem = projectsPage.get_project_by_index(0)
+        self._do_action_on_project(projectItem, 'Unarchive')
+        
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
+        
+        toolbar = self.main_view.open_toolbar()
+        toolbar.click_button('showArchive')
+        
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(1)))
+        
+    def test_show_archived_projects(self):
+        PROJECT_NAME = 'Test Project'
+        
+        projectsPage = self.main_view.get_projects_page()
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
+        
+        toolbar = self.main_view.open_toolbar()
+        toolbar.click_button('newProject')
+        self._confirm_dialog(PROJECT_NAME)
+        
+        projectItem = projectsPage.get_project_by_index(0)
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(1)))
+        
+        self._do_action_on_project(projectItem, 'Archive')
+        
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
+        
+        toolbar = self.main_view.open_toolbar()
+        toolbar.click_button('showArchive')
+        
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(1)))
+        
+        toolbar = self.main_view.open_toolbar()
+        toolbar.click_button('showArchive')
+        
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
 
     def _do_action_on_project(self, project, action):
         project.open_actions_popover()

@@ -41,7 +41,7 @@ SingleValue {
 
     selected: currentProject === project
     enabled: project === null || project.enabled
-    visible: (project.archived && showArchivedProjects) || (!project.archived && !showArchivedProjects)
+    visible: showArchived === project.archived
     progression: true
 
     onPressAndHold: {

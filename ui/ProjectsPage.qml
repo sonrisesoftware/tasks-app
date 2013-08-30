@@ -116,6 +116,7 @@ Page {
         }
 
         ToolbarButton {
+            objectName: "showArchive"
             id: optionsButton
             text: showArchived ? i18n.tr("Normal") : i18n.tr("Archived")
             iconSource: icon("settings")
