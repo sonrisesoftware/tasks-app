@@ -77,10 +77,13 @@ Object {
         var json = values
 
         for (var i = 0; i < childrenDocs.length; i++) {
+            print("Found subdocument ", childrenDocs[i].docId, "for", docId)
             children[childrenDocs[i].docId] = childrenDocs[i].save()
         }
 
-        json.children = children
+        if (listDocs().length > 0) {
+            json.children = children
+        }
         print("Saving", docId, JSON.stringify(json))
 
         return json
@@ -91,6 +94,7 @@ Object {
         values = json
         if (json.hasOwnProperty("children")) {
             children = json.children
+            delete values["children"]
         }
 
         if (childrenDocs !== undefined) {
@@ -101,6 +105,17 @@ Object {
 
         if (reload !== undefined)
             reload()
+    }
+
+    function remove(docId) {
+        if (children.hasOwnProperty(docId)) {
+            delete children[docId]
+        }
+
+        for (var i = 0; i < childrenDocs.length; i++) {
+            if (childrenDocs[i].docId === docId)
+                childrenDocs.splice(i, 1)
+        }
     }
 
     function listDocs() {

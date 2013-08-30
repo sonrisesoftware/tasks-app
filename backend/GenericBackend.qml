@@ -102,6 +102,7 @@ Item {
 
     // This removes a project from the model
     function internal_removeProject(project) {
+        database.remove(project.docId)
         print("Removing project...")
         for (var i = 0; i < projects.count; i++) {
             if (projects.get(i).modelData === project)

@@ -20,29 +20,55 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.    *
  ***************************************************************************/
 import QtQuick 2.0
+import Ubuntu.Components 0.1
 import U1db 1.0 as U1db
-import ".."
 
-GenericBackend {
-    id: root
+Item {
+    id: list
 
-    name: "Projects"
-    newName: "Local Project"
-    databaseName: "local-tasks"
+    /* Properties that define how the list works */
 
-    function newProject(name) {
-        var project = createProject({
-                          docId: nextDocId++
-                      })
-        project.name = name
-        internal_addProject(project)
-        return project
+    property string docId               // The document ID used by U1db and optionally by other storage
+    property string name                // The name of the list
+    property string editable            // Can the list be deleted or renamed, or have tasks added?
+    property var project
+
+    onNameChanged:  fieldChanged("name", name)
+
+    property bool updating: false       // Used to prevent sending changes to remote backend
+                                        // when loading changes from the remote or local backend
+
+    function fieldChanged(name, value) {
+        if (!updating)
+            document.lock(name, value)
     }
 
-    projectComponent: Component {
+    property var lists: ListModel {
+        id: lists
+    }
 
-        Project {
+    /* To be called after the document changes,
+       either after loading from U1db or after loading from a remote model */
+    function reloadFields() {
+        print("Reloading list", name)
+        updating = true
 
-        }
+        name = document.get("name", "")
+
+        updating = false
+        print("Done.")
+    }
+
+    /* U1db Storage */
+
+    Document {
+        id: document
+        parent: project.document
+        docId: list.docId
+        reload: reloadFields
+    }
+
+    function loadU1db() {
+        // Implemented by individual backends...
     }
 }

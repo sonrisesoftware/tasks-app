@@ -34,6 +34,11 @@ Item {
     property string editable            // Can the project be deleted or named, or have lists added?
     property var backend
 
+    property int nextDocId: 0
+    property var listComponent
+
+    onNextDocIdChanged: document.set("nextDocId", nextDocId)
+
     onNameChanged:  fieldChanged("name", name)
     onDescriptionChanged: fieldChanged("description", description)
 
@@ -52,7 +57,7 @@ Item {
     /* To be called after the document changes,
        either after loading from U1db or after loading from a remote model */
     function reloadFields() {
-        print("Reloading...")
+        print("Reloading project", name)
         updating = true
 
         name = document.get("name", "")
@@ -64,7 +69,7 @@ Item {
 
     /* U1db Storage */
 
-    Document {
+    property var document: Document {
         id: document
         parent: backend.database
         docId: project.docId
@@ -72,13 +77,67 @@ Item {
     }
 
     function loadU1db() {
-        //reloadFields()
+        nextDocId = document.get("nextDocId", 0)
+        var list = document.listDocs()
+        print("Child lists:", list)
+
+        for (var i = 0; i < list.length; i++) {
+            loadListU1db(list[i])
+        }
     }
 
-    // XXX: REMOVE - TEST ONLY
-    function load(json) {
-        print("Loading from remote TEST")
-        document.set("name", json.name)
-        document.set("description", json.description)
+    /* Creation of new lists */
+
+    // This is the front-end to creating new lists
+    function newList(name) {
+        // For implementation by backend...
+    }
+
+    // For loading a list from U1db
+    function loadListU1db(docId) {
+        var list = createList({
+                                  docId: docId
+                              })
+        internal_addList(list)
+        list.loadU1db()
+        return list
+    }
+
+    // Creates a new list object
+    function createList(args) {
+        if (args === undefined)
+            args = {}
+
+        var list = listComponent.createObject(project, args)
+
+        if (list === null) {
+            console.log("Unable to create:", newName)
+        }
+
+        list.project = project
+        return list
+    }
+
+    // This adds a list to the model
+    function internal_addList(list) {
+        lists.append({modelData: list})
+    }
+
+    /* Deletion of lists */
+
+    // This is the front-end to removing lists
+    function removeList(list) {
+        // For implementation by backend...
+        internal_removeList(list)
+    }
+
+    // This removes a list from the model
+    function internal_removeList(list) {
+        print("Removing list...")
+        lists.remove(list.docId)
+        for (var i = 0; i < lists.count; i++) {
+            if (lists.get(i).modelData === project)
+                lists.remove(i)
+        }
     }
 }

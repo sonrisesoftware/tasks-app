@@ -170,16 +170,10 @@ MainView {
             firstRun()
         }
 
-        //var project = localProjectsModel.newProject("Test")
+        var project = localProjectsModel.newProject("Test")
 
-        var project = localProjectsModel.projects.get(0).modelData
-        project.description = "NEW DESCRIPTION"
-        project.load({
-                         name: "OLD",
-                         description: "OLD DESCRIPTION"
-                     })
-        print("Name:", project.name)
-        print("Description:", project.description)
+        project.newList("To do")
+        print("Lists", project.lists)
 
         print("Documents:", localProjectsModel.projects.count)
     }
