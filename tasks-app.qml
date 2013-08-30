@@ -296,6 +296,14 @@ MainView {
     /* COMPONENTS */
 
     Component {
+        id: optionsPopover
+
+        OptionsPopover {
+
+        }
+    }
+
+    Component {
         id: newProjectDialog
 
         InputDialog {

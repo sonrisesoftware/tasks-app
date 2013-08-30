@@ -40,6 +40,7 @@ SingleValue {
 
     selected: currentList === list
     visible: !list.archived || showArchived
+    progression: true
 
     onPressAndHold: {
         print("PRESS AND HOLD!")

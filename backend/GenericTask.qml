@@ -78,7 +78,7 @@ Item {
 
     function updateRepeat() {
         if (completed) {
-            var json = task.save()
+            var json = task.document.values
 
             // If the task has never been completed before
             // Then create the repeat of it

@@ -28,11 +28,12 @@ import "../components"
 Page {
     id: root
 
-    title: i18n.tr("Projects")
+    title: showArchived ? i18n.tr("Archived Projects") : i18n.tr("Projects")
 
     property string type: "projects"
 
     property var currentProject: null
+    property bool showArchived: false
 
     Flickable {
         id: flickable
@@ -100,6 +101,7 @@ Page {
 
     tools: ToolbarItems {
         ToolbarButton {
+            objectName: "newProject"
             iconSource: icon("add")
             text: i18n.tr("New Project")
 
@@ -115,11 +117,11 @@ Page {
 
         ToolbarButton {
             id: optionsButton
-            text: i18n.tr("Options")
+            text: showArchived ? i18n.tr("Normal") : i18n.tr("Archived")
             iconSource: icon("settings")
 
             onTriggered: {
-                PopupUtils.open(optionsPopover, optionsButton)
+                showArchived = !showArchived
             }
         }
     }

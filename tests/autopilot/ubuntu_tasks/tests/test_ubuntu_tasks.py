@@ -27,6 +27,7 @@ from textwrap import dedent
 from testtools.matchers import Is, Not, Equals
 from testtools import skip
 import os
+import os.path
 from ubuntu_tasks.tests import UbuntuTasksTestCase
 
 
@@ -34,6 +35,8 @@ class MainTests(UbuntuTasksTestCase):
     """Generic tests for the Hello World"""
 
     def setUp(self):
+        if os.path.exists('~/.local/share/Qt Project/QtQmlViewer/tasks-app.db'):
+            os.remove('~/.local/share/Qt Project/QtQmlViewer/tasks-app.db')
         super(MainTests, self).setUp()
 
     def test_mainView_shows(self):
@@ -41,12 +44,28 @@ class MainTests(UbuntuTasksTestCase):
 
         self.assertThat(self.main_view.visible,Eventually(Equals(True)))
 
-    def test_upcoming_tasks(self):
-        """Check that the first view is upcoming tasks"""
-        projectPage = self.main_view.get_project_page()
-        self.assertThat(projectPage.get_project_name, Eventually(Equals("Upcoming")))
-        
     def test_projects_page(self):
-        if self.main_view.wideAspect:
-            projectPage = self.main_view.get_project_page()
-            self.assertThat(projectPage.title, Eventually(Equals("Tasks")))
+        projectsPage = self.main_view.get_projects_page()
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
+        self.assertThat(projectsPage.title, Eventually(Equals("Projects")))
+        
+    def test_new_project(self):
+        PROJECT_NAME = 'New Project'
+        
+        projectsPage = self.main_view.get_projects_page()
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
+        
+        toolbar = self.main_view.open_toolbar()
+        toolbar.click_button('newProject')
+        self._confirm_dialog(PROJECT_NAME)
+        
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(1)))
+        
+        projectItem = projectsPage.get_project_by_index(0)
+        self.assertThat(projectItem.get_name, Eventually(Equals(PROJECT_NAME)))
+
+    def _confirm_dialog(self, text=None):
+        confirm_dialog = self.main_view.get_confirm_dialog()
+        if text:
+            confirm_dialog.enter_text(text)
+        confirm_dialog.ok()

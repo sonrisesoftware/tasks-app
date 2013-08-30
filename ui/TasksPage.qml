@@ -55,12 +55,11 @@ Page {
     tools: ToolbarItems {
         ToolbarButton {
             iconSource: icon("add")
-            text: i18n.tr("New List")
-            visible: currentProject !== null
-            enabled: currentProject !== null && currentProject.editable
+            text: i18n.tr("New Task")
+            enabled: currentList.editable
 
             onTriggered: {
-                print("NEW LIST!!!!!")
+                print("NEW TASK!!!!!")
             }
         }
 

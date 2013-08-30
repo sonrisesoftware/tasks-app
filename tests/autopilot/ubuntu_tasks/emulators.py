@@ -31,22 +31,25 @@ from ubuntuuitoolkit import emulators as toolkit_emulators
 class MainView(toolkit_emulators.MainView):
     """Ubuntu Tasks MainView Autopilot emulator."""
 
-    def get_project_page(self):
-        """Return the FolderListPage emulator of the MainView."""
-        page = self.select_single(HomePage)
+    def get_projects_page(self):
+        page = self.select_single(ProjectsPage)
         page.main_view = self
         return page
 
     def get_confirm_dialog(self):
         dialog = self.select_single(ConfirmDialog)
         if dialog is None:
-            dialog = self.select_single(ConfirmDialogWithInput)
+            dialog = self.select_single(InputDialog)
         return dialog
 
 class ProjectsPage(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
     
-    def get_projects_count():
-        return len(self.select_many('Standard'))
+    def get_projects_count(self):
+        return len(self.select_many(ProjectListItem))
+        
+    def get_project_by_index(self, index):
+        item = self.select_many(ProjectListItem)[index]
+        return item
 
 class HomePage(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
     
@@ -54,4 +57,53 @@ class HomePage(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
         if self.main_view.wideAspect:
             return self.projectName
         else:
-            return self.title
+            return self.title        
+    
+
+class ProjectListItem(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
+    def get_name(self):
+        return self.text
+        
+class ConfirmDialog(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
+    """ConfirmDialog Autopilot emulator."""
+
+    def __init__(self, *args):
+        super(ConfirmDialog, self).__init__(*args)
+        self.pointing_device = toolkit_emulators.get_pointing_device()
+
+    def ok(self):
+        okButton = self.select_single('Button', objectName='okButton')
+        self.pointing_device.click_object(okButton)
+
+    def cancel(self):
+        cancel_button = self.select_single('Button', objectName='cancelButton')
+        self.pointing_device.click_object(cancel_button)
+
+class InputDialog(ConfirmDialog):
+
+    def __init__(self, *args):
+        super(InputDialog, self).__init__(*args)
+        self.keyboard = input.Keyboard.create()
+
+    def enter_text(self, text, clear=True):
+        if clear:
+            self.clear_text()
+        text_field = self._select_text_field()
+        self.pointing_device.click_object(text_field)
+        self.keyboard.type(text)
+        text_field.text.wait_for(text)
+
+    def clear_text(self):
+        text_field = self._select_text_field()
+        # XXX The clear button doesn't have an objectName. Reported on
+        # https://bugs.launchpad.net/ubuntu-ui-toolkit/+bug/1205208
+        # --elopio - 2013-07-25
+        clear_button = text_field.select_single('AbstractButton')
+        # XXX for some reason, we need to click the button twice.
+        # More investigation is needed. --elopio - 2013-07-25
+        self.pointing_device.click_object(clear_button)
+        self.pointing_device.click_object(clear_button)
+        text_field.text.wait_for('')
+
+    def _select_text_field(self):
+        return self.select_single('TextField', objectName='inputField')

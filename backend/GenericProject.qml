@@ -31,6 +31,7 @@ Item {
     property string docId               // The document ID used by U1db and optionally by other storage
     property string name                // The name of the project
     property string description         // The description of the project
+    property bool archived              // Is the project archived?
     property bool editable: backend.editable
     property bool supportsLists: backend.supportsLists
     property var backend
@@ -42,6 +43,7 @@ Item {
 
     onNameChanged:  fieldChanged("name", name)
     onDescriptionChanged: fieldChanged("description", description)
+    onArchivedChanged: fieldChanged("archived", archived)
 
     property bool updating: false       // Used to prevent sending changes to remote backend
                                         // when loading changes from the remote or local backend
@@ -63,6 +65,7 @@ Item {
 
         name = document.get("name", "")
         description = document.get("description", "")
+        archived = document.get("archived", false)
 
         updating = false
         print("Done.")

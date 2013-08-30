@@ -41,7 +41,8 @@ SingleValue {
 
     selected: currentProject === project
     enabled: project === null || project.enabled
-    visible: project === null || !project.archived || showArchivedProjects
+    visible: (project.archived && showArchivedProjects) || (!project.archived && !showArchivedProjects)
+    progression: true
 
     onPressAndHold: {
         print("PRESS AND HOLD!")

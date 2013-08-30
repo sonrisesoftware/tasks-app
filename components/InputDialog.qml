@@ -35,6 +35,7 @@ Dialog {
 
     TextField {
         id: textField
+        objectName: "inputField"
 
         onAccepted: okButton.clicked()
         validator: RegExpValidator {
