@@ -165,4 +165,10 @@ Item {
                 lists.remove(i)
         }
     }
+
+    /* DELETION OF THE PROJECT */
+
+    function remove() {
+        backend.removeProject(project)
+    }
 }

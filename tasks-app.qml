@@ -355,4 +355,80 @@ MainView {
             }
         }
     }
+
+    Component {
+        id: projectActionsPopover
+
+        ActionSelectionPopover {
+            property var project
+            objectName: "projectActionsPopover"
+
+            actions: ActionList {
+                Action {
+                    objectName: "rename"
+                    text: i18n.tr("Rename")
+                    enabled: project.editable
+                    onTriggered: {
+                        PopupUtils.open(renameProjectDialog, caller, {
+                                            project: project
+                                        })
+                    }
+                }
+
+                Action {
+                    objectName: "archive"
+                    text: project.archived ? i18n.tr("Unarchive") : i18n.tr("Archive")
+                    enabled: project.editable
+                    onTriggered: {
+                        project.archived = !project.archived
+                    }
+                }
+
+                Action {
+                    objectName: "delete"
+                    enabled: project.editable
+                    text: i18n.tr("Delete")
+                    onTriggered: {
+                        PopupUtils.open(confirmDeleteProjectDialog, root, {project: project})
+                    }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: renameProjectDialog
+
+        InputDialog {
+            property var project
+
+            id: renameProjectDialogItem
+            title: i18n.tr("Rename Project")
+            //text: i18n.tr("Are you sure you want to delete '%1'?").arg(project.name)
+            value: project.name
+
+            onAccepted: {
+                PopupUtils.close(renameProjectDialogItem)
+                project.name = value
+            }
+        }
+    }
+
+    Component {
+        id: confirmDeleteProjectDialog
+
+        ConfirmDialog {
+            property var project
+
+            id: confirmDeleteProjectDialogItem
+            title: i18n.tr("Delete Project")
+            text: i18n.tr("Are you sure you want to delete '%1'?").arg(project.name)
+
+            onAccepted: {
+                PopupUtils.close(confirmDeleteProjectDialogItem)
+                //clearPageStack()
+                project.remove()
+            }
+        }
+    }
 }

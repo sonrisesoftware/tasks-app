@@ -69,3 +69,29 @@ class MainTests(UbuntuTasksTestCase):
         if text:
             confirm_dialog.enter_text(text)
         confirm_dialog.ok()
+
+    def test_delete_project(self):
+        PROJECT_NAME = 'Test Project'
+        
+        projectsPage = self.main_view.get_projects_page()
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
+        
+        toolbar = self.main_view.open_toolbar()
+        toolbar.click_button('newProject')
+        self._confirm_dialog(PROJECT_NAME)
+        
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(1)))
+        
+        projectItem = projectsPage.get_project_by_index(0)
+        self._do_action_on_project(projectItem, 'Delete')
+        self._confirm_dialog()
+        
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
+
+    def _do_action_on_project(self, project, action):
+        project.open_actions_popover()
+        actions_popover = self.main_view.get_project_actions_popover()
+        actions_popover.click_button(action)
+        self.assertThat(
+            self.main_view.get_project_actions_popover,
+            Eventually(Equals(None)))

@@ -41,6 +41,11 @@ class MainView(toolkit_emulators.MainView):
         if dialog is None:
             dialog = self.select_single(InputDialog)
         return dialog
+        
+    def get_project_actions_popover(self):
+        """Return the ActionSelectionPopover emulator of the file actions."""
+        return self.select_single(
+            ActionSelectionPopover, objectName='projectActionsPopover')
 
 class ProjectsPage(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
     
@@ -61,8 +66,18 @@ class HomePage(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
     
 
 class ProjectListItem(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
+    def __init__(self, *args):
+        super(ProjectListItem, self).__init__(*args)
+        self.pointing_device = toolkit_emulators.get_pointing_device()
+    
     def get_name(self):
         return self.text
+        
+    def open_actions_popover(self):
+        self.pointing_device.move_to_object(self)
+        self.pointing_device.press()
+        time.sleep(1)
+        self.pointing_device.release()
         
 class ConfirmDialog(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
     """ConfirmDialog Autopilot emulator."""
@@ -107,3 +122,37 @@ class InputDialog(ConfirmDialog):
 
     def _select_text_field(self):
         return self.select_single('TextField', objectName='inputField')
+
+class ActionSelectionPopover(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
+    """ActionSelectionPopover Autopilot emulator."""
+    # TODO Move this to the ubuntu-ui-toolkit. Reported on
+    # https://bugs.launchpad.net/ubuntu-ui-toolkit/+bug/1205205
+    # --elopio - 2013-07-25
+
+    def __init__(self, *args):
+        super(ActionSelectionPopover, self).__init__(*args)
+        self.pointing_device = toolkit_emulators.get_pointing_device()
+
+    def click_button(self, text):
+        """Click a button on the popover.
+
+        XXX We are receiving the text because there's no way to set the
+        objectName on the action. This is reported at
+        https://bugs.launchpad.net/ubuntu-ui-toolkit/+bug/1205144
+        --elopio - 2013-07-25
+
+        :parameter text: The text of the button.
+
+        """
+        button = self._get_button(text)
+        if button is None:
+            raise ValueError(
+                'Button with text "{0}" not found.'.format(text))
+        self.pointing_device.click_object(button)
+
+    def _get_button(self, text):
+        buttons = self.select_many('Empty')
+        for button in buttons:
+            if button.text == text:
+                return button
+                
