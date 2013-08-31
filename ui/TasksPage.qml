@@ -33,10 +33,45 @@ Page {
     property var currentList
     property var currentProject: currentList.project
 
+    ValueSelector {
+        id: listSelector
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: parent.top
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            color: Qt.rgba(0.2,0.2,0.2,0.2)
+        }
+
+        text: i18n.tr("List")
+        values: {
+            var list = subList(currentProject.lists, "name")
+            list.push(i18n.tr("<i>New List...</i>"))
+            return list
+        }
+        visible: currentProject.supportsLists
+
+        onSelectedIndexChanged: {
+            if (selectedIndex === values.length - 1) {
+                print("NEW LIST...")
+            } else {
+                currentList = currentProject.lists.get(selectedIndex).modelData
+            }
+        }
+    }
+
     TasksList {
         id: list
 
-        anchors.fill: parent
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: listSelector.visible ? listSelector.bottom : parent.top
+            bottom: parent.bottom
+        }
 
         list: currentList
     }
@@ -82,8 +117,8 @@ Page {
 
             onTriggered: {
                 while (pageStack.depth > 1)
-                    pageStack.clear()
-                project.remove()
+                    pageStack.pop()
+                currentProject.remove()
             }
         }
 

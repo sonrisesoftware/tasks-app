@@ -24,8 +24,6 @@ import Ubuntu.Components 0.1
 import Ubuntu.Components.Popups 0.1
 import Ubuntu.Components.ListItems 0.1 as ListItem
 import U1db 1.0 as U1db
-import QtSystemInfo 5.0
-import Ubuntu.OnlineAccounts 0.1
 
 import "ui"
 import "components"
@@ -100,83 +98,8 @@ MainView {
         Component.onCompleted: pageStack.push(tabs)
     }
 
-    UbuntuShape {
+    Notification {
         id: notification
-
-        property var func
-        property var args
-
-        opacity: 0
-
-        function show(text, func, args) {
-            notification.func = func
-            notification.args = args
-            label.text = text
-            showAnimation.restart()
-            timer.running = true
-        }
-
-        Timer {
-            id: timer
-            interval: 2500
-            onTriggered: hideAnimation.restart()
-        }
-
-        NumberAnimation {
-            duration: 200
-            id: showAnimation
-            target: notification
-            property: "opacity"
-            from: 0
-            to: 1
-        }
-
-        NumberAnimation {
-            duration: 500
-            id: hideAnimation
-            target: notification
-            property: "opacity"
-            from: 1
-            to: 0
-        }
-
-        NumberAnimation {
-            duration: 200
-            id: clickedAnimation
-            target: notification
-            property: "opacity"
-            from: 1
-            to: 0
-        }
-
-        ListItem.Empty {
-            Label {
-                id: label
-                anchors.centerIn: parent
-                text: "Undo"
-                color: "gray"
-            }
-            onTriggered: {
-                hideAnimation.stop()
-                timer.stop()
-                clickedAnimation.restart()
-
-                notification.func(notification.args)
-            }
-            showDivider: false
-        }
-
-        color: "white"
-        //gradientColor: Qt.rgba(0.9,0.9,0.9,1)
-        height: childrenRect.height
-
-        anchors {
-            margins: units.gu(2)
-            horizontalCenter: parent.horizontalCenter
-            bottom: parent.bottom
-        }
-
-        width: Math.min(units.gu(50), parent.width - units.gu(4))
     }
 
     /* NAVIGATION */
@@ -301,7 +224,7 @@ MainView {
     }
 
     Component.onCompleted: {
-        notification.show("Undo", print, "Undoing test...")
+        notification.show("Undo", icon("back"), print, "Undoing test...")
         reloadSettings()
 
         for (var i = 0; i < backendModels.length; i++) {
@@ -392,10 +315,24 @@ MainView {
         return value
     }
 
+    function subList(list, prop) {
+        var value = []
+
+        //print("Concat:", prop, length(list))
+
+        for (var i = 0; i < length(list); i++) {
+            var item = get(list, i)
+            value.push(item[prop])
+        }
+
+        //print("Concat:", prop, value, length(value))
+        return value
+    }
+
     function concat(list, prop) {
         var value = []
 
-        //print("Concat:", prop, value, length(value))
+        //print("Concat:", prop, length(list))
 
         for (var i = 0; i < length(list); i++) {
             var item = get(list, i)
@@ -560,7 +497,7 @@ MainView {
                     onTriggered: {
                         project.archived = !project.archived
                         if (project.archived)
-                            notification.show("Undo archive", function(project) {
+                            notification.show(i18n.tr("Archived %1").arg(project.name), icon("back"), function(project) {
                                 project.archived = false
                             }, project)
                     }

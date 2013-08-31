@@ -7,7 +7,6 @@ Ubuntu Tasks
 
  * Ubuntu SDK
  * U1db - qtdeclarative5-u1db1.0
- * QtSystemInfo - qtdeclarative5-systeminfo-plugin
  * Ubuntu UI Extras (see below)
 
 To install Ubuntu UI Extras, you will need [Code Units](https://github.com/iBeliever/code-units), a small utility to download bits of code.
