@@ -31,6 +31,8 @@ Item {
     property int count: length(upcomingTasks)
     property var model: upcomingTasks
 
+    onModelChanged: print("UPCOMING TASKS MODEL:", count)
+
     Flickable {
         id: flickable
         anchors.fill: parent
@@ -53,11 +55,11 @@ Item {
 
             Repeater {
                 id: overdue
-                //model: root.model
-                model: filteredTasks(upcomingTasks, function(task) { return task.overdue}, "Overdue ONLY")
+                model: root.model
                 delegate: TaskListItem {
                     objectName: "overdueTask" + index
 
+                    show: task.overdue
                     task: modelData
                 }
             }
@@ -69,11 +71,27 @@ Item {
 
             Repeater {
                 id: today
-                //model: upcomingTasks
-                model: filteredTasks(upcomingTasks, function(task) { return task.isDueToday()}, "Upcoming ONLY")
+                model: root.model
                 delegate: TaskListItem {
                     objectName: "todayTask" + index
 
+                    show: task.isDueToday()
+                    task: modelData
+                }
+            }
+
+            Header {
+                text: i18n.tr("Tomorrow")
+                visible: today.count > 0
+            }
+
+            Repeater {
+                id: tomorrow
+                model: root.model
+                delegate: TaskListItem {
+                    objectName: "tomorrowTask" + index
+
+                    show: task.isDueTomorrow()
                     task: modelData
                 }
             }
@@ -85,13 +103,11 @@ Item {
 
             Repeater {
                 id: week
-                //model: upcomingTasks
-                model: filteredTasks(upcomingTasks, function(task) {
-                    return !task.overdue && !task.isDueToday() && task.isDueThisWeek()
-                }, "Upcoming this week")
+                model: root.model
                 delegate: TaskListItem {
                     objectName: "weekTask" + index
 
+                    show: !task.overdue && !task.isDueToday() && !task.isDueTomorrow() && task.isDueThisWeek()
                     task: modelData
                 }
             }

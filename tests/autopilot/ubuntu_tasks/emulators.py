@@ -30,9 +30,29 @@ from ubuntuuitoolkit import emulators as toolkit_emulators
 
 class MainView(toolkit_emulators.MainView):
     """Ubuntu Tasks MainView Autopilot emulator."""
+    
+    def go_back(self):
+        toolbar = self.open_toolbar()
+        
+        button = None
+        buttons = toolbar.select_many('ActionItem')
+        for item in buttons:
+            if item.text == 'Back':
+                button = item
+        if button is None:
+            raise ValueError(
+                'Button with objectName "{0}" not found.'.format(object_name))
+        self.pointing_device.click_object(button)
 
     def get_projects_page(self):
+        #self.switch_to_next_tab()
         page = self.select_single(ProjectsPage)
+        page.main_view = self
+        return page
+        
+    def get_archived_projects_page(self):
+        #self.switch_to_next_tab()
+        page = self.select_single(ProjectsPage, objectName='archivedProjectsPage')
         page.main_view = self
         return page
 

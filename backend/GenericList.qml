@@ -32,6 +32,9 @@ Item {
     property string name                // The name of the list
     property var project
     property bool editable: project.editable
+    property var upcomingTasks: filter(tasks, function(task) {
+        return task.upcoming
+    })
     property int uncompletedCount: count(tasks, function(task) {
         return !task.completed
     })

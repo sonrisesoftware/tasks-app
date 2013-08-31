@@ -103,7 +103,7 @@ Page {
 
         fontSize: "large"
 
-        text: i18n.tr("No projects")
+        text: showArchived ? i18n.tr("No archived projects") : i18n.tr("No projects")
     }
 
     Scrollbar {
@@ -122,10 +122,14 @@ Page {
     ]
 
     tools: ToolbarItems {
+        id: tools
+        Component.onCompleted: print("BACK:", tools.back.objectName)
+
         ToolbarButton {
             objectName: "newProject"
             iconSource: icon("add")
             text: i18n.tr("New Project")
+            visible: !showArchived
 
             onTriggered: {
                 newProject()
@@ -138,13 +142,45 @@ Page {
         }
 
         ToolbarButton {
-            objectName: "showArchive"
-            id: optionsButton
-            text: showArchived ? i18n.tr("Normal") : i18n.tr("Archived")
-            iconSource: icon("settings")
+            id: clearButton
+            objectName: "clearArchive"
+
+            text: i18n.tr("Clear")
+            iconSource: icon("clear")
+            visible: showArchived
+            enabled: hasProjects
 
             onTriggered: {
-                showArchived = !showArchived
+                for (var i = 0; i < backendModels.length; i++) {
+                    var backend = backendModels[i]
+                    var index = 0;
+                    //print("Removing tasks from", backend.name, backend.projects.count)
+                    while (index < backend.projects.count) {
+                        var project = get(backend.projects, index)
+
+                        //print("Checking project:", index, project.name)
+
+                        if (project.archived) {
+                            //print("  Removed.")
+                            project.remove()
+                        } else {
+                            index++
+                        }
+                    }
+                }
+            }
+        }
+
+        ToolbarButton {
+            id: optionsButton
+            objectName: "showArchive"
+
+            text: i18n.tr("Archived")
+            iconSource: icon("edit")
+            visible: !showArchived
+
+            onTriggered: {
+                pageStack.push(Qt.resolvedUrl("ProjectsPage.qml"), {showArchived: true, objectName: "archivedProjectsPage"})
             }
         }
     }

@@ -66,12 +66,38 @@ MainView {
     PageStack {
         id: pageStack
 
-        ProjectsPage {
-            id: projectsPage
+        Tabs {
+            id: tabs
+
+//            HideableTab {
+//                title: page.title
+//                page: UpcomingPage {
+//                    id: upcomingPage
+//                }
+//                //show: length(upcomingTasks) > 0
+//                show: false
+//            }
+
+            Tab {
+                objectName: "projectsTab"
+
+                title: page.title
+                page: ProjectsPage {
+                    id: projectsPage
+                }
+            }
+
+            Tab {
+                title: page.title
+                page: SettingsPage {
+                    id: settingsPage
+                }
+            }
+
             visible: false
         }
 
-        Component.onCompleted: pageStack.push(projectsPage)
+        Component.onCompleted: pageStack.push(tabs)
     }
 
     /* NAVIGATION */
@@ -97,6 +123,10 @@ MainView {
     property var backendModels: [
        localProjectsModel
     ]
+
+    property var upcomingTasks: concat(backendModels, "upcomingTasks")
+
+    onUpcomingTasksChanged: print("UPCOMING TASKS:", upcomingTasks)
 
     /* SETTINGS */
 
@@ -263,7 +293,6 @@ MainView {
             value += count(item[prop], func, name)
         }
 
-        print("Filtered sum:", value)
         return value
     }
 
@@ -275,6 +304,20 @@ MainView {
             value += item[prop]
         }
 
+        return value
+    }
+
+    function concat(list, prop) {
+        var value = []
+
+        //print("Concat:", prop, value, length(value))
+
+        for (var i = 0; i < length(list); i++) {
+            var item = get(list, i)
+            value.concat(item[prop])
+        }
+
+        //print("Concat:", prop, value, length(value))
         return value
     }
 

@@ -55,20 +55,7 @@ class MainTests(UbuntuTasksTestCase):
         projectsPage = self.main_view.get_projects_page()
         self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
         
-        toolbar = self.main_view.open_toolbar()
-        toolbar.click_button('newProject')
-        self._confirm_dialog(PROJECT_NAME)
-        
-        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(1)))
-        
-        projectItem = projectsPage.get_project_by_index(0)
-        self.assertThat(projectItem.get_name, Eventually(Equals(PROJECT_NAME)))
-
-    def _confirm_dialog(self, text=None):
-        confirm_dialog = self.main_view.get_confirm_dialog()
-        if text:
-            confirm_dialog.enter_text(text)
-        confirm_dialog.ok()
+        projectItem = self._create_new_project(PROJECT_NAME)
 
     def test_delete_project(self):
         PROJECT_NAME = 'Test Project'
@@ -76,13 +63,7 @@ class MainTests(UbuntuTasksTestCase):
         projectsPage = self.main_view.get_projects_page()
         self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
         
-        toolbar = self.main_view.open_toolbar()
-        toolbar.click_button('newProject')
-        self._confirm_dialog(PROJECT_NAME)
-        
-        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(1)))
-        
-        projectItem = projectsPage.get_project_by_index(0)
+        projectItem = self._create_new_project(PROJECT_NAME)
         self._do_action_on_project(projectItem, 'Delete')
         self._confirm_dialog()
         
@@ -95,13 +76,7 @@ class MainTests(UbuntuTasksTestCase):
         projectsPage = self.main_view.get_projects_page()
         self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
         
-        toolbar = self.main_view.open_toolbar()
-        toolbar.click_button('newProject')
-        self._confirm_dialog(PROJECT_NAME)
-        
-        projectItem = projectsPage.get_project_by_index(0)
-        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(1)))
-        self.assertThat(projectItem.get_name, Eventually(Equals(PROJECT_NAME)))
+        projectItem = self._create_new_project(PROJECT_NAME)
         
         self._do_action_on_project(projectItem, 'Rename')
         self._confirm_dialog(NEW_NAME)
@@ -110,34 +85,24 @@ class MainTests(UbuntuTasksTestCase):
         self.assertThat(projectItem.get_name, Eventually(Equals(NEW_NAME)))
         
     def test_archive_project(self):
-        PROJECT_NAME = 'Test Project'
+        PROJECT_NAME = 'New Project'
         
         projectsPage = self.main_view.get_projects_page()
         self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
         
-        toolbar = self.main_view.open_toolbar()
-        toolbar.click_button('newProject')
-        self._confirm_dialog(PROJECT_NAME)
-        
-        projectItem = projectsPage.get_project_by_index(0)
-        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(1)))
+        projectItem = self._create_new_project(PROJECT_NAME)
         
         self._do_action_on_project(projectItem, 'Archive')
         
         self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
         
-    def test_unarchive_projects(self):
-        PROJECT_NAME = 'Test Project'
+    def test_unarchive_project(self):
+        PROJECT_NAME = 'New Project'
         
         projectsPage = self.main_view.get_projects_page()
         self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
         
-        toolbar = self.main_view.open_toolbar()
-        toolbar.click_button('newProject')
-        self._confirm_dialog(PROJECT_NAME)
-        
-        projectItem = projectsPage.get_project_by_index(0)
-        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(1)))
+        projectItem = self._create_new_project(PROJECT_NAME)
         
         self._do_action_on_project(projectItem, 'Archive')
         
@@ -146,17 +111,32 @@ class MainTests(UbuntuTasksTestCase):
         toolbar = self.main_view.open_toolbar()
         toolbar.click_button('showArchive')
         
-        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(1)))
+        archivedProjectsPage = self.main_view.get_archived_projects_page()
+        self.assertThat(archivedProjectsPage.get_projects_count, Eventually(Equals(1)))
         
         projectItem = projectsPage.get_project_by_index(0)
         self._do_action_on_project(projectItem, 'Unarchive')
         
-        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
+        archivedProjectsPage = self.main_view.get_archived_projects_page()
+        self.assertThat(archivedProjectsPage.get_projects_count, Eventually(Equals(0)))
         
-        toolbar = self.main_view.open_toolbar()
-        toolbar.click_button('showArchive')
+        self.main_view.go_back()
         
         self.assertThat(projectsPage.get_projects_count, Eventually(Equals(1)))
+        
+    def _create_new_project(self, name):
+        projectsPage = self.main_view.get_projects_page()
+        count = projectsPage.get_projects_count()
+        
+        toolbar = self.main_view.open_toolbar()
+        toolbar.click_button('newProject')
+        self._confirm_dialog(name)
+        
+        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(count + 1)))
+        
+        projectItem = projectsPage.get_project_by_index(0)
+        self.assertThat(projectItem.get_name, Eventually(Equals(name)))
+        return projectItem
         
     def test_show_archived_projects(self):
         PROJECT_NAME = 'Test Project'
@@ -164,12 +144,7 @@ class MainTests(UbuntuTasksTestCase):
         projectsPage = self.main_view.get_projects_page()
         self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
         
-        toolbar = self.main_view.open_toolbar()
-        toolbar.click_button('newProject')
-        self._confirm_dialog(PROJECT_NAME)
-        
-        projectItem = projectsPage.get_project_by_index(0)
-        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(1)))
+        projectItem = self._create_new_project(PROJECT_NAME)
         
         self._do_action_on_project(projectItem, 'Archive')
         
@@ -178,10 +153,10 @@ class MainTests(UbuntuTasksTestCase):
         toolbar = self.main_view.open_toolbar()
         toolbar.click_button('showArchive')
         
-        self.assertThat(projectsPage.get_projects_count, Eventually(Equals(1)))
+        archivedProjectsPage = self.main_view.get_archived_projects_page()
+        self.assertThat(archivedProjectsPage.get_projects_count, Eventually(Equals(1)))
         
-        toolbar = self.main_view.open_toolbar()
-        toolbar.click_button('showArchive')
+        self.main_view.go_back()
         
         self.assertThat(projectsPage.get_projects_count, Eventually(Equals(0)))
 
@@ -192,3 +167,9 @@ class MainTests(UbuntuTasksTestCase):
         self.assertThat(
             self.main_view.get_project_actions_popover,
             Eventually(Equals(None)))
+
+    def _confirm_dialog(self, text=None):
+        confirm_dialog = self.main_view.get_confirm_dialog()
+        if text:
+            confirm_dialog.enter_text(text)
+        confirm_dialog.ok()
