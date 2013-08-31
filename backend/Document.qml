@@ -18,9 +18,11 @@ Object {
 
     //Component.onCompleted: print("NEW DOCUMENT:", docId)
 
-    onParentChanged: {
-        //print("PARENT:", parent)
-        if (parent !== undefined) {
+    onParentChanged: loadFromParent()
+    onDocIdChanged: loadFromParent()
+
+    function loadFromParent() {
+        if (parent !== undefined && docId != "") {
             print(parent)
             //print("Loading from parent:", docId, parent.docId)
             if (parent.childrenDocs === undefined)
@@ -80,7 +82,7 @@ Object {
         var json = values
 
         for (var i = 0; i < childrenDocs.length; i++) {
-            //print("Found subdocument ", childrenDocs[i].docId, "for", docId)
+            print("Found subdocument ", childrenDocs[i].docId, "for", docId)
             children[childrenDocs[i].docId] = childrenDocs[i].save()
         }
 

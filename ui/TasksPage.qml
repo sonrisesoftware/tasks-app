@@ -66,8 +66,7 @@ Page {
         ToolbarButton {
             iconSource: icon("edit")
             text: i18n.tr("Rename")
-            visible: currentProject !== null
-            enabled: currentProject !== null && currentProject.editable
+            enabled: currentProject.editable
 
             onTriggered: {
                 PopupUtils.open(renameProjectDialog, root, {
@@ -77,22 +76,21 @@ Page {
         }
 
         ToolbarButton {
-            iconSource: icon("delete")
-            text: i18n.tr("Delete")
-            visible: currentProject !== null
-            enabled: currentProject !== null && currentProject.editable
+            iconSource: icon("save")
+            text: i18n.tr("Archive")
+            enabled: currentProject.editable
 
             onTriggered: {
-                PopupUtils.open(confirmDeleteProjectDialog, root, {
-                                    project: currentProject
-                                })
+                while (pageStack.depth > 1)
+                    pageStack.clear()
+                project.remove()
             }
         }
 
         ToolbarButton {
             text: i18n.tr("Statistics")
             iconSource: icon("graphs")
-            visible: currentProject != null && currentProject.backend.supportsStatistics
+            visible: currentProject.backend.supportsStatistics
 
             onTriggered: {
                 showStatistics(currentProject)

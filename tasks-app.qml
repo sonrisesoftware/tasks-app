@@ -69,14 +69,14 @@ MainView {
         Tabs {
             id: tabs
 
-//            HideableTab {
-//                title: page.title
-//                page: UpcomingPage {
-//                    id: upcomingPage
-//                }
-//                //show: length(upcomingTasks) > 0
-//                show: false
-//            }
+            //FIXME: Needs to be disabled for Autopilot tests
+            HideableTab {
+                title: page.title
+                page: UpcomingPage {
+                    id: upcomingPage
+                }
+                show: length(upcomingTasks) > 0
+            }
 
             Tab {
                 objectName: "projectsTab"
@@ -206,7 +206,9 @@ MainView {
 
     function saveProjects() {
         for (var i = 0; i < backendModels.length; i++) {
-            saveSetting("backend-" + backendModels[i].databaseName, backendModels[i].save())
+            var json = backendModels[i].save()
+            print(JSON.stringify(json))
+            saveSetting("backend-" + backendModels[i].databaseName, json)
         }
     }
 
@@ -520,7 +522,39 @@ MainView {
             onAccepted: {
                 PopupUtils.close(confirmDeleteProjectDialogItem)
                 //clearPageStack()
+                while (pageStack.depth > 1)
+                    pageStack.clear()
                 project.remove()
+            }
+        }
+    }
+
+    Component {
+        id: taskActionsPopover
+
+        ActionSelectionPopover {
+            property var task
+
+            actions: ActionList {
+                Action {
+                    id: moveAction
+
+                    text: i18n.tr("Move")
+                    enabled: task.editable
+                    onTriggered: {
+                        PopupUtils.open(projectsPopover, caller, {
+                                            task: task
+                                        })
+                    }
+                }
+
+                Action {
+                    id: deleteAction
+                    enabled: task.editable
+
+                    text: i18n.tr("Delete")
+                    onTriggered: task.remove()
+                }
             }
         }
     }

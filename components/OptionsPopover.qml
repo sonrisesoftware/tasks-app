@@ -53,29 +53,31 @@ Popover {
                 checked: showCompletedTasks
                 onCheckedChanged: saveSetting("showCompletedTasks", checked ? "true" : "false")
             }
-        }
-
-        Standard {
-            //FIXME: Hack because of Suru theme!
-            Label {
-                anchors {
-                    verticalCenter: parent.verticalCenter
-                    left: parent.left
-                    margins: units.gu(2)
-                }
-
-                text: i18n.tr("Show Archived Projects")
-                fontSize: "medium"
-                color: Theme.palette.normal.overlayText
-            }
-
-            control: CheckBox {
-                checked: showArchivedProjects
-                onCheckedChanged: saveSetting("showArchivedProjects", checked ? "true" : "false")
-            }
 
             showDivider: false
         }
+
+//        Standard {
+//            //FIXME: Hack because of Suru theme!
+//            Label {
+//                anchors {
+//                    verticalCenter: parent.verticalCenter
+//                    left: parent.left
+//                    margins: units.gu(2)
+//                }
+
+//                text: i18n.tr("Show Archived Projects")
+//                fontSize: "medium"
+//                color: Theme.palette.normal.overlayText
+//            }
+
+//            control: CheckBox {
+//                checked: showArchivedProjects
+//                onCheckedChanged: saveSetting("showArchivedProjects", checked ? "true" : "false")
+//            }
+
+//            showDivider: false
+//        }
 
 //        ValueSelector {
 //            text: i18n.tr("Sort By")

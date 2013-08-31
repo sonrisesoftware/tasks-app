@@ -84,6 +84,7 @@ Item {
     function createProject(args) {
         if (args === undefined)
             args = {}
+        args.backend = root
 
         var project = projectComponent.createObject(root, args)
 
@@ -91,7 +92,6 @@ Item {
             console.log("Unable to create:", newName)
         }
 
-        project.backend = root
         return project
     }
 

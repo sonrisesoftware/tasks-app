@@ -49,6 +49,12 @@ class MainView(toolkit_emulators.MainView):
         page = self.select_single(ProjectsPage)
         page.main_view = self
         return page
+    
+    def get_tasks_page(self):
+        page = self.select_single(TasksPage)
+        if page != None:
+            page.main_view = self
+        return page
         
     def get_archived_projects_page(self):
         #self.switch_to_next_tab()
@@ -80,6 +86,16 @@ class ProjectsPage(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
     def get_project_by_index(self, index):
         item = self.select_many(ProjectListItem)[index]
         return item
+    
+class TasksPage(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
+    
+    def get_tasks_count(self):
+        list = self.select_many(TaskListItem)
+        count = 0
+        for item in list:
+            if item.visible:
+                count += 1
+        return count
 
 class HomePage(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
     

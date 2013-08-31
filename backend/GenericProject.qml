@@ -93,8 +93,12 @@ Item {
         }
 
         if (!supportsLists && lists.count !== 1) {
-            print("Creating default list...")
+            print("Creating default list...", lists.count)
             lists.clear()
+            document.childrenDocs = []
+            document.children = {}
+            document.set("nextDocId", 0)
+            nextDocId = 0
             var list = createList({
                               docId: nextDocId++
                           })
@@ -135,18 +139,20 @@ Item {
         if (args === undefined)
             args = {}
 
+        args.project = project
+
         var list = listComponent.createObject(project, args)
 
         if (list === null) {
             console.log("Unable to create:", newName)
         }
 
-        list.project = project
         return list
     }
 
     // This adds a list to the model
     function internal_addList(list) {
+        print("ADDING LIST", list.name, "to", name)
         lists.append({modelData: list})
     }
 
