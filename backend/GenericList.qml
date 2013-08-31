@@ -61,13 +61,13 @@ Item {
     /* To be called after the document changes,
        either after loading from U1db or after loading from a remote model */
     function reloadFields() {
-        print("Reloading list", name)
+        //print("Reloading list", name)
         updating = true
 
         name = document.get("name", "")
 
         updating = false
-        print("Done.")
+        //print("Done.")
     }
 
     /* U1db Storage */
@@ -83,7 +83,7 @@ Item {
         reloadFields()
 
         var list = document.listDocs()
-        print("Child tasks:", list)
+        //print("Child tasks:", list)
 
         for (var i = 0; i < list.length; i++) {
             loadTaskU1db(list[i])
@@ -94,7 +94,7 @@ Item {
 
     // This is the front-end to creating new tasks
     function newTask(name) {
-        print("Adding new task...")
+        //print("Adding new task...")
         var task = createTask({
                           docId: nextDocId++
                       })
@@ -132,7 +132,7 @@ Item {
     // This adds a task to the model
     function internal_addTask(task) {
         tasks.append({modelData: task})
-        print("TASKS", tasks.count)
+        //print("TASKS", tasks.count)
     }
 
     /* Deletion of tasks */
@@ -145,7 +145,7 @@ Item {
 
     // This removes a task from the model
     function internal_removeTask(task) {
-        print("Removing task...")
+        //print("Removing task...")
         tasks.remove(task.docId)
         for (var i = 0; i < tasks.count; i++) {
             if (tasks.get(i).modelData === project)

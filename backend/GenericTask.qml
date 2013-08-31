@@ -76,9 +76,24 @@ Item {
 
     property bool canComplete: !hasChecklist
 
+    function toJSON() {
+        return {
+            name: name,
+            description: description,
+            creationDate: creationDate,
+            dueDate: dueDate,
+            repeat: repeat,
+            completed: completed,
+            completionDate: completionDate,
+            priority: priority,
+            tags: tags,
+            checklist: checklist.save()
+        }
+    }
+
     function updateRepeat() {
         if (completed) {
-            var json = task.document.values
+            var json = toJSON()
 
             // If the task has never been completed before
             // Then create the repeat of it
@@ -97,10 +112,10 @@ Item {
                 } while (dateIsBeforeOrSame(json.dueDate, today))
 
                 if (repeat !== "never")
-                    if (project === undefined)
+                    if (list === undefined)
                         console.log("Unable to create repeating task!")
                     else
-                        project.newTask(json)
+                        list.newTask(json)
             }
 
             completionDate = new Date()
@@ -109,7 +124,7 @@ Item {
 
     /* U1db Storage */
 
-    Document {
+    property var document: Document {
         id: document
         docId: task.docId
         parent: list.document
@@ -131,6 +146,8 @@ Item {
 
         updating = false
     }
+
+    Component.onDestruction: saveU1db()
 
     function saveU1db() {
         document.set("checklist", checklist.save())

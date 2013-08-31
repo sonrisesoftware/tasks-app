@@ -62,7 +62,7 @@ Item {
     /* To be called after the document changes,
        either after loading from U1db or after loading from a remote model */
     function reloadFields() {
-        print("Reloading project", name)
+        //print("Reloading project", name)
         updating = true
 
         name = document.get("name", "")
@@ -70,7 +70,7 @@ Item {
         archived = document.get("archived", false)
 
         updating = false
-        print("Done.")
+        //print("Done.")
     }
 
     /* U1db Storage */
@@ -86,14 +86,14 @@ Item {
         reloadFields()
 
         var list = document.listDocs()
-        print("Child lists:", list)
+        //print("Child lists:", list)
 
         for (var i = 0; i < list.length; i++) {
             loadListU1db(list[i])
         }
 
         if (!supportsLists && lists.count !== 1) {
-            print("Creating default list...", lists.count)
+            //print("Creating default list...", lists.count)
             lists.clear()
             document.childrenDocs = []
             document.children = {}
@@ -115,7 +115,7 @@ Item {
             console.log("FATAL: Creating lists is unsupported for", backend.name)
             Qt.quit()
         }
-        print("Adding new list...")
+        //print("Adding new list...")
         var list = createList({
                           docId: nextDocId++
                       })
@@ -152,7 +152,7 @@ Item {
 
     // This adds a list to the model
     function internal_addList(list) {
-        print("ADDING LIST", list.name, "to", name)
+        //print("ADDING LIST", list.name, "to", name)
         lists.append({modelData: list})
     }
 
@@ -166,7 +166,7 @@ Item {
 
     // This removes a list from the model
     function internal_removeList(list) {
-        print("Removing list...")
+        //print("Removing list...")
         lists.remove(list.docId)
         for (var i = 0; i < lists.count; i++) {
             if (lists.get(i).modelData === project)

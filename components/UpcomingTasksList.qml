@@ -31,8 +31,6 @@ Item {
     property int count: length(upcomingTasks)
     property var model: upcomingTasks
 
-    onModelChanged: print("UPCOMING TASKS MODEL:", count)
-
     Flickable {
         id: flickable
         anchors.fill: parent

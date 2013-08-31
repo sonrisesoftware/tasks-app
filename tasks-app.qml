@@ -100,6 +100,85 @@ MainView {
         Component.onCompleted: pageStack.push(tabs)
     }
 
+    UbuntuShape {
+        id: notification
+
+        property var func
+        property var args
+
+        opacity: 0
+
+        function show(text, func, args) {
+            notification.func = func
+            notification.args = args
+            label.text = text
+            showAnimation.restart()
+            timer.running = true
+        }
+
+        Timer {
+            id: timer
+            interval: 2500
+            onTriggered: hideAnimation.restart()
+        }
+
+        NumberAnimation {
+            duration: 200
+            id: showAnimation
+            target: notification
+            property: "opacity"
+            from: 0
+            to: 1
+        }
+
+        NumberAnimation {
+            duration: 500
+            id: hideAnimation
+            target: notification
+            property: "opacity"
+            from: 1
+            to: 0
+        }
+
+        NumberAnimation {
+            duration: 200
+            id: clickedAnimation
+            target: notification
+            property: "opacity"
+            from: 1
+            to: 0
+        }
+
+        ListItem.Empty {
+            Label {
+                id: label
+                anchors.centerIn: parent
+                text: "Undo"
+                color: "gray"
+            }
+            onTriggered: {
+                hideAnimation.stop()
+                timer.stop()
+                clickedAnimation.restart()
+
+                notification.func(notification.args)
+            }
+            showDivider: false
+        }
+
+        color: "white"
+        //gradientColor: Qt.rgba(0.9,0.9,0.9,1)
+        height: childrenRect.height
+
+        anchors {
+            margins: units.gu(2)
+            horizontalCenter: parent.horizontalCenter
+            bottom: parent.bottom
+        }
+
+        width: Math.min(units.gu(50), parent.width - units.gu(4))
+    }
+
     /* NAVIGATION */
 
     function goToProject(project) {
@@ -114,6 +193,10 @@ MainView {
         pageStack.push(Qt.resolvedUrl("ui/TasksPage.qml"), {currentList: list})
     }
 
+    function goToTask(task) {
+        pageStack.push(Qt.resolvedUrl("ui/TaskViewPage.qml"), {task: task})
+    }
+
     /* TASK MANAGEMENT */
 
     LocalBackend.LocalBackend {
@@ -125,8 +208,6 @@ MainView {
     ]
 
     property var upcomingTasks: concat(backendModels, "upcomingTasks")
-
-    onUpcomingTasksChanged: print("UPCOMING TASKS:", upcomingTasks)
 
     /* SETTINGS */
 
@@ -207,7 +288,7 @@ MainView {
     function saveProjects() {
         for (var i = 0; i < backendModels.length; i++) {
             var json = backendModels[i].save()
-            print(JSON.stringify(json))
+            //print(JSON.stringify(json))
             saveSetting("backend-" + backendModels[i].databaseName, json)
         }
     }
@@ -220,6 +301,7 @@ MainView {
     }
 
     Component.onCompleted: {
+        notification.show("Undo", print, "Undoing test...")
         reloadSettings()
 
         for (var i = 0; i < backendModels.length; i++) {
@@ -243,6 +325,8 @@ MainView {
     }
 
     /* PRIORITY MANAGEMENT */
+
+    property var priorities: ["low", "medium", "high"]
 
     function priorityName(priority) {
         if (priority === "low") {
@@ -279,7 +363,6 @@ MainView {
                 list.push(task)
         }
 
-        print("Count:", list.length)
         return list
     }
 
@@ -476,6 +559,10 @@ MainView {
                     enabled: project.editable
                     onTriggered: {
                         project.archived = !project.archived
+                        if (project.archived)
+                            notification.show("Undo archive", function(project) {
+                                project.archived = false
+                            }, project)
                     }
                 }
 

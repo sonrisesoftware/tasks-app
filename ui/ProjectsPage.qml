@@ -123,7 +123,6 @@ Page {
 
     tools: ToolbarItems {
         id: tools
-        Component.onCompleted: print("BACK:", tools.back.objectName)
 
         ToolbarButton {
             objectName: "newProject"

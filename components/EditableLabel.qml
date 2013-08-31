@@ -141,6 +141,18 @@ Item {
             bottom: textField.bottom
         }
 
+//        gradient: Gradient {
+//            GradientStop {
+//                position: 0
+//                color: backgroundColor
+//            }
+
+//            GradientStop {
+//                position: 1
+//                color: footerColor
+//            }
+//        }
+
         text: i18n.tr("Apply")
         onClicked: {
             done()

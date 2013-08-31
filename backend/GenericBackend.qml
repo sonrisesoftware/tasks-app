@@ -127,7 +127,7 @@ Item {
     }
 
     function loadU1db(json) {
-        print("Loading U1db from", JSON.stringify(json))
+        //print("Loading U1db from", JSON.stringify(json))
         database.load(json)
 
         nextDocId = database.get("nextDocId", 0)

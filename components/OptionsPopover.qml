@@ -47,8 +47,6 @@ Popover {
                 color: Theme.palette.normal.overlayText
             }
 
-            visible: currentProject !== null
-
             control: CheckBox {
                 checked: showCompletedTasks
                 onCheckedChanged: saveSetting("showCompletedTasks", checked ? "true" : "false")
