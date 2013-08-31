@@ -5,7 +5,7 @@ import U1db 1.0 as U1db
 Object {
     id: root
 
-    property string docId
+    property string docId: ""
     property var reload
     property var locked: []
 
@@ -24,13 +24,13 @@ Object {
     function loadFromParent() {
         if (parent !== undefined && docId != "") {
             //print(parent)
-            //print("Loading from parent:", docId, parent.docId)
+            print("Loading from parent:", docId, parent.docId)
             if (parent.childrenDocs === undefined)
                 parent.childrenDocs = []
             parent.childrenDocs.push(root)
             if (!parent.children.hasOwnProperty(docId)) {
-                //print("Creating child...")
-                parent.children[docId] = {}
+                print("Creating child...")
+                parent.children[docId] = save()
             }
 
             load(parent.children[docId])
@@ -71,6 +71,7 @@ Object {
 
     function set(name, value) {
         if (get(name) !== value && locked.indexOf(name) === -1) {
+            print("Setting", name, "to", value)
             values[name] = value
 
             if (reload !== undefined)
@@ -82,24 +83,33 @@ Object {
         var json = values
 
         for (var i = 0; i < childrenDocs.length; i++) {
-            //print("Found subdocument ", childrenDocs[i].docId, "for", docId)
+            print("Found subdocument ", childrenDocs[i].docId, "for", docId)
             children[childrenDocs[i].docId] = childrenDocs[i].save()
         }
 
         if (listDocs().length > 0) {
             json.children = children
         }
-        //print("Saving", docId, JSON.stringify(json))
+        print("Saving", docId, JSON.stringify(json))
 
         return json
     }
 
     function load(json) {
         //print("Loading", docId, JSON.stringify(json))
-        values = json
+
+        if (values === undefined)
+            values = {}
+        if (locked === undefined)
+            locked = []
+
         if (json.hasOwnProperty("children")) {
             children = json.children
-            delete values["children"]
+        }
+
+        for (var key in json) {
+            if (key !== "children")
+                set(key, json[key])
         }
 
         if (childrenDocs !== undefined) {

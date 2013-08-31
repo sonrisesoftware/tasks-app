@@ -99,7 +99,7 @@ Item {
                           docId: nextDocId++
                       })
         task.name = name
-        internal_addTask(task)
+        addTask(task)
         return task
     }
 
@@ -108,7 +108,7 @@ Item {
         var task = createTask({
                                   docId: docId
                               })
-        internal_addTask(task)
+        addTask(task)
         task.loadU1db()
         return task
     }
@@ -130,7 +130,9 @@ Item {
     }
 
     // This adds a task to the model
-    function internal_addTask(task) {
+    function addTask(task) {
+        if (task.docId === "")
+            task.docId = nextDocId++
         tasks.append({modelData: task})
         //print("TASKS", tasks.count)
     }

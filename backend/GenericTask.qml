@@ -62,6 +62,7 @@ Item {
                                         // when loading changes from the remote or local backend
 
     function fieldChanged(name, value) {
+        print("FIELD CHANGED", name, "TO", value, updating)
         if (!updating)
             document.set(name, value)
     }

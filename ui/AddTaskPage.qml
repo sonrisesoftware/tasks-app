@@ -32,8 +32,8 @@ Page {
 
     property string type: "add"
 
-    property var project
-    property var task: project.createTask()
+    property var list
+    property var task: list.createTask()
 
 //    property color headerColor: labelHeaderColor(taskItem.task.label)
 //    property color backgroundColor: labelColor(taskItem.task.label)
@@ -77,7 +77,7 @@ Page {
             iconSource: icon("add")
 
             onTriggered: {
-                project.addTask(taskItem.task)
+                list.addTask(taskItem.task)
                 pageStack.pop()
             }
         }

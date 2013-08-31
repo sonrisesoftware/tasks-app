@@ -145,7 +145,7 @@ MainView {
 
     U1db.Database {
         id: storage
-        path: "tasks-app.db"
+        path: "ubuntu-tasks.db"
     }
 
     U1db.Document {
@@ -211,7 +211,7 @@ MainView {
     function saveProjects() {
         for (var i = 0; i < backendModels.length; i++) {
             var json = backendModels[i].save()
-            //print(JSON.stringify(json))
+            print(JSON.stringify(json))
             saveSetting("backend-" + backendModels[i].databaseName, json)
         }
     }

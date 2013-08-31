@@ -95,6 +95,7 @@ Page {
 
             onTriggered: {
                 print("NEW TASK!!!!!")
+                pageStack.push(Qt.resolvedUrl("AddTaskPage.qml"), {list: currentList})
             }
         }
 
