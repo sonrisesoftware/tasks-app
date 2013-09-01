@@ -115,11 +115,12 @@ Page {
             iconSource: icon("save")
             text: i18n.tr("Archive")
             enabled: currentProject.editable
+            visible: !currentProject.archived
 
             onTriggered: {
                 while (pageStack.depth > 1)
                     pageStack.pop()
-                currentProject.remove()
+                currentProject.archived = true
             }
         }
 
