@@ -39,6 +39,28 @@ Page {
 
     property var currentProject: null
 
+    onCurrentProjectChanged: {
+        currentList = null
+
+        if (currentProject !== null) {
+            if (currentProject.lists.count > 0)
+                currentList = currentProject.lists.get(0).modelData
+        }
+    }
+
+    property var currentList: null
+
+    onCurrentListChanged: {
+        if (currentList !== null && currentList.tasks.count > 0)
+            currentTask = currentList.tasks.get(0).modelData
+    }
+
+    property var currentTask: null
+
+    property bool showArchived: false
+
+    property bool supportsLists: currentProject !== null && currentProject.supportsLists
+
     Sidebar {
         id: sidebar
 
@@ -101,14 +123,54 @@ Page {
             visible: upcoming
         }
 
-        TasksList {
-            id: list
-
+        Item {
             anchors.fill: parent
+
             visible: !upcoming
 
-            showAddBar: false
-            project: currentProject
+            ValueSelector {
+                id: listSelector
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: parent.top
+                }
+
+                Rectangle {
+                    anchors.fill: parent
+                    color: Qt.rgba(0.2,0.2,0.2,0.2)
+                }
+
+                text: i18n.tr("List")
+                values: {
+                    var list = subList(currentProject === null ? [] : currentProject.lists, "name")
+                    list.push(i18n.tr("<i>New List...</i>"))
+                    return list
+                }
+                visible: currentProject && currentProject.supportsLists
+
+                onSelectedIndexChanged: {
+                    if (selectedIndex === values.length - 1) {
+                        print("NEW LIST...")
+                    } else {
+                        currentList = currentProject.lists.get(selectedIndex).modelData
+                    }
+                }
+            }
+
+            TasksList {
+                id: list
+
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: listSelector.visible ? listSelector.bottom : parent.top
+                    bottom: parent.bottom
+                }
+
+                showAddBar: false
+                list: currentList
+            }
         }
     }
 
@@ -137,10 +199,7 @@ Page {
             visible:  sidebar.expanded || currentProject === null
 
             onTriggered: {
-                if (backendModels.length > 1)
-                    PopupUtils.open(newProjectPopover, newProjectButton)
-                else
-                    PopupUtils.open(newProjectDialog, root)
+                newProject(newProjectButton)
             }
         }
 
@@ -156,7 +215,7 @@ Page {
             enabled: currentProject !== null && currentProject.editable
 
             onTriggered: {
-                pageStack.push(addTaskPage, { project: currentProject })
+                pageStack.push(Qt.resolvedUrl("AddTaskPage.qml"), {list: currentList})
             }
         }
 
@@ -174,15 +233,15 @@ Page {
         }
 
         ToolbarButton {
-            iconSource: icon("delete")
-            text: i18n.tr("Delete")
-            visible: currentProject !== null
+            iconSource: icon("save")
+            text: i18n.tr("Archive")
             enabled: currentProject !== null && currentProject.editable
+            visible: currentProject !== null && !currentProject.archived
 
             onTriggered: {
-                PopupUtils.open(confirmDeleteProjectDialog, root, {
-                                    project: currentProject
-                                })
+                while (pageStack.depth > 1)
+                    pageStack.pop()
+                currentProject.archived = true
             }
         }
 
@@ -200,6 +259,7 @@ Page {
             id: optionsButton
             text: i18n.tr("Options")
             iconSource: icon("settings")
+            visible: wideAspect
 
             onTriggered: {
                 PopupUtils.open(optionsPopover, optionsButton)

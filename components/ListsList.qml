@@ -28,69 +28,45 @@ import "../ui"
 Item {
     id: root
 
-    property alias showAddBar: addBar.visible
-    property var filter: function(task) {
-        return !task.completed || showCompletedTasks
-    }
+    property string noneMessage: i18n.tr("No lists")
+    property var model: project.lists
+    property var project
 
-    property string noneMessage: i18n.tr("No tasks")
-    property var model: sort(list ? list.tasks : [], sortBy)
-    property var project: list ? list.project : null
-    property var list
-
-    property alias addBarColor: addBar.color
-
-    property var flickable: taskListView
-    property alias header: taskListView.header
+    property var flickable: listListView
+    property alias header: listListView.header
 
     ListView {
-        id: taskListView
-        objectName: "taskListView"
+        id: listListView
+        objectName: "listListView"
 
-        anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
-            bottom: addBar.top
-        }
+        anchors.fill: parent
 
         clip: true
 
         model: root.model
 
-        delegate: TaskListItem {
-            objectName: "task" + index
+        delegate: ListListItem {
+            objectName: "list" + index
 
-            task: modelData
-            show: filter(task)
+            list: modelData
+            visible: !modelData.archived
         }
     }
 
     Scrollbar {
-        flickableItem: taskListView
-    }
-
-    QuickAddBar {
-        id: addBar
-        anchors.bottomMargin: 0
-        height: expanded ? implicitHeight : 0
+        flickableItem: listListView
     }
 
     Item {
-        anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
-            bottom: addBar.top
-        }
+        anchors.fill: parent
 
         Label {
             id: noTasksLabel
-            objectName: "noTasksLabel"
+            objectName: "noListsLabel"
 
             anchors.centerIn: parent
 
-            visible: count(model, filter) === 0
+            visible: length(model) === 0
             opacity: 0.5
 
             fontSize: "large"

@@ -80,6 +80,7 @@ Item {
     }
 
     function done() {
+        print("Done editing!")
         textField.focus = false
     }
 
@@ -113,6 +114,7 @@ Item {
             focus ? __styleInstance.color = Theme.palette.normal.overlayText : __styleInstance.color = "white"
 
             if (focus === false) {
+                print("Saving text...")
                 root.editing = false
                 root.text = text
             } else {
@@ -140,6 +142,18 @@ Item {
             top: textField.top
             bottom: textField.bottom
         }
+
+//        gradient: Gradient {
+//            GradientStop {
+//                position: 0
+//                color: backgroundColor
+//            }
+
+//            GradientStop {
+//                position: 1
+//                color: footerColor
+//            }
+//        }
 
         text: i18n.tr("Apply")
         onClicked: {

@@ -28,7 +28,6 @@ import "../ui"
 Item {
     id: root
 
-    property int count: length(upcomingTasks)
     property var model: upcomingTasks
 
     Flickable {
@@ -48,50 +47,72 @@ Item {
 
             Header {
                 text: i18n.tr("Overdue")
-                visible: overdue.count > 0
+                visible: count(root.model, function(task) {
+                    return task.overdue
+                }) > 0
             }
 
             Repeater {
                 id: overdue
-                //model: root.model
-                model: filteredTasks(upcomingTasks, function(task) { return task.overdue}, "Overdue ONLY")
+                model: root.model
                 delegate: TaskListItem {
                     objectName: "overdueTask" + index
 
+                    show: task.overdue
                     task: modelData
                 }
             }
 
             Header {
                 text: i18n.tr("Today")
-                visible: today.count > 0
+                visible: count(root.model, function(task) {
+                    return task.isDueToday()
+                }) > 0
             }
 
             Repeater {
                 id: today
-                //model: upcomingTasks
-                model: filteredTasks(upcomingTasks, function(task) { return task.isDueToday()}, "Upcoming ONLY")
+                model: root.model
                 delegate: TaskListItem {
                     objectName: "todayTask" + index
 
+                    show: task.isDueToday()
+                    task: modelData
+                }
+            }
+
+            Header {
+                text: i18n.tr("Tomorrow")
+                visible: count(root.model, function(task) {
+                    return task.isDueTomorrow()
+                }) > 0
+            }
+
+            Repeater {
+                id: tomorrow
+                model: root.model
+                delegate: TaskListItem {
+                    objectName: "tomorrowTask" + index
+
+                    show: task.isDueTomorrow()
                     task: modelData
                 }
             }
 
             Header {
                 text: i18n.tr("This Week")
-                visible: week.count > 0
+                visible: count(root.model, function(task) {
+                    return !task.overdue && !task.isDueToday() && !task.isDueTomorrow() && task.isDueThisWeek()
+                }) > 0
             }
 
             Repeater {
                 id: week
-                //model: upcomingTasks
-                model: filteredTasks(upcomingTasks, function(task) {
-                    return !task.overdue && !task.isDueToday() && task.isDueThisWeek()
-                }, "Upcoming this week")
+                model: root.model
                 delegate: TaskListItem {
                     objectName: "weekTask" + index
 
+                    show: !task.overdue && !task.isDueToday() && !task.isDueTomorrow() && task.isDueThisWeek()
                     task: modelData
                 }
             }
@@ -104,10 +125,12 @@ Item {
 
     Label {
         anchors.centerIn: parent
-        visible: count === 0
+        visible: length(upcomingTasks) === 0
 
         fontSize: "large"
         text: i18n.tr("No upcoming tasks")
+        horizontalAlignment: Text.AlignRight
+
         opacity: 0.5
     }
 }

@@ -35,22 +35,23 @@ SingleValue {
           : project.name
 
     onClicked: {
-        currentProject = project
-        goToProject(project)
+        if (!showArchived)
+            goToProject(project)
     }
 
+    visible: project === null || showArchived === project.archived
+
     selected: currentProject === project
-    enabled: project === null || project.enabled
-    visible: project === null || !project.archived || showArchivedProjects
 
     onPressAndHold: {
+        print("PRESS AND HOLD!")
         if (project !== null && project.editable)
             PopupUtils.open(projectActionsPopover, root, {
                                 project: project
                             })
     }
 
-    property int count: project === null ? upcomingTasks.length : project.uncompletedTasks.length
+    property int count: project === null ? length(upcomingTasks) : project.uncompletedCount
 
     value: count === 0 ? "" : count
 }

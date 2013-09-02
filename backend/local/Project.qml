@@ -24,35 +24,11 @@ import U1db 1.0 as U1db
 import ".."
 
 GenericProject {
-    id: root
+    id: project
 
-    function load(json) {
-        name = json.name
-        archived = json.archived
-        var tasks = json.tasks
-        for (var i = 0; i < tasks.length; i++) {
-            var task = newTask()
-            task.load(tasks[i])
-        }
-    }
+    listComponent: Component {
 
-    function save() {
-        var json = {}
-        json.name = name
-        json.tasks = []
-        json.archived = archived
-
-        for (var i = 0; i < tasks.count; i++) {
-            json.tasks.push(tasks.get(i).modelData.save())
-        }
-
-        return json
-    }
-
-    taskComponent: Component {
-        id: taskComponent
-
-        Task {
+        List {
 
         }
     }

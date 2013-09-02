@@ -30,23 +30,72 @@ from ubuntuuitoolkit import emulators as toolkit_emulators
 
 class MainView(toolkit_emulators.MainView):
     """Ubuntu Tasks MainView Autopilot emulator."""
+    
+    def go_back(self):
+        toolbar = self.open_toolbar()
+        
+        button = None
+        buttons = toolbar.select_many('ActionItem')
+        for item in buttons:
+            if item.text == 'Back':
+                button = item
+        if button is None:
+            raise ValueError(
+                'Button with objectName "{0}" not found.'.format(object_name))
+        self.pointing_device.click_object(button)
 
-    def get_project_page(self):
-        """Return the FolderListPage emulator of the MainView."""
-        page = self.select_single(HomePage)
+    def get_projects_page(self):
+        #self.switch_to_next_tab()
+        page = self.select_single(ProjectsPage)
+        page.main_view = self
+        return page
+    
+    def get_tasks_page(self):
+        page = self.select_single(TasksPage)
+        if page != None:
+            page.main_view = self
+        return page
+        
+    def get_archived_projects_page(self):
+        #self.switch_to_next_tab()
+        page = self.select_single(ProjectsPage, objectName='archivedProjectsPage')
         page.main_view = self
         return page
 
     def get_confirm_dialog(self):
         dialog = self.select_single(ConfirmDialog)
         if dialog is None:
-            dialog = self.select_single(ConfirmDialogWithInput)
+            dialog = self.select_single(InputDialog)
         return dialog
+        
+    def get_project_actions_popover(self):
+        """Return the ActionSelectionPopover emulator of the file actions."""
+        return self.select_single(
+            ActionSelectionPopover, objectName='projectActionsPopover')
 
 class ProjectsPage(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
     
-    def get_projects_count():
-        return len(self.select_many('Standard'))
+    def get_projects_count(self):
+        list = self.select_many(ProjectListItem)
+        count = 0
+        for item in list:
+            if item.visible:
+                count += 1
+        return count
+        
+    def get_project_by_index(self, index):
+        item = self.select_many(ProjectListItem)[index]
+        return item
+    
+class TasksPage(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
+    
+    def get_tasks_count(self):
+        list = self.select_many(TaskListItem)
+        count = 0
+        for item in list:
+            if item.visible:
+                count += 1
+        return count
 
 class HomePage(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
     
@@ -54,4 +103,97 @@ class HomePage(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
         if self.main_view.wideAspect:
             return self.projectName
         else:
-            return self.title
+            return self.title        
+    
+
+class ProjectListItem(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
+    def __init__(self, *args):
+        super(ProjectListItem, self).__init__(*args)
+        self.pointing_device = toolkit_emulators.get_pointing_device()
+    
+    def get_name(self):
+        return self.text
+        
+    def open_actions_popover(self):
+        self.pointing_device.move_to_object(self)
+        self.pointing_device.press()
+        time.sleep(1)
+        self.pointing_device.release()
+        
+class ConfirmDialog(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
+    """ConfirmDialog Autopilot emulator."""
+
+    def __init__(self, *args):
+        super(ConfirmDialog, self).__init__(*args)
+        self.pointing_device = toolkit_emulators.get_pointing_device()
+
+    def ok(self):
+        okButton = self.select_single('Button', objectName='okButton')
+        self.pointing_device.click_object(okButton)
+
+    def cancel(self):
+        cancel_button = self.select_single('Button', objectName='cancelButton')
+        self.pointing_device.click_object(cancel_button)
+
+class InputDialog(ConfirmDialog):
+
+    def __init__(self, *args):
+        super(InputDialog, self).__init__(*args)
+        self.keyboard = input.Keyboard.create()
+
+    def enter_text(self, text, clear=True):
+        if clear:
+            self.clear_text()
+        text_field = self._select_text_field()
+        self.pointing_device.click_object(text_field)
+        self.keyboard.type(text)
+        text_field.text.wait_for(text)
+
+    def clear_text(self):
+        text_field = self._select_text_field()
+        # XXX The clear button doesn't have an objectName. Reported on
+        # https://bugs.launchpad.net/ubuntu-ui-toolkit/+bug/1205208
+        # --elopio - 2013-07-25
+        clear_button = text_field.select_single('AbstractButton')
+        # XXX for some reason, we need to click the button twice.
+        # More investigation is needed. --elopio - 2013-07-25
+        self.pointing_device.click_object(clear_button)
+        self.pointing_device.click_object(clear_button)
+        text_field.text.wait_for('')
+
+    def _select_text_field(self):
+        return self.select_single('TextField', objectName='inputField')
+
+class ActionSelectionPopover(toolkit_emulators.UbuntuUIToolkitEmulatorBase):
+    """ActionSelectionPopover Autopilot emulator."""
+    # TODO Move this to the ubuntu-ui-toolkit. Reported on
+    # https://bugs.launchpad.net/ubuntu-ui-toolkit/+bug/1205205
+    # --elopio - 2013-07-25
+
+    def __init__(self, *args):
+        super(ActionSelectionPopover, self).__init__(*args)
+        self.pointing_device = toolkit_emulators.get_pointing_device()
+
+    def click_button(self, text):
+        """Click a button on the popover.
+
+        XXX We are receiving the text because there's no way to set the
+        objectName on the action. This is reported at
+        https://bugs.launchpad.net/ubuntu-ui-toolkit/+bug/1205144
+        --elopio - 2013-07-25
+
+        :parameter text: The text of the button.
+
+        """
+        button = self._get_button(text)
+        if button is None:
+            raise ValueError(
+                'Button with text "{0}" not found.'.format(text))
+        self.pointing_device.click_object(button)
+
+    def _get_button(self, text):
+        buttons = self.select_many('Empty')
+        for button in buttons:
+            if button.text == text:
+                return button
+                

@@ -47,12 +47,14 @@ Popover {
                 color: Theme.palette.normal.overlayText
             }
 
-            visible: currentProject !== null
+            //text: i18n.tr("Show Completed Tasks")
 
             control: CheckBox {
                 checked: showCompletedTasks
                 onCheckedChanged: saveSetting("showCompletedTasks", checked ? "true" : "false")
             }
+
+            visible: currentProject !== null
         }
 
         Standard {
@@ -69,21 +71,18 @@ Popover {
                 color: Theme.palette.normal.overlayText
             }
 
-            control: CheckBox {
-                checked: showArchivedProjects
-                onCheckedChanged: saveSetting("showArchivedProjects", checked ? "true" : "false")
+//            control: CheckBox {
+//                checked: showArchivedProjects
+//                onCheckedChanged: saveSetting("showArchivedProjects", checked ? "true" : "false")
+//            }
+
+            onClicked: {
+                pageStack.push(Qt.resolvedUrl("../ui/ProjectsPage.qml"), {showArchived: true, objectName: "archivedProjectsPage"})
             }
+
+            visible: wideAspect
 
             showDivider: false
         }
-
-//        ValueSelector {
-//            text: i18n.tr("Sort By")
-//            values: [
-//                "Due Date",
-//                "Relevence",
-//                "Importance"
-//            ]
-//        }
     }
 }

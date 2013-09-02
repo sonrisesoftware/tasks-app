@@ -28,9 +28,15 @@ import "../components"
 Page {
     id: root
 
-    title: i18n.tr("Projects")
+    title: showArchived ? i18n.tr("Archived Projects") : i18n.tr("Projects")
 
     property string type: "projects"
+
+    property bool showArchived: false
+
+    property bool hasProjects: filteredSum(backendModels, "projects", function(project) {
+        return showArchived === project.archived
+    }) > 0
 
     property var currentProject: null
 
@@ -54,10 +60,15 @@ Page {
                 model: backendModels
 
                 delegate: Column {
+                    id: modelColumn
                     visible: modelData.enabled
                     width: parent.width
                     Header {
+                        id: header
                         text: modelData.name
+                        visible: count(modelData.projects, function(project) {
+                            return showArchived === project.archived
+                        }) > 0
 
                         ActivityIndicator {
                             anchors {
@@ -83,6 +94,20 @@ Page {
         }
     }
 
+    Label {
+        id: noTasksLabel
+        objectName: "noProjectsLabel"
+
+        anchors.centerIn: parent
+
+        visible: !hasProjects
+        opacity: 0.5
+
+        fontSize: "large"
+
+        text: showArchived ? i18n.tr("No archived projects") : i18n.tr("No projects")
+    }
+
     Scrollbar {
         flickableItem: flickable
     }
@@ -99,22 +124,65 @@ Page {
     ]
 
     tools: ToolbarItems {
+        id: tools
+
         ToolbarButton {
+            id: newProjectButton
+            objectName: "newProject"
             iconSource: icon("add")
             text: i18n.tr("New Project")
+            visible: !showArchived
 
             onTriggered: {
-                PopupUtils.open(newProjectDialog, root)
+                newProject(newProjectButton)
+            }
+        }
+
+        Item {
+            height: parent.height
+            width: units.gu(0.5)
+        }
+
+        ToolbarButton {
+            id: clearButton
+            objectName: "clearArchive"
+
+            text: i18n.tr("Clear")
+            iconSource: icon("clear")
+            visible: showArchived
+            enabled: hasProjects
+
+            onTriggered: {
+                for (var i = 0; i < backendModels.length; i++) {
+                    var backend = backendModels[i]
+                    var index = 0;
+                    //print("Removing tasks from", backend.name, backend.projects.count)
+                    while (index < backend.projects.count) {
+                        var project = get(backend.projects, index)
+
+                        //print("Checking project:", index, project.name)
+
+                        if (project.archived) {
+                            //print("  Removed.")
+                            project.remove()
+                        } else {
+                            index++
+                        }
+                    }
+                }
             }
         }
 
         ToolbarButton {
             id: optionsButton
-            text: i18n.tr("Options")
-            iconSource: icon("settings")
+            objectName: "showArchive"
+
+            text: i18n.tr("Archived")
+            iconSource: icon("edit")
+            visible: !showArchived
 
             onTriggered: {
-                PopupUtils.open(optionsPopover, optionsButton)
+                pageStack.push(Qt.resolvedUrl("ProjectsPage.qml"), {showArchived: true, objectName: "archivedProjectsPage"})
             }
         }
     }

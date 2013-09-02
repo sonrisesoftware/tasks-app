@@ -32,11 +32,17 @@ QtObject {
     }
 
     function load(json) {
-        name = json.name
+        if (json === undefined)
+            return
+
+        if (json.hasOwnProperty("name"))
+            name = json.name
         items.clear()
 
-        for (var i = 0; i < json.items.length; i++) {
-            items.append({modelData: json.items[i]})
+        if (json.hasOwnProperty("items")) {
+            for (var i = 0; i < json.items.length; i++) {
+                items.append({modelData: json.items[i]})
+            }
         }
         updateChecklistStatus()
     }

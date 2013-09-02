@@ -56,6 +56,7 @@ Page {
                     checked: trelloIntegration
                     onCheckedChanged: {
                         saveSetting("trelloIntegration", checked ? "true" : "false")
+                        checked = Qt.binding(function() { return trelloIntegration })
                         if (trelloIntegration && getSetting("trelloToken", "") === "")
                             PopupUtils.open(trelloAuthentication, root)
                     }
@@ -72,7 +73,8 @@ Page {
         id: trelloAuthentication
 
         Trello.TrelloAuthenticationDialog {
-            onAccepted: trelloModel.load()
+            onAccepted: trello.load({})
+            onRejected: trelloIntegration = false
         }
     }
 }

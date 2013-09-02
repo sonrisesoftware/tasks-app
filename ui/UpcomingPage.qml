@@ -4,8 +4,7 @@
  * - Colossians 3:17                                                       *
  *                                                                         *
  * Ubuntu Tasks - A task management system for Ubuntu Touch                *
- * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *
- *                                                                         *
+ * Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>          *                                                                         *
  * This program is free software: you can redistribute it and/or modify    *
  * it under the terms of the GNU General Public License as published by    *
  * the Free Software Foundation, either version 3 of the License, or       *
@@ -23,59 +22,33 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
+import "../components"
 import "../ubuntu-ui-extras"
 
 Page {
     id: root
 
-    title: project.name//i18n.tr("Statistics")
+    title: i18n.tr("Upcoming")
 
-    property string type: "statistics"
-    property var project
+    property string type: "upcoming"
 
-    function totalCount(date) {
-        return countTasks(function(task) {
-            return task.existedBy(date)
-        })
-    }
+    UpcomingTasksList {
+        id: list
 
-    BarGraph {
         anchors.fill: parent
-        colors: ["green", "red"]
-        names: ["To do", "Overdue"]
-
-        values: {
-            var list = []
-            var dates = []
-            var max = 0
-            for (var i = count - 1; i >= 0; i--) {
-                var day = new Date()
-                day.setDate(day.getDate() - i)
-                var overdue = length(filter(project.allTasks, function(task) { return task.overdueBy(day)}, "Overdue ONLY"))
-                var other = length(filter(project.allTasks, function(task) { return task.notCompletedBy(day) && !task.overdueBy(day)}, "Not completed"))
-                var total = overdue + other
-                if (total > max)
-                    max = total
-
-                list.push([other, overdue])
-                dates.push(formattedDate(day))
-            }
-            maxValue = max + 1
-            labels = dates
-            return list
-        }
-
-        autoSize: true
     }
 
-    states: [
-        State {
-            when: showToolbar
-            PropertyChanges {
-                target: root.tools
-                locked: true
-                opened: true
-            }
-        }
-    ]
+//    states: [
+//        State {
+//            when: showToolbar
+//            PropertyChanges {
+//                target: root.tools
+//                locked: true
+//                opened: true
+//            }
+//        }
+//    ]
+
+//    tools: ToolbarItems {
+//    }
 }

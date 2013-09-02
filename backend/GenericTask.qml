@@ -25,9 +25,12 @@ import Ubuntu.Components 0.1
 Item {
     id: task
 
-    property string index: ""
-    property var project
-    property bool editable: true
+    property string docId
+    property var project: list.project
+    property var list
+    property bool editable: project.editable
+
+    /* Properties describing the task */
 
     property string name
     property string description
@@ -38,17 +41,61 @@ Item {
     property date completionDate
     property string priority: "low"
     property var tags: []
+    property var comments: []
+
+    onNameChanged:  fieldChanged("name", name)
+    onDescriptionChanged: fieldChanged("description", description)
+    onCreationDateChanged: fieldChanged("creationDate", creationDate)
+    onDueDateChanged: fieldChanged("dueDate", dueDate)
+    onRepeatChanged: fieldChanged("repeat", repeat)
+    onCompletedChanged: {
+        fieldChanged("completed", completed)
+        updateRepeat()
+    }
+    onCompletionDateChanged: fieldChanged("completionDate", completionDate)
+    onPriorityChanged: fieldChanged("priority", priority)
+    onTagsChanged: fieldChanged("tags", tags)
+    onCommentsChanged: fieldChanged("comments", comments)
+    //TODO: Add others...
+
+    property bool updating: false       // Used to prevent sending changes to remote backend
+                                        // when loading changes from the remote or local backend
+
+    function fieldChanged(name, value) {
+        //print("FIELD CHANGED", name, "TO", value, updating)
+        if (!updating)
+            document.set(name, value)
+    }
+
+
     property Checklist checklist: Checklist {
 
     }
+
+    property int relevence: priority === "low" ? 0 : priority === "medium" ? 1 : 2
 
     property bool hasChecklist: checklist.length > 0
 
     property bool canComplete: !hasChecklist
 
-    onCompletedChanged: {
+    function toJSON() {
+        return {
+            name: name,
+            description: description,
+            creationDate: creationDate,
+            dueDate: dueDate,
+            repeat: repeat,
+            completed: completed,
+            completionDate: completionDate,
+            priority: priority,
+            tags: tags,
+            checklist: checklist.save()
+        }
+    }
+
+    function updateRepeat() {
         if (completed) {
-            var json = task.save()
+            var json = toJSON()
 
             // If the task has never been completed before
             // Then create the repeat of it
@@ -67,46 +114,50 @@ Item {
                 } while (dateIsBeforeOrSame(json.dueDate, today))
 
                 if (repeat !== "never")
-                    if (project === undefined)
+                    if (list === undefined)
                         console.log("Unable to create repeating task!")
                     else
-                        project.newTask(json)
+                        list.newTask(json)
             }
 
             completionDate = new Date()
         }
     }
 
-    function save() {
-        return {
-            index: index,
-            name: name,
-            description: description,
-            creationDate: creationDate,
-            dueDate: dueDate,
-            repeat: repeat,
-            completed: completed,
-            completionDate: completionDate,
-            priority: priority,
-            tags: tags,
-            checklist: checklist.save()
-        }
+    /* U1db Storage */
+
+    property var document: Document {
+        id: document
+        docId: task.docId
+        parent: list.document
     }
 
-    function load(json) {
-        index = json.index
-        name = json.name
-        description = json.description
-        creationDate = json.creationDate
-        if (json.dueDate !== null)
-            dueDate = json.dueDate
-        repeat = json.repeat
-        completed = json.completed
-        if (json.completionDate !== null)
-            completionDate = json.completionDate
-        priority = json.priority
-        tags = json.tags
-        checklist.load(json.checklist)
+    function reloadFields() {
+        updating = true
+
+        name = document.get("name", "")
+        description = document.get("description", "")
+        creationDate = document.get("creationDate", new Date())
+        dueDate = document.get("dueDate", new Date(""))
+        repeat = document.get("repeat", "never")
+        completed = document.get("completed", false)
+        completionDate = document.get("completionDate", new Date(""))
+        priority = document.get("priority", "low")
+        tags = document.get("tags", [])
+        checklist.load(document.get("checklist", {}))
+
+        updating = false
+    }
+
+    Component.onDestruction: saveU1db()
+
+    function saveU1db() {
+        document.set("checklist", checklist.save())
+    }
+
+    function loadU1db() {
+        reloadFields()
+        checklist.load(document.get("checklist"))
     }
 
     property bool upcoming: (overdue || isDueThisWeek()) && !completed
@@ -155,6 +206,15 @@ Item {
                 dueDate.getDate() === today.getDate()
     }
 
+    function isDueTomorrow() {
+        var tomorrow = new Date()
+        tomorrow.setDate(tomorrow.getDate() + 1)
+
+        return dueDate.getFullYear() === tomorrow.getFullYear() &&
+                dueDate.getMonth() === tomorrow.getMonth() &&
+                dueDate.getDate() === tomorrow.getDate()
+    }
+
     function isDueThisWeek() {
         var date = new Date()
         date.setDate(date.getDate() + 7)
@@ -164,10 +224,11 @@ Item {
 
     function remove() {
         // Do something...
+        list.removeTask(task)
     }
 
     function moveTo(project) {
-        // Do something...
+        // TODO: Do something...
     }
 }
 

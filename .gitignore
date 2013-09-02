@@ -1,4 +1,6 @@
+
 *~
+*.pyc
 *.qmlproject.user
 *.click
 *.db

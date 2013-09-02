@@ -24,11 +24,10 @@ import Ubuntu.Components 0.1
 import Ubuntu.Components.Popups 0.1
 import Ubuntu.Components.ListItems 0.1 as ListItem
 import U1db 1.0 as U1db
-import QtSystemInfo 5.0
-import Ubuntu.OnlineAccounts 0.1
 
 import "ui"
 import "components"
+import "backend"
 import "backend/local" as LocalBackend
 import "backend/trello" as TrelloBackend
 import "ubuntu-ui-extras"
@@ -56,13 +55,9 @@ MainView {
     property bool wideAspect: width > units.gu(80)
 
     // Colors from Calculator app
-    headerColor: currentPage && currentPage.hasOwnProperty("headerColor") ? currentPage.headerColor : "#323A5D"
-    backgroundColor: currentPage && currentPage.hasOwnProperty("backgroundColor") ? currentPage.backgroundColor : "#6A6AA1"
-    footerColor: currentPage && currentPage.hasOwnProperty("footerColor") ? currentPage.footerColor : "#6899D7"
-
-    //backgroundColor: "#FCFF95"
-    //backgroundColor: "#FFFFBB"
-    //footerColor: "#FFFCD7"
+    headerColor: "#323A5D"
+    backgroundColor: "#6A6AA1"
+    footerColor: "#6899D7"
 
     property var pageStack: pageStack
 
@@ -72,9 +67,10 @@ MainView {
         Tabs {
             id: tabs
 
-            property string type: "tabs"
-
+            //FIXME: Needs to be disabled for Autopilot tests
             Tab {
+                objectName: "homeTab"
+
                 title: page.title
                 page: HomePage {
                     id: homePage
@@ -85,7 +81,6 @@ MainView {
                 title: page.title
                 page: ProjectsPage {
                     id: projectsPage
-
                 }
 
                 show: !wideAspect
@@ -101,84 +96,16 @@ MainView {
             visible: false
         }
 
-//        Page {
-//            id: testPage
-
-//            title: "Trello Login"
-
-//            AccountServiceModel {
-//                id: accounts
-//                service: "trello-boards"
-//            }
-//            ListView {
-//                id: listView
-//                anchors.fill: parent
-//                model: accounts
-//                header: ListItem.Header {
-//                    text: i18n.tr("Trello Accounts")
-//                }
-
-//                delegate: ListItem.Standard {
-//                    Item {
-//                        AccountService {
-//                            id: accts
-//                            objectHandle: accountServiceHandle
-//                            onAuthenticated: { console.log("Access token is " + reply.AccessToken) }
-//                            onAuthenticationError: { console.log("Authentication failed, code " + error.code) }
-//                        }
-//                    }
-//                    text: providerName + ": " + displayName
-//                    onClicked: accts.authenticate(null)
-//                }
-//            }
-//        }
-
-        TaskViewPage {
-            id: taskViewPage
-
-            visible: false
-        }
-
         Component.onCompleted: {
-            pageStack.push(tabs)
-            //pageStack.push(testPage)
             clearPageStack()
         }
     }
 
-    property var showToolbar: wideAspect ? true : undefined
-
-    states: [
-        State {
-            when: showToolbar
-
-            PropertyChanges {
-                target: taskViewPage.parent
-                anchors.bottomMargin: -root.toolbar.triggerSize
-            }
-        }
-    ]
-
-    property Page currentPage: pageStack.currentPage.hasOwnProperty("currentPage")
-                               ? pageStack.currentPage.currentPage
-                               : pageStack.currentPage
-
-    property var currentProject: currentPage && currentPage.hasOwnProperty("currentProject") ? currentPage.currentProject : null
-    property var currentTask: currentPage && currentPage.hasOwnProperty("task") ? currentPage.task : null
-
-    property string viewing: currentPage && currentPage.hasOwnProperty("type")
-                             ? currentPage.type
-                             : currentTask !== null
-                               ? "task"
-                               : currentProject !== null
-                                 ? "project"
-                                 : "unknown"
-
-    //onViewingChanged: print("Now viewing ", viewing)
-
     function clearPageStack() {
-        while (pageStack.depth > 1)
+        while (pageStack.depth > 0)
             pageStack.pop()
+        pageStack.push(tabs)
+
         tabs.selectedTabIndex = 1
         tabs.selectedTabIndex = 0
 
@@ -190,91 +117,123 @@ MainView {
         pageStack.pop()
     }
 
-    onWideAspectChanged: {
-        var currentProject = root.currentProject
-        var viewing = root.viewing
-        if (!wideAspect)
-            homePage.currentProject = null
+    Notification {
+        id: notification
+    }
 
-        if (viewing === "task") {
-            goToTask(currentTask, "project")
-        } else if (viewing === "project") {
-            goToProject(currentProject)
-        } else if (viewing === "add") {
-            var task = currentTask
-            goToProject(task.project)
-            pageStack.push(addTaskPage, {task: task})
-        } else if (viewing === "statistics") {
-            var project = currentPage.project
-            showStatistics(project)
-        } else {
-            if (!(viewing === "upcoming" || viewing === "projects")) {
-                clearPageStack()
-                console.log("Unknown type:", viewing)
+    property var showToolbar: wideAspect ? true : undefined
+
+    states: [
+        State {
+            when: showToolbar && root.toolbar.locked && root.toolbar.opened
+
+            PropertyChanges {
+                target: pageStack
+                anchors.bottomMargin: -root.toolbar.triggerSize
             }
-
-            clearPageStack()
-            tabs.selectedTabIndex = 0
-            homePage.currentProject = null
         }
-    }
+    ]
 
-    function showStatistics(project) {
-        goToProject(project)
-        pageStack.push(statisticsPage, {project: project})
-    }
+    property Page currentPage: pageStack.currentPage.hasOwnProperty("currentPage")
+                               ? pageStack.currentPage.currentPage
+                               : pageStack.currentPage
 
-    function goToTask(task, viewing) {
-        if (viewing === undefined)
-            viewing = root.viewing
+    property var viewing: currentPage.hasOwnProperty("type") ? currentPage.type : "unknown"
+
+    property var currentProject: currentPage && currentPage.hasOwnProperty("currentProject") ? currentPage.currentProject : null
+    property var currentList: currentPage && currentPage.hasOwnProperty("currentList") ? currentPage.currentList : null
+    property var currentTask: currentPage && currentPage.hasOwnProperty("task") ? currentPage.task : null
+
+    onWideAspectChanged: {
+        var viewing = root.viewing
+        var currentProject = root.currentProject
+        var currentList = root.currentList
+        var currentTask = root.currentTask
 
         clearPageStack()
+        homePage.currentProject = null
+
+        print("Switching to %1 in %2".arg(wideAspect ? "Wide Aspect" : "Phone").arg(viewing))
 
         if (wideAspect) {
-            tabs.selectedTabIndex = 0
-            if (viewing === "project")
-                homePage.currentProject = task.project
-            pageStack.push(taskViewPage, {task: task})
+            if (viewing === "projects" || viewing === "upcoming") {
+                tabs.selectedTabIndex = 0
+            } else if (viewing === "project") {
+                tabs.selectedTabIndex = 0
+                homePage.currentProject = currentProject
+            } else if (viewing === "list") {
+                tabs.selectedTabIndex = 0
+                homePage.currentProject = currentProject
+                homePage.currentList = currentList
+            } else if (viewing === "task") {
+                tabs.selectedTabIndex = 0
+                homePage.currentProject = currentTask.project
+                homePage.currentList = currentTask.list
+                goToTask(currentTask)
+            }
         } else {
             if (viewing === "project") {
                 tabs.selectedTabIndex = 1
-                pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: task.project})
+                goToProject(currentProject)
+            } else if (viewing === "upcoming") {
+                tabs.selectedTabIndex = 0
+            } else if (viewing === "list") {
+                tabs.selectedTabIndex = 1
+                goToList(currentList)
+            } else if (viewing === "task") {
+               tabs.selectedTabIndex = 1
+                goToList(currentTask.list)
+                goToTask(currentTask)
             }
-
-            pageStack.push(taskViewPage, {task: task})
         }
     }
 
-    function goToProject(project) {
-        clearPageStack()
+    /* NAVIGATION */
 
+    function showStatistics(project) {
+        pageStack.push(Qt.resolvedUrl("ui/StatisticsPage.qml"), {project: project})
+    }
+
+    function goToProject(project) {
         if (wideAspect) {
-            tabs.selectedTabIndex = 0
             homePage.currentProject = project
         } else {
-            tabs.selectedTabIndex = 1
-            pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: project})
+            pageStack.push(Qt.resolvedUrl("ui/TasksPage.qml"), {currentList: project.lists.get(0).modelData})
         }
+    }
+
+    function goToList(list) {
+        if (wideAspect) {
+            homePage.currentProject = list.project
+            homePage.currentList = list
+        } else {
+            pageStack.push(Qt.resolvedUrl("ui/TasksPage.qml"), {currentList: list})
+        }
+    }
+
+    function goToTask(task) {
+        pageStack.push(Qt.resolvedUrl("ui/TaskViewPage.qml"), {task: task})
     }
 
     /* TASK MANAGEMENT */
 
-    LocalBackend.TasksModel {
-        id: localProjectsModel
-        database: storage
+    TrelloBackend.TrelloBackend {
+        id: trello
     }
 
-    TrelloBackend.TrelloModel {
-        id: trelloModel
-        database: storage
+    LocalBackend.LocalBackend {
+        id: localProjectsModel
     }
 
     property var backendModels: [
-        localProjectsModel,
-        trelloModel
+       localProjectsModel, trello
     ]
 
-    property var upcomingTasks: localProjectsModel.upcomingTasks
+    property var upcomingTasks: concat(backendModels, "upcomingTasks")
+
+    onUpcomingTasksChanged: {
+        //print("Upcoming tasks:", length(upcomingTasks))
+    }
 
     /* SETTINGS */
 
@@ -282,6 +241,7 @@ MainView {
     property bool showArchivedProjects
     property bool trelloIntegration
     property bool runBefore
+    property string sortBy: "intPriority"
 
     /* CHECKING FOR INTERNET */
 
@@ -289,7 +249,7 @@ MainView {
 
     U1db.Database {
         id: storage
-        path: "tasks-app.db"
+        path: "ubuntu-tasks.db"
     }
 
     U1db.Document {
@@ -309,6 +269,14 @@ MainView {
         }
     }
 
+    U1db.Document {
+        id: backendStorage
+
+        database: storage
+        docId: 'storage'
+        create: true
+    }
+
     function showSettings() {
         PopupUtils.open(settingsSheet)
     }
@@ -316,11 +284,13 @@ MainView {
     function getSetting(name, def) {
         var tempContents = {};
         tempContents = settings.contents
-        return tempContents.hasOwnProperty(name)
+        var value = tempContents.hasOwnProperty(name)
                 ? tempContents[name]
                 : settings.defaults.hasOwnProperty(name)
                   ? settings.defaults[name]
                   : def
+        //print(name, JSON.stringify(def), JSON.stringify(value))
+        return value
     }
 
     function saveSetting(name, value) {
@@ -336,9 +306,6 @@ MainView {
     }
 
     function reloadSettings() {
-        //showVerse = getSetting("showVerse") === "true" ? true : false
-        //print("showVerse <=", showVerse)
-
         showCompletedTasks = getSetting("showCompletedTasks") === "true"
         showArchivedProjects = getSetting("showArchivedProjects") === "true"
         trelloIntegration = getSetting("trelloIntegration") === "true"
@@ -347,7 +314,9 @@ MainView {
 
     function saveProjects() {
         for (var i = 0; i < backendModels.length; i++) {
-            backendModels[i].save()
+            var json = backendModels[i].save()
+            //print(JSON.stringify(json))
+            saveSetting("backend-" + backendModels[i].databaseName, json)
         }
     }
 
@@ -359,15 +328,14 @@ MainView {
     }
 
     Component.onCompleted: {
+        notification.show("Undo", icon("back"), print, "Undoing test...")
         reloadSettings()
-        //width = getSetting("windowWidth")
-        //height = getSetting("windowHeight")
 
         for (var i = 0; i < backendModels.length; i++) {
-            backendModels[i].load()
+            var json = getSetting("backend-" + backendModels[i].databaseName, {})
+            backendModels[i].load(json)
         }
 
-        //print("Run before: ", runBefore)
         if (!runBefore) {
             saveSetting("runBefore", "true")
             firstRun()
@@ -375,27 +343,13 @@ MainView {
     }
 
     Component.onDestruction: {
-        //saveSetting("windowWidth", width)
-        //saveSetting("windowHeight", height)
         saveProjects()
     }
 
     /* INITIAL WELCOME PROJECT */
 
     function firstRun() {
-        var project = localProjectsModel.newProject("Getting Started")
-        project.newTask({name: "Welcome to Ubuntu Tasks"})
-        project.newTask({name: "To view a task's description, tap it", description: "Here is the description for the task"})
-        project.newTask({name: "To complete a task, tap the checkbox on at the right"})
-        project.newTask({name: "When completed, tasks disappear from view"})
-        project.newTask({name: "To show completed tasks, click the Options toolbar button"})
-        project.newTask({name: "This is a completed task", completed: true, completedDate: new Date()})
-        project.newTask({name: "To set a due date, priority, or other options, tap it", description: "Look below at the options you can set"})
-        project.newTask({name: "To create a new task or project, look in the toolbar"})
-        project.newTask({name: "To create a new task, you can also type in the quick add task field"})
-        project.newTask({name: "When you're done learning, you can delete this project"})
     }
-
 
     /* PRIORITY MANAGEMENT */
 
@@ -403,13 +357,13 @@ MainView {
 
     function priorityName(priority) {
         if (priority === "low") {
-            return "Low"
+            return i18n.tr("Low")
         } else if (priority === "medium") {
-            return "Medium"
+            return i18n.tr("Medium")
         } else if (priority === "high") {
-            return "High"
+            return i18n.tr("High")
         } else {
-            return "????"
+            return i18n.tr("Unknown")
         }
     }
 
@@ -423,45 +377,132 @@ MainView {
         }
     }
 
-    /* HELPER FUNCTIONS */
+    /* UTILITY FUNCTIONS */
 
-    function length(model) {
-        return model.hasOwnProperty("count") ? model.count : model.length
-    }
-
-    function filteredTasks(tasks, filter, name) {
+    function filter(tasks, filter, name) {
         //print("Running filter:", name)
         var list = []
 
         for (var i = 0; i < length(tasks); i++) {
-            var task = tasks.hasOwnProperty("get") ? tasks.get(i) : tasks[i]
-            if (task.hasOwnProperty("modelData"))
-                task = task.modelData
+            var task = get(tasks, i)
             //print("Filtering:", task.name)
             if (filter(task))
                 list.push(task)
         }
 
-        //print("Count:", list.length)
+        //print("Filtered list:", list)
+
         return list
     }
 
-    function countTasks(tasks, filter) {
-        //print("Counting tasks...")
-        var count = 0
+    function count(model, func, name) {
+        return filter(model, func, name).length
+    }
 
-        for (var i = 0; i < tasks.count; i++) {
-            if (filter(tasks.get(i).modelData))
-                count++
+    function filteredSum(list, prop, func, name) {
+        var value = 0
+
+        for (var i = 0; i < length(list); i++) {
+            var item = get(list, i)
+            value += count(item[prop], func, name)
         }
 
-        return count
+        return value
+    }
+
+    function sum(list, prop) {
+        var value = 0
+
+        for (var i = 0; i < length(list); i++) {
+            var item = get(list, i)
+            value += item[prop]
+        }
+
+        return value
+    }
+
+    function subList(list, prop) {
+        var value = []
+
+        //print("Concat:", prop, length(list))
+
+        for (var i = 0; i < length(list); i++) {
+            var item = get(list, i)
+            value.push(item[prop])
+        }
+
+        //print("Concat:", prop, value, length(value))
+        return value
+    }
+
+    function toList(model) {
+        var list = []
+
+        for (var i = 0; i < model.count; i++) {
+            list.push(get(model, i))
+        }
+
+        return list
+    }
+
+    function sort(list, prop) {
+        if (list.hasOwnProperty("count"))
+            list = toList(list)
+        //print("Sorting by", prop)
+        list.sort(function(a, b) {
+            return b.relevence - a.relevence
+        });
+
+        return list
+    }
+
+    function concat(list, prop) {
+        var value = []
+
+        //print("Concat:", prop, length(list))
+
+        for (var i = 0; i < length(list); i++) {
+            var item = get(list, i)
+            //print("Adding:", item[prop])
+            if (item[prop].hasOwnProperty("length")) {
+                value = value.concat(item[prop])
+            } else {
+                for (var j = 0; j < item[prop].count; j++) {
+                    value.push(get(item[prop], j))
+                }
+            }
+        }
+
+        //print("Concat:", prop, value, length(value))
+        return value
     }
 
     function icon(name) {
-        //return "/usr/share/icons/ubuntu-mobile/actions/scalable/" + name + ".svg"
         return "../icons/" + name + ".png"
-        //return "qrc:///icons/" + name + ".png"
+    }
+
+    function get(model, index) {
+        var item = model.hasOwnProperty("get") ? model.get(index) : model[index]
+        if (model.hasOwnProperty("get"))
+            item = item.modelData
+
+        return item
+    }
+
+    function length(model) {
+        if (model === undefined || model === null)
+            return 0
+        else
+            return model.hasOwnProperty("count") ? model.count : model.length
+    }
+
+    function newProject(caller) {
+        if (backendModels.length > 1)
+            PopupUtils.open(newProjectPopover, caller)
+        else
+            PopupUtils.open(newProjectDialog, root, {
+                                backend: backendModels[0]
+                            })
     }
 
     function formattedDate(date) {
@@ -514,36 +555,102 @@ MainView {
         }
     }
 
-     Component {
-        id: addTaskPage
-
-        AddTaskPage {
-
-        }
-    }
-
     Component {
-        id: statisticsPage
+        id: newProjectDialog
 
-        StatisticsPage {
+        InputDialog {
+            property var backend
 
-        }
-    }
-
-    Component {
-        id: confirmDeleteTaskDialog
-
-        ConfirmDialog {
-            property var task
-
-            id: confirmDeleteTaskDialogItem
-            title: i18n.tr("Delete Task")
-            text: i18n.tr("Are you sure you want to delete '%1'?").arg(task.name)
-
+            title: i18n.tr("New %1").arg(backend.newName)
             onAccepted: {
-                PopupUtils.close(confirmDeleteTaskDialogItem)
-                goToProject(task.project)
-                task.remove()
+                var project = backend.newProject(value)
+                goToProject(project)
+            }
+        }
+    }
+
+    Component {
+        id: newProjectPopover
+
+        Popover {
+            id: newProjectPopoverItem
+            Column {
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: parent.top
+                }
+
+                Repeater {
+                    model: backendModels
+                    delegate: ListItem.Standard {
+                        //visible: modelData.editable
+
+                        //FIXME: Hack because of Suru theme!
+                        Label {
+                            anchors {
+                                verticalCenter: parent.verticalCenter
+                                left: parent.left
+                                margins: units.gu(2)
+                            }
+
+                            text: modelData.newName
+                            fontSize: "medium"
+                            color: Theme.palette.normal.overlayText
+                        }
+
+                        onClicked: {
+                            PopupUtils.close(newProjectPopoverItem)
+                            PopupUtils.open(newProjectDialog, root, {backend: modelData})
+                        }
+
+                        //showDivider: index < count - 1
+                    }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: projectActionsPopover
+
+        ActionSelectionPopover {
+            property var project
+            objectName: "projectActionsPopover"
+
+            actions: ActionList {
+                Action {
+                    objectName: "rename"
+                    text: i18n.tr("Rename")
+                    enabled: project.editable
+                    onTriggered: {
+                        PopupUtils.open(renameProjectDialog, caller, {
+                                            project: project
+                                        })
+                    }
+                }
+
+                Action {
+                    objectName: "archive"
+                    text: project.archived ? i18n.tr("Unarchive") : i18n.tr("Archive")
+                    enabled: project.editable
+                    onTriggered: {
+                        project.archived = !project.archived
+                        if (project.archived)
+                            notification.show(i18n.tr("Archived %1").arg(project.name), icon("back"), function(project) {
+                                project.archived = false
+                            }, project)
+                    }
+                }
+
+                Action {
+                    objectName: "delete"
+                    enabled: project.editable
+                    text: i18n.tr("Delete")
+                    onTriggered: {
+                        PopupUtils.open(confirmDeleteProjectDialog, root, {project: project})
+                    }
+                }
             }
         }
     }
@@ -579,105 +686,10 @@ MainView {
             onAccepted: {
                 PopupUtils.close(confirmDeleteProjectDialogItem)
                 //clearPageStack()
+                while (pageStack.depth > 1)
+                    pageStack.clear()
                 project.remove()
             }
-        }
-    }
-
-    Component {
-        id: newProjectDialog
-
-        InputDialog {
-            property var backend
-
-            title: i18n.tr("New %1").arg(backend.newName)
-            onAccepted: backend.newProject(value)
-        }
-    }
-
-    Component {
-        id: newProjectPopover
-
-        Popover {
-            id: newProjectPopoverItem
-            Column {
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    top: parent.top
-                }
-
-                Repeater {
-                    model: backendModels
-                    delegate: ListItem.Standard {
-                        visible: modelData.editable
-
-                        //FIXME: Hack because of Suru theme!
-                        Label {
-                            anchors {
-                                verticalCenter: parent.verticalCenter
-                                left: parent.left
-                                margins: units.gu(2)
-                            }
-
-                            text: modelData.newName
-                            fontSize: "medium"
-                            color: Theme.palette.normal.overlayText
-                        }
-
-                        onClicked: {
-                            PopupUtils.close(newProjectPopoverItem)
-                            PopupUtils.open(newProjectDialog, root, {backend: modelData})
-                        }
-
-                        //showDivider: index < count - 1
-                    }
-                }
-            }
-        }
-    }
-
-    Component {
-        id: projectActionsPopover
-
-        ActionSelectionPopover {
-            property var project
-
-            actions: ActionList {
-                Action {
-                    text: i18n.tr("Rename")
-                    enabled: project.editable
-                    onTriggered: {
-                        PopupUtils.open(renameProjectDialog, caller, {
-                                            project: project
-                                        })
-                    }
-                }
-
-                Action {
-                    text: project.archived ? i18n.tr("Unarchive") : i18n.tr("Archive")
-                    enabled: project.editable
-                    onTriggered: {
-                        project.archived = !project.archived
-                    }
-                }
-
-                Action {
-                    enabled: project.editable
-                    text: i18n.tr("Delete")
-                    onTriggered: {
-                        PopupUtils.open(confirmDeleteProjectDialog, root, {project: project})
-                    }
-                }
-            }
-        }
-    }
-
-    Component {
-        id: projectsPopover
-
-        ProjectsPopover {
-
         }
     }
 

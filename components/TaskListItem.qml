@@ -62,44 +62,40 @@ Empty {
         color: priorityColor(task.priority)
     }
 
-    Label {
-        id: titleLabel
+    Column {
+        id: labels
+
+        spacing: units.gu(0.1)
+
         anchors {
-            top: subLabel.visible ? parent.top : undefined
-            topMargin: units.gu(0.7)
-            //left: parent.left
+            verticalCenter: parent.verticalCenter
             left: priorityShape.right
-            leftMargin: units.gu(1)
-            //leftMargin: units.gu(2)
+            margins: units.gu(1)
             right: doneCheckBox.left
-            rightMargin: units.gu(2)
-            verticalCenter: subLabel.visible ? undefined : parent.verticalCenter
         }
 
-        elide: Text.ElideRight
-        text: task.name
-        color: selected ? UbuntuColors.orange : Theme.palette.selected.backgroundText
-    }
+        Text {
+            id: titleLabel
 
-    Label {
-        id: subLabel
-        anchors {
-            //top: titleLabel.bottom
-            //topMargin: units.gu(0.2)
-            bottom: parent.bottom
-            bottomMargin: units.gu(0.7)
-            left: titleLabel.left
-            right: doneCheckBox.left
-            rightMargin: units.gu(2)
+            width: parent.width
+            elide: Text.ElideRight
+            text: task.name
+
+            color: selected ? UbuntuColors.orange : Theme.palette.selected.backgroundText
         }
 
-        //color: UbuntuColors.warmGrey
-        color: Theme.palette.normal.backgroundText
-        fontSize: "small"
-        font.italic: true
-        text: task.subText
-        visible: Qt.formatDate(task.dueDate) != ""
-        elide: Text.ElideRight
+        Label {
+            id: subLabel
+            width: parent.width
+
+            height: visible ? implicitHeight: 0
+            color: Theme.palette.normal.backgroundText
+            fontSize: "small"
+            font.italic: true
+            text: task.subText
+            visible: Qt.formatDate(task.dueDate) != ""
+            elide: Text.ElideRight
+        }
     }
 
 //    Rectangle {
