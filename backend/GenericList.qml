@@ -148,7 +148,7 @@ Item {
     // This removes a task from the model
     function internal_removeTask(task) {
         //print("Removing task...")
-        tasks.remove(task.docId)
+        document.remove(task.docId)
         for (var i = 0; i < tasks.count; i++) {
             if (tasks.get(i).modelData === project)
                 tasks.remove(i)

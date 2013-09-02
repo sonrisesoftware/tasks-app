@@ -24,25 +24,36 @@ import Ubuntu.Components 0.1
 import Ubuntu.Components.Popups 0.1
 import U1db 1.0 as U1db
 import ".."
-import "Trello.js" as Trello
-//import "sha1.js" as SHA1
-//import "oauth.js" as OAUTH
+import "../local" as Local
 
 GenericBackend {
     id: root
-
-    property ListModel projects: ListModel {
-        id: projects
-    }
 
     name: "Trello Boards"
     newName: "Trello Board"
     requiresInternet: true
     databaseName: "trello"
-    property string token: ""
     enabled: token !== "" && trelloIntegration
     editable: false
     supportsStatistics: false
+
+    function newProject(name) {
+        var project = createProject({
+                          docId: nextDocId++
+                      })
+        project.name = name
+        internal_addProject(project)
+        project.loadU1db()
+        project.locked = true
+        post("/boards", ["name=" + name], onNewProject, project)
+        return project
+    }
+
+    function onNewProject(response, project) {
+        var json = JSON.parse(response)
+        project.boardID = json.id
+        project.locked = false
+    }
 
     function getBoard(boardID) {
         for (var i = 0; i < projects.count; i++) {
@@ -51,130 +62,118 @@ GenericBackend {
         }
     }
 
-    function onError() {
+    function load(json) {
+        loadU1db(json)
 
-    }
+        token = getSetting("trelloToken", "")
+        print("Trello token:", token, trelloIntegration)
 
-    function load() {
-        Trello.model = root
-        Trello.token = getSetting("trelloToken", "")
-        token = Trello.token
-        print("Trello token:", Trello.token, trelloIntegration)
-
-        if (Trello.token != "" && trelloIntegration) {
-            var json = JSON.parse(tasksDocument.contents.tasks)
-
-            if (runBefore) {
-                print("LOADING...")
-                for (var i = 0; i < json.length; i++) {
-                    var project = internal_newProject(json[i].name)
-                    project.load(json[i])
-                    project.refresh(json[i])
-                }
-            }
-
+        if (token != "" && trelloIntegration)
             authorized()
-        }
     }
 
     function authorized() {
-        Trello.call("/members/my/boards", [], onBoardsLoaded)
+        get("/members/my/boards", [], onBoardsLoaded)
+    }
+
+    function internal_newProject() {
+        print("Creating new project...")
+        var project = createProject({
+                          docId: nextDocId++
+                      })
+        internal_addProject(project)
+        project.loadU1db()
+        return project
     }
 
     function onBoardsLoaded(response) {
         var json = JSON.parse(response)
+        print("Boards loaded:", json)
         for (var i = 0; i < json.length; i++) {
             var board = getBoard(json[i].id)
             if (board === undefined) {
-                board = internal_newProject(json[i].name)
-                board.load(json[i])
-                board.refresh(json[i])
+                board = internal_newProject()
+                board.loadTrello(json[i])
+                //board.refresh(json[i])
             } else {
-                board.load(json[i])
+                board.loadTrello(json[i])
             }
         }
         for (var k = 0; k < projects.count; k++) {
+            var project = projects.get(k).modelData
             var found = false
+            if (project.locked) continue;
+
             for (var j = 0; j < json.length; j++) {
-                if (projects.get(k).modelData.boardID === json[j].id) {
+                if (project.boardID === json[j].id) {
                     found = true
                     break
                 }
             }
 
             if (!found)
-                projects.remove(k)
+                project.remove()
         }
     }
 
-    function save() {
-        var json = []
-
-        for (var i = 0; i < projects.count; i++) {
-            json.push(projects.get(i).modelData.save())
-        }
-
-        var tempDocument = tasksDocument
-        var tempContents = {}
-        tempContents.tasks = JSON.stringify(json)
-        tempDocument.contents = tempContents
-        tasksDocument = tempDocument
-    }
-
-    function newProject(name) {
-        var board = internal_newProject(name)
-        Trello.post("/boards", ["name=" + name], onNewProject)
-        return board
-    }
-
-    function onNewProject(response) {
-        var json = JSON.parse(response)
-        board.load(json[i])
-        board.refresh(json[i])
-    }
-
-    function internal_newProject(name) {
-        var project = newProjectComponent.createObject(root)
-        project.backend = root
-
-        if (project === null) {
-            console.log("Unable to create project!")
-        }
-
-        project.name = name
-        projects.append({"modelData": project})
-        return project
-    }
-
-    function addProject(project) {
-        projects.append(project)
-    }
-
-    function removeProject(project) {
-        for (var i = 0; i < projects.count; i++) {
-            if (projects.get(i).modelData === project)
-                projects.remove(i)
-        }
-        project.destroy()
-    }
-
-    Component {
-        id: newProjectComponent
+    projectComponent: Component {
 
         Project {
 
         }
     }
 
-    U1db.Document {
-        id: tasksDocument
+    /* INTERNAL FUNCTIONS */
 
-        database: root.database
-        docId: 'trello'
-        create: true
+    readonly property string key: "333870c6f8dc97cb6a14e79dfe119675"
+    readonly property string secret: "1be63ceca6fcf130bfb61e68c9d85fcd9d1adeda3671fcee61d86d2bc236e7c3"
+    property string token
+    property string responseText
 
-        defaults: {
-            tasks: ""
-        }
+    function call(path, options, callback) {
+        get(path, options, callback)
+    }
+
+    function post(path, options, callback, args) {
+        request(path, "POST", options, callback, args)
+    }
+
+    function put(path, options, callback) {
+        request(path, "PUT", options, callback)
+    }
+
+    function get(path, options, callback) {
+        request(path, "GET", options, callback)
+    }
+
+    function request(path, call, options, callback, args) {
+        var address = "https://trello.com/1" + path + "?key=" + key + "&token=" + token
+        if (options.length > 0)
+            address += "&" + options.join("&").replace(" ", "+")
+
+        print(call, address)
+
+        var doc = new XMLHttpRequest();
+        doc.onreadystatechange = function() {
+            if (doc.readyState === XMLHttpRequest.DONE) {
+                loading--
+                print(call, path, options.join("&").replace(" ", "+"))
+                print(doc.responseText)
+                if (callback !== undefined)
+                    callback(doc.responseText, args)
+            }
+         }
+
+        doc.open(call, address);
+        //doc.setRequestHeader("Accept", "application/json")
+        doc.send();
+
+        loading++
+    }
+
+    function authenticate(name) {
+        Qt.openUrlExternally("https://trello.com/1/authorize?" + "key=" +
+                             key + "&name=" + name.replace(" ", "+") +
+                             "&expiration=30days&response_type=token&scope=read,write")
     }
 }

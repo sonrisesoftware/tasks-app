@@ -199,7 +199,7 @@ Page {
             visible:  sidebar.expanded || currentProject === null
 
             onTriggered: {
-                newProject()
+                newProject(newProjectButton)
             }
         }
 
@@ -259,7 +259,7 @@ Page {
             id: optionsButton
             text: i18n.tr("Options")
             iconSource: icon("settings")
-            //visible: currentProject !== null
+            visible: wideAspect
 
             onTriggered: {
                 PopupUtils.open(optionsPopover, optionsButton)

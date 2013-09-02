@@ -127,13 +127,14 @@ Page {
         id: tools
 
         ToolbarButton {
+            id: newProjectButton
             objectName: "newProject"
             iconSource: icon("add")
             text: i18n.tr("New Project")
             visible: !showArchived
 
             onTriggered: {
-                newProject()
+                newProject(newProjectButton)
             }
         }
 

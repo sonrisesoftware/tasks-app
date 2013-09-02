@@ -30,12 +30,14 @@ Item {
     property string name
     property string newName
     property string databaseName                // The database filename
+    enabled: true                               // Is this backend enabled?
     property bool editable: true                // Can projects/lists/tasks be edited/created/deleted?
     property bool requiresInternet: false       // Requires the internet to sync?
     property bool supportsStatistics: true      // Supports showing the statistics page?
     property bool supportsLists: true           // Supports multiple tasks lists?
     property var projectComponent
     property var upcomingTasks: concat(projects, "upcomingTasks")
+    property int loading: 0
 
     property int nextDocId: 0
 
@@ -61,6 +63,7 @@ Item {
 
     // This is the front-end to creating new projects
     function newProject(name) {
+        print("Generic new project...")
         var project = createProject({
                           docId: nextDocId++
                       })

@@ -82,9 +82,11 @@ Object {
     function save() {
         var json = values
 
-        for (var i = 0; i < childrenDocs.length; i++) {
-            //print("Found subdocument ", childrenDocs[i].docId, "for", docId)
-            children[childrenDocs[i].docId] = childrenDocs[i].save()
+        if (childrenDocs != undefined) {
+            for (var i = 0; i < childrenDocs.length; i++) {
+                //print("Found subdocument ", childrenDocs[i].docId, "for", docId)
+                children[childrenDocs[i].docId] = childrenDocs[i].save()
+            }
         }
 
         if (listDocs().length > 0) {
@@ -97,6 +99,9 @@ Object {
 
     function load(json) {
         //print("Loading", docId, JSON.stringify(json))
+
+        if (json === undefined)
+            return
 
         if (values === undefined)
             values = {}
@@ -123,6 +128,7 @@ Object {
     }
 
     function remove(docId) {
+        print("Removing", docId)
         if (children.hasOwnProperty(docId)) {
             delete children[docId]
         }

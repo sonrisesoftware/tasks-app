@@ -23,7 +23,6 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
-import "Trello.js" as Trello
 
 Dialog {
     id: root
@@ -54,10 +53,10 @@ Dialog {
         onClicked: {
             if (textField.acceptableInput) {
                 PopupUtils.close(root)
-                Trello.token = value
+                trello.token = value
                 saveSetting("trelloToken", value)
             } else {
-                Trello.authenticate("Ubuntu Tasks")
+                trello.authenticate("Ubuntu Tasks")
             }
 
             accepted()

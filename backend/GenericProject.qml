@@ -168,7 +168,7 @@ Item {
     // This removes a list from the model
     function internal_removeList(list) {
         //print("Removing list...")
-        lists.remove(list.docId)
+        document.remove(list.docId)
         for (var i = 0; i < lists.count; i++) {
             if (lists.get(i).modelData === project)
                 lists.remove(i)
@@ -178,6 +178,7 @@ Item {
     /* DELETION OF THE PROJECT */
 
     function remove() {
+        print("Deleting project...")
         backend.removeProject(project)
     }
 }

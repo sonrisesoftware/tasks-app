@@ -217,12 +217,16 @@ MainView {
 
     /* TASK MANAGEMENT */
 
+    TrelloBackend.TrelloBackend {
+        id: trello
+    }
+
     LocalBackend.LocalBackend {
         id: localProjectsModel
     }
 
     property var backendModels: [
-       localProjectsModel
+       localProjectsModel, trello
     ]
 
     property var upcomingTasks: concat(backendModels, "upcomingTasks")
@@ -492,9 +496,9 @@ MainView {
             return model.hasOwnProperty("count") ? model.count : model.length
     }
 
-    function newProject() {
+    function newProject(caller) {
         if (backendModels.length > 1)
-            PopupUtils.open(newProjectPopover, newProjectButton)
+            PopupUtils.open(newProjectPopover, caller)
         else
             PopupUtils.open(newProjectDialog, root, {
                                 backend: backendModels[0]
@@ -558,7 +562,10 @@ MainView {
             property var backend
 
             title: i18n.tr("New %1").arg(backend.newName)
-            onAccepted: backend.newProject(value)
+            onAccepted: {
+                var project = backend.newProject(value)
+                goToProject(project)
+            }
         }
     }
 
@@ -577,7 +584,7 @@ MainView {
                 Repeater {
                     model: backendModels
                     delegate: ListItem.Standard {
-                        visible: modelData.editable
+                        //visible: modelData.editable
 
                         //FIXME: Hack because of Suru theme!
                         Label {

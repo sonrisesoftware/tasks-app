@@ -30,12 +30,29 @@ GenericProject {
     property var boardID
     editable: false
     enabled: true
+    property bool locked: false
 
-    property ListModel lists: ListModel {
-        id: lists
+    onBoardIDChanged: {
+        if (!updating)
+            document.set("boardID", boardID)
     }
 
-    function load(json) {
+    /* To be called after the document changes,
+       either after loading from U1db or after loading from a remote model */
+    function reloadFields() {
+        //print("Reloading project", name)
+        updating = true
+
+        name = document.get("name", "")
+        description = document.get("description", "")
+        archived = document.get("archived", false)
+        boardID = document.get("boardID", "")
+
+        updating = false
+        //print("Done.")
+    }
+
+    function loadTrello(json) {
         name = json.name
         boardID = json.id
         archived = json.closed
@@ -149,53 +166,10 @@ GenericProject {
         return json
     }
 
-    taskComponent: Component {
-        id: taskComponent
+    listComponent: Component {
 
-        Task {
+        GenericList {
 
-        }
-    }
-
-    property var listComponent: Component {
-        id: listComponent
-
-        List {
-
-        }
-    }
-
-    function newList(args) {
-        var list = createList(args)
-
-        addList(list)
-        return list
-    }
-
-    function createList(args) {
-        if (args === undefined)
-            args = {}
-        var list = listComponent.createObject(root, args)
-
-        if (list === null) {
-            console.log("Unable to create list!")
-        }
-
-        list.project = root
-        return list
-    }
-
-    function addList(list) {
-        lists.append({"modelData": list})
-    }
-
-    function removeList(list) {
-        if (!editable)
-            return
-        for (var i = 0; i < lists.count; i++) {
-            if (lists.get(i).modelData === list) {
-                lists.remove(i)
-            }
         }
     }
 }
