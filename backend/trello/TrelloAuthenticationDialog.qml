@@ -38,6 +38,8 @@ Dialog {
     TextField {
         id: textField
 
+        placeholderText: i18n.tr("Authentication Token")
+
         onAccepted: okButton.clicked()
         validator: RegExpValidator {
             regExp: /.+/
@@ -45,19 +47,40 @@ Dialog {
     }
 
     Button {
+        id: authenticateButton
+        objectName: "tokenButton"
+
+        text: i18n.tr("Get Token")
+
+        gradient: Gradient {
+            GradientStop {
+                position: 0
+                color: "green"//Qt.rgba(0,0.7,0,1)
+            }
+
+            GradientStop {
+                position: 1
+                color: Qt.rgba(0.3,0.7,0.3,1)
+            }
+        }
+
+        onClicked: {
+            trello.authenticate("Ubuntu Tasks")
+        }
+    }
+
+    Button {
         id: okButton
         objectName: "okButton"
 
-        text: textField.acceptableInput ? i18n.tr("Ok") : i18n.tr("Authenticate")
+        text: i18n.tr("Ok")
+
+        enabled: textField.acceptableInput
 
         onClicked: {
-            if (textField.acceptableInput) {
-                PopupUtils.close(root)
-                trello.token = value
-                saveSetting("trelloToken", value)
-            } else {
-                trello.authenticate("Ubuntu Tasks")
-            }
+            PopupUtils.close(root)
+            trello.token = value
+            saveSetting("trelloToken", value)
 
             accepted()
         }

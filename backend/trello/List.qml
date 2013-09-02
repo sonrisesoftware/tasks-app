@@ -48,6 +48,7 @@ GenericList {
 
     function loadTrello(json) {
         name = json.name
+        listID = json.id
     }
 
     function refresh() {

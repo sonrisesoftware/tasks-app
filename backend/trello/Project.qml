@@ -103,7 +103,7 @@ GenericProject {
             if (list.locked) return
 
             for (var j = 0; j < json.length; j++) {
-                if (list.index === json[j].id) {
+                if (list.listID === json[j].id) {
                     found = true
                     break
                 }
@@ -116,7 +116,7 @@ GenericProject {
 
     function getList(listID) {
         for (var i = 0; i < lists.count; i++) {
-            if (lists.get(i).modelData.index === listID)
+            if (lists.get(i).modelData.listID === listID)
                 return lists.get(i).modelData
         }
     }

@@ -84,7 +84,7 @@ Object {
 
         if (childrenDocs != undefined) {
             for (var i = 0; i < childrenDocs.length; i++) {
-                //print("Found subdocument ", childrenDocs[i].docId, "for", docId)
+                //print("Found subdocument", childrenDocs[i].docId, "for", docId)
                 children[childrenDocs[i].docId] = childrenDocs[i].save()
             }
         }
@@ -128,7 +128,7 @@ Object {
     }
 
     function remove(docId) {
-        print("Removing", docId)
+        //print("Removing", docId)
         if (children.hasOwnProperty(docId)) {
             delete children[docId]
         }

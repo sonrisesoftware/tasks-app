@@ -171,7 +171,7 @@ Item {
         //print("Removing list...")
         document.remove(list.docId)
         for (var i = 0; i < lists.count; i++) {
-            if (lists.get(i).modelData === project)
+            if (lists.get(i).modelData === list)
                 lists.remove(i)
         }
     }
@@ -179,7 +179,7 @@ Item {
     /* DELETION OF THE PROJECT */
 
     function remove() {
-        print("Deleting project...")
+        //print("Deleting project...")
         backend.removeProject(project)
     }
 }
