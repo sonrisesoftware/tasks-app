@@ -23,39 +23,26 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.Popups 0.1
 import U1db 1.0 as U1db
-import "../../components"
+import ".."
 import "Trello.js" as Trello
 //import "sha1.js" as SHA1
 //import "oauth.js" as OAUTH
 
-Item {
+GenericBackend {
     id: root
 
     property ListModel projects: ListModel {
         id: projects
     }
 
-    property string name: "Trello Boards"
-    property string newName: "Trello Board"
-    property bool requiresInternet: true
-    property int loading: 0
-    property var database
+    name: "Trello Boards"
+    newName: "Trello Board"
+    requiresInternet: true
+    databaseName: "trello"
     property string token: ""
     enabled: token !== "" && trelloIntegration
-    property bool editable: false
-    property bool supportsStatistics: false
-
-    property var list: []
-
-    property var upcomingTasks: {
-        var tasks = []
-
-        for (var i = 0; i < projects.count; i++) {
-            tasks = tasks.concat(projects.get(i).modelData.upcomingTasks)
-        }
-
-        return tasks
-    }
+    editable: false
+    supportsStatistics: false
 
     function getBoard(boardID) {
         for (var i = 0; i < projects.count; i++) {

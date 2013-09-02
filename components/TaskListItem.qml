@@ -66,7 +66,7 @@ Empty {
         id: titleLabel
         anchors {
             top: subLabel.visible ? parent.top : undefined
-            topMargin: units.gu(0.7)
+            topMargin: units.gu(0.9)
             //left: parent.left
             left: priorityShape.right
             leftMargin: units.gu(1)
@@ -87,7 +87,7 @@ Empty {
             //top: titleLabel.bottom
             //topMargin: units.gu(0.2)
             bottom: parent.bottom
-            bottomMargin: units.gu(0.7)
+            bottomMargin: units.gu(1)
             left: titleLabel.left
             right: doneCheckBox.left
             rightMargin: units.gu(2)

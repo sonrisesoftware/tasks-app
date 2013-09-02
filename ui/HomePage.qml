@@ -215,7 +215,7 @@ Page {
             enabled: currentProject !== null && currentProject.editable
 
             onTriggered: {
-                pageStack.push(addTaskPage, { project: currentProject })
+                pageStack.push(Qt.resolvedUrl("AddTaskPage.qml"), {list: currentList})
             }
         }
 
@@ -233,15 +233,15 @@ Page {
         }
 
         ToolbarButton {
-            iconSource: icon("delete")
-            text: i18n.tr("Delete")
-            visible: currentProject !== null
+            iconSource: icon("save")
+            text: i18n.tr("Archive")
             enabled: currentProject !== null && currentProject.editable
+            visible: currentProject !== null && !currentProject.archived
 
             onTriggered: {
-                PopupUtils.open(confirmDeleteProjectDialog, root, {
-                                    project: currentProject
-                                })
+                while (pageStack.depth > 1)
+                    pageStack.pop()
+                currentProject.archived = true
             }
         }
 

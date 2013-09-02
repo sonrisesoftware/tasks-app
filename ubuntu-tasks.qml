@@ -96,7 +96,24 @@ MainView {
             visible: false
         }
 
-        Component.onCompleted: pageStack.push(tabs)
+        Component.onCompleted: {
+            pageStack.push(tabs)
+            clearPageStack()
+        }
+    }
+
+    function clearPageStack() {
+        while (pageStack.depth > 1)
+            pageStack.pop()
+        tabs.selectedTabIndex = 1
+        tabs.selectedTabIndex = 0
+
+        pageStack.push(Qt.resolvedUrl("ui/ProjectsPage.qml"))
+        pageStack.pop()
+        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: null})
+        pageStack.pop()
+        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: null})
+        pageStack.pop()
     }
 
     Notification {
@@ -110,7 +127,7 @@ MainView {
             when: showToolbar && root.toolbar.locked && root.toolbar.opened
 
             PropertyChanges {
-                target: homePage.parent
+                target: pageStack
                 anchors.bottomMargin: -root.toolbar.triggerSize
             }
         }
@@ -127,7 +144,47 @@ MainView {
     property var currentTask: currentPage && currentPage.hasOwnProperty("task") ? currentPage.task : null
 
     onWideAspectChanged: {
-        print("TODO: Change wide aspect mode!")
+        var viewing = root.viewing
+        var currentProject = root.currentProject
+        var currentList = root.currentList
+        var currentTask = root.currentTask
+
+        clearPageStack()
+        homePage.currentProject = null
+
+        print("Switching to %1 in %2".arg(wideAspect ? "Wide Aspect" : "Phone").arg(viewing))
+
+        if (wideAspect) {
+            if (viewing === "projects" || viewing === "upcoming") {
+                tabs.selectedTabIndex = 0
+            } else if (viewing === "project") {
+                tabs.selectedTabIndex = 0
+                homePage.currentProject = currentProject
+            } else if (viewing === "list") {
+                tabs.selectedTabIndex = 0
+                homePage.currentProject = currentProject
+                homePage.currentList = currentList
+            } else if (viewing === "task") {
+                tabs.selectedTabIndex = 0
+                homePage.currentProject = currentTask.project
+                homePage.currentList = currentTask.list
+                goToTask(currentTask)
+            }
+        } else {
+            if (viewing === "project") {
+                tabs.selectedTabIndex = 1
+                goToProject(currentProject)
+            } else if (viewing === "upcoming") {
+                tabs.selectedTabIndex = 0
+            } else if (viewing === "list") {
+                tabs.selectedTabIndex = 1
+                goToList(currentList)
+            } else if (viewing === "task") {
+               tabs.selectedTabIndex = 1
+                goToList(currentTask.list)
+                goToTask(currentTask)
+            }
+        }
     }
 
     /* NAVIGATION */
@@ -136,16 +193,17 @@ MainView {
         if (wideAspect) {
             homePage.currentProject = project
         } else {
-            if (project.supportsLists) {
-                pageStack.push(Qt.resolvedUrl("ui/ListsPage.qml"), {currentProject: project})
-            } else {
-                pageStack.push(Qt.resolvedUrl("ui/TasksPage.qml"), {currentList: project.lists.get(0).modelData})
-            }
+            pageStack.push(Qt.resolvedUrl("ui/TasksPage.qml"), {currentList: project.lists.get(0).modelData})
         }
     }
 
     function goToList(list) {
-        pageStack.push(Qt.resolvedUrl("ui/TasksPage.qml"), {currentList: list})
+        if (wideAspect) {
+            homePage.currentProject = list.project
+            homePage.currentList = list
+        } else {
+            pageStack.push(Qt.resolvedUrl("ui/TasksPage.qml"), {currentList: list})
+        }
     }
 
     function goToTask(task) {
