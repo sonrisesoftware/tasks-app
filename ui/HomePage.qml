@@ -259,6 +259,7 @@ Page {
             id: optionsButton
             text: i18n.tr("Options")
             iconSource: icon("settings")
+            visible: currentProject !== null
 
             onTriggered: {
                 PopupUtils.open(optionsPopover, optionsButton)

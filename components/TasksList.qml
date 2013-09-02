@@ -34,7 +34,7 @@ Item {
     }
 
     property string noneMessage: i18n.tr("No tasks")
-    property var model: list ? list.tasks : []
+    property var model: sort(list ? list.tasks : [], sortBy)
     property var project: list ? list.project : null
     property var list
 

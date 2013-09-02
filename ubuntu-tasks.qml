@@ -237,6 +237,7 @@ MainView {
     property bool showArchivedProjects
     property bool trelloIntegration
     property bool runBefore
+    property string sortBy: "intPriority"
 
     /* CHECKING FOR INTERNET */
 
@@ -428,6 +429,27 @@ MainView {
 
         //print("Concat:", prop, value, length(value))
         return value
+    }
+
+    function toList(model) {
+        var list = []
+
+        for (var i = 0; i < model.count; i++) {
+            list.push(get(model, i))
+        }
+
+        return list
+    }
+
+    function sort(list, prop) {
+        if (list.hasOwnProperty("count"))
+            list = toList(list)
+        //print("Sorting by", prop)
+        list.sort(function(a, b) {
+            return b.relevence - a.relevence
+        });
+
+        return list
     }
 
     function concat(list, prop) {

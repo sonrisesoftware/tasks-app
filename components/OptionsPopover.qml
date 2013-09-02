@@ -76,16 +76,9 @@ Popover {
                 onCheckedChanged: saveSetting("showArchivedProjects", checked ? "true" : "false")
             }
 
+            visible: wideAspect
+
             showDivider: false
         }
-
-//        ValueSelector {
-//            text: i18n.tr("Sort By")
-//            values: [
-//                "Due Date",
-//                "Relevence",
-//                "Importance"
-//            ]
-//        }
     }
 }
