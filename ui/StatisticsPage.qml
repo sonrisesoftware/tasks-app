@@ -51,8 +51,8 @@ Page {
             for (var i = count - 1; i >= 0; i--) {
                 var day = new Date()
                 day.setDate(day.getDate() - i)
-                var overdue = length(project.filteredTasks(function(task) { return task.overdueBy(day)}, "Overdue ONLY"))
-                var other = length(project.filteredTasks(function(task) { return task.notCompletedBy(day) && !task.overdueBy(day)}, "Not completed"))
+                var overdue = length(filter(project.allTasks, function(task) { return task.overdueBy(day)}, "Overdue ONLY"))
+                var other = length(filter(project.allTasks, function(task) { return task.notCompletedBy(day) && !task.overdueBy(day)}, "Not completed"))
                 var total = overdue + other
                 if (total > max)
                     max = total

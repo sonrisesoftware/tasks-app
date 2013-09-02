@@ -36,6 +36,7 @@ Item {
     property bool supportsLists: backend.supportsLists
     property var backend
     property var upcomingTasks: concat(lists, "upcomingTasks")
+    property var allTasks: concat(lists, "tasks")
     property int uncompletedCount: sum(lists, "uncompletedCount")
 
     property int nextDocId: 0

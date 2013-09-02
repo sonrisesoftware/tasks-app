@@ -97,14 +97,15 @@ MainView {
         }
 
         Component.onCompleted: {
-            pageStack.push(tabs)
             clearPageStack()
         }
     }
 
     function clearPageStack() {
-        while (pageStack.depth > 1)
+        while (pageStack.depth > 0)
             pageStack.pop()
+        pageStack.push(tabs)
+
         tabs.selectedTabIndex = 1
         tabs.selectedTabIndex = 0
 
@@ -188,6 +189,10 @@ MainView {
     }
 
     /* NAVIGATION */
+
+    function showStatistics(project) {
+        pageStack.push(Qt.resolvedUrl("ui/StatisticsPage.qml"), {project: project})
+    }
 
     function goToProject(project) {
         if (wideAspect) {
@@ -433,7 +438,13 @@ MainView {
         for (var i = 0; i < length(list); i++) {
             var item = get(list, i)
             //print("Adding:", item[prop])
-            value = value.concat(item[prop])
+            if (item[prop].hasOwnProperty("length")) {
+                value = value.concat(item[prop])
+            } else {
+                for (var j = 0; j < item[prop].count; j++) {
+                    value.push(get(item[prop], j))
+                }
+            }
         }
 
         //print("Concat:", prop, value, length(value))

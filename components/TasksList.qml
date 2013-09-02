@@ -90,7 +90,7 @@ Item {
 
             anchors.centerIn: parent
 
-            visible: length(model) === 0
+            visible: count(model, filter) === 0
             opacity: 0.5
 
             fontSize: "large"
