@@ -35,7 +35,8 @@ SingleValue {
           : project.name
 
     onClicked: {
-        goToProject(project)
+        if (!showArchived)
+            goToProject(project)
     }
 
     visible: project === null || showArchived === project.archived

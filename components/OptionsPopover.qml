@@ -71,9 +71,13 @@ Popover {
                 color: Theme.palette.normal.overlayText
             }
 
-            control: CheckBox {
-                checked: showArchivedProjects
-                onCheckedChanged: saveSetting("showArchivedProjects", checked ? "true" : "false")
+//            control: CheckBox {
+//                checked: showArchivedProjects
+//                onCheckedChanged: saveSetting("showArchivedProjects", checked ? "true" : "false")
+//            }
+
+            onClicked: {
+                pageStack.push(Qt.resolvedUrl("../ui/ProjectsPage.qml"), {showArchived: true, objectName: "archivedProjectsPage"})
             }
 
             visible: wideAspect
