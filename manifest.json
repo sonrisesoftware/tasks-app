@@ -1,18 +1,14 @@
 {
+    "description": "description of ubuntu-tasks",
     "framework": "ubuntu-sdk-13.10",
-    "maintainer": "Michael Spencer <spencers1993@gmail.com>",
-    "name": "com.ubuntu.developer.mdspencer.tasks",
-    "security": {
-        "profiles": {
-            "tasks-app": {
-                "policy_groups": [
-                    "networking"
-                ],
-                "policy_version": 1
-            }
+    "hooks": {
+        "ubuntu-tasks": {
+            "apparmor": "ubuntu-tasks.json",
+            "desktop": "ubuntu-tasks.desktop"
         }
     },
-    "title": "Tasks",
-    "icon": "ubuntu-tasks.svg",
-    "version": "0.1"
+    "maintainer": "Michael Spencer <sonrisesoftware@gmail.com>",
+    "name": "com.sonrisesoftware.ubuntu-tasks",
+    "title": "ubuntu-tasks",
+    "version": "0.2"
 }

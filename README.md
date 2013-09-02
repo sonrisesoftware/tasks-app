@@ -98,3 +98,11 @@ Day 17 - 8/23/2013
 Day 20 - 8/26/2013
  * Redesigned checklists
  * Continued work on Trello backend
+
+Day 27 - 9/2/2013
+ * Rewritten backend
+ * UI for Trello lists
+ * Read-only Trello backend
+ * Ability to create Trello projects
+
+**Released version 0.2**
