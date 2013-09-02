@@ -47,6 +47,8 @@ Popover {
                 color: Theme.palette.normal.overlayText
             }
 
+            //text: i18n.tr("Show Completed Tasks")
+
             control: CheckBox {
                 checked: showCompletedTasks
                 onCheckedChanged: saveSetting("showCompletedTasks", checked ? "true" : "false")

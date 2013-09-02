@@ -38,6 +38,8 @@ Page {
         return showArchived === project.archived
     }) > 0
 
+    property var currentProject: null
+
     Flickable {
         id: flickable
         anchors.fill: parent

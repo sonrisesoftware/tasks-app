@@ -34,7 +34,7 @@ Item {
     property bool editable: project.editable
     property var upcomingTasks: filter(tasks, function(task) {
         return task.upcoming
-    })
+    }, "Upcoming tasks")
     property int uncompletedCount: count(tasks, function(task) {
         return !task.completed
     })

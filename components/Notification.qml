@@ -38,8 +38,8 @@ UbuntuShape {
         notification.args = args
         label.text = text
         image.source = icon
-        showAnimation.restart()
-        timer.running = true
+//        showAnimation.restart()
+//        timer.running = true
     }
 
     Timer {

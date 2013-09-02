@@ -33,6 +33,8 @@ Page {
     property var currentList
     property var currentProject: currentList.project
 
+    property string type: "tasks"
+
     ValueSelector {
         id: listSelector
         anchors {

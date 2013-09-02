@@ -24,12 +24,12 @@ Object {
     function loadFromParent() {
         if (parent !== undefined && docId != "") {
             //print(parent)
-            print("Loading from parent:", docId, parent.docId)
+            //print("Loading from parent:", docId, parent.docId)
             if (parent.childrenDocs === undefined)
                 parent.childrenDocs = []
             parent.childrenDocs.push(root)
             if (!parent.children.hasOwnProperty(docId)) {
-                print("Creating child...")
+                //print("Creating child...")
                 parent.children[docId] = save()
             }
 
@@ -43,7 +43,7 @@ Object {
     }
 
     function lock(name, value) {
-        //print("Locking", name, "with value", value)
+        print("Locking", name, "with value", value)
         if (isLocked(name))
             locked.splice(locked.indexOf(name), 1)
         set(name, value)
@@ -71,7 +71,7 @@ Object {
 
     function set(name, value) {
         if (get(name) !== value && locked.indexOf(name) === -1) {
-            print("Setting", name, "to", value)
+            //print("Setting", name, "to", value)
             values[name] = value
 
             if (reload !== undefined)
@@ -83,14 +83,14 @@ Object {
         var json = values
 
         for (var i = 0; i < childrenDocs.length; i++) {
-            print("Found subdocument ", childrenDocs[i].docId, "for", docId)
+            //print("Found subdocument ", childrenDocs[i].docId, "for", docId)
             children[childrenDocs[i].docId] = childrenDocs[i].save()
         }
 
         if (listDocs().length > 0) {
             json.children = children
         }
-        print("Saving", docId, JSON.stringify(json))
+        //print("Saving", docId, JSON.stringify(json))
 
         return json
     }

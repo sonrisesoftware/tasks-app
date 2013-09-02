@@ -39,6 +39,26 @@ Page {
 
     property var currentProject: null
 
+    onCurrentProjectChanged: {
+        currentList = null
+
+        if (currentProject !== null) {
+            if (currentProject.lists.count > 0)
+                currentList = currentProject.lists.get(0).modelData
+        }
+    }
+
+    property var currentList: null
+
+    onCurrentListChanged: {
+        if (currentList !== null && currentList.tasks.count > 0)
+            currentTask = currentList.tasks.get(0).modelData
+    }
+
+    property var currentTask: null
+
+    property bool showArchived: false
+
     property bool supportsLists: currentProject !== null && currentProject.supportsLists
 
     Sidebar {
@@ -103,14 +123,54 @@ Page {
             visible: upcoming
         }
 
-        TasksList {
-            id: list
-
+        Item {
             anchors.fill: parent
+
             visible: !upcoming
 
-            showAddBar: false
-            project: currentProject
+            ValueSelector {
+                id: listSelector
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: parent.top
+                }
+
+                Rectangle {
+                    anchors.fill: parent
+                    color: Qt.rgba(0.2,0.2,0.2,0.2)
+                }
+
+                text: i18n.tr("List")
+                values: {
+                    var list = subList(currentProject === null ? [] : currentProject.lists, "name")
+                    list.push(i18n.tr("<i>New List...</i>"))
+                    return list
+                }
+                visible: currentProject && currentProject.supportsLists
+
+                onSelectedIndexChanged: {
+                    if (selectedIndex === values.length - 1) {
+                        print("NEW LIST...")
+                    } else {
+                        currentList = currentProject.lists.get(selectedIndex).modelData
+                    }
+                }
+            }
+
+            TasksList {
+                id: list
+
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: listSelector.visible ? listSelector.bottom : parent.top
+                    bottom: parent.bottom
+                }
+
+                showAddBar: false
+                list: currentList
+            }
         }
     }
 

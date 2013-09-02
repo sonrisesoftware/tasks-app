@@ -28,7 +28,6 @@ import "../ui"
 Item {
     id: root
 
-    property int count: length(upcomingTasks)
     property var model: upcomingTasks
 
     Flickable {
@@ -48,7 +47,9 @@ Item {
 
             Header {
                 text: i18n.tr("Overdue")
-                visible: overdue.count > 0
+                visible: count(root.model, function(task) {
+                    return task.overdue
+                }) > 0
             }
 
             Repeater {
@@ -64,7 +65,9 @@ Item {
 
             Header {
                 text: i18n.tr("Today")
-                visible: today.count > 0
+                visible: count(root.model, function(task) {
+                    return task.isDueToday()
+                }) > 0
             }
 
             Repeater {
@@ -80,7 +83,9 @@ Item {
 
             Header {
                 text: i18n.tr("Tomorrow")
-                visible: today.count > 0
+                visible: count(root.model, function(task) {
+                    return task.isDueTomorrow()
+                }) > 0
             }
 
             Repeater {
@@ -96,7 +101,9 @@ Item {
 
             Header {
                 text: i18n.tr("This Week")
-                visible: week.count > 0
+                visible: count(root.model, function(task) {
+                    return !task.overdue && !task.isDueToday() && !task.isDueTomorrow() && task.isDueThisWeek()
+                }) > 0
             }
 
             Repeater {
@@ -118,10 +125,12 @@ Item {
 
     Label {
         anchors.centerIn: parent
-        visible: count === 0
+        visible: length(upcomingTasks) === 0
 
         fontSize: "large"
         text: i18n.tr("No upcoming tasks")
+        horizontalAlignment: Text.AlignRight
+
         opacity: 0.5
     }
 }

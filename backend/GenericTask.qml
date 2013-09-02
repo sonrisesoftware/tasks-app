@@ -62,7 +62,7 @@ Item {
                                         // when loading changes from the remote or local backend
 
     function fieldChanged(name, value) {
-        print("FIELD CHANGED", name, "TO", value, updating)
+        //print("FIELD CHANGED", name, "TO", value, updating)
         if (!updating)
             document.set(name, value)
     }
@@ -203,6 +203,15 @@ Item {
         return dueDate.getFullYear() === today.getFullYear() &&
                 dueDate.getMonth() === today.getMonth() &&
                 dueDate.getDate() === today.getDate()
+    }
+
+    function isDueTomorrow() {
+        var tomorrow = new Date()
+        tomorrow.setDate(tomorrow.getDate() + 1)
+
+        return dueDate.getFullYear() === tomorrow.getFullYear() &&
+                dueDate.getMonth() === tomorrow.getMonth() &&
+                dueDate.getDate() === tomorrow.getDate()
     }
 
     function isDueThisWeek() {

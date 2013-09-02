@@ -49,10 +49,10 @@ MainView {
 
     anchorToKeyboard: true
     
-    width: units.gu(50)
+    width: units.gu(100)
     height: units.gu(75)
 
-    property bool wideAspect: false//width > units.gu(80)
+    property bool wideAspect: width > units.gu(80)
 
     // Colors from Calculator app
     headerColor: "#323A5D"
@@ -68,21 +68,22 @@ MainView {
             id: tabs
 
             //FIXME: Needs to be disabled for Autopilot tests
-            HideableTab {
+            Tab {
+                objectName: "homeTab"
+
                 title: page.title
-                page: UpcomingPage {
-                    id: upcomingPage
+                page: HomePage {
+                    id: homePage
                 }
-                show: length(upcomingTasks) > 0
             }
 
-            Tab {
-                objectName: "projectsTab"
-
+            HideableTab {
                 title: page.title
                 page: ProjectsPage {
                     id: projectsPage
                 }
+
+                show: !wideAspect
             }
 
             Tab {
@@ -102,13 +103,44 @@ MainView {
         id: notification
     }
 
+    property var showToolbar: wideAspect ? true : undefined
+
+    states: [
+        State {
+            when: showToolbar && root.toolbar.locked && root.toolbar.opened
+
+            PropertyChanges {
+                target: homePage.parent
+                anchors.bottomMargin: -root.toolbar.triggerSize
+            }
+        }
+    ]
+
+    property Page currentPage: pageStack.currentPage.hasOwnProperty("currentPage")
+                               ? pageStack.currentPage.currentPage
+                               : pageStack.currentPage
+
+    property var viewing: currentPage.hasOwnProperty("type") ? currentPage.type : "unknown"
+
+    property var currentProject: currentPage && currentPage.hasOwnProperty("currentProject") ? currentPage.currentProject : null
+    property var currentList: currentPage && currentPage.hasOwnProperty("currentList") ? currentPage.currentList : null
+    property var currentTask: currentPage && currentPage.hasOwnProperty("task") ? currentPage.task : null
+
+    onWideAspectChanged: {
+        print("TODO: Change wide aspect mode!")
+    }
+
     /* NAVIGATION */
 
     function goToProject(project) {
-        if (project.supportsLists) {
-            pageStack.push(Qt.resolvedUrl("ui/ListsPage.qml"), {currentProject: project})
+        if (wideAspect) {
+            homePage.currentProject = project
         } else {
-            pageStack.push(Qt.resolvedUrl("ui/TasksPage.qml"), {currentList: project.lists.get(0).modelData})
+            if (project.supportsLists) {
+                pageStack.push(Qt.resolvedUrl("ui/ListsPage.qml"), {currentProject: project})
+            } else {
+                pageStack.push(Qt.resolvedUrl("ui/TasksPage.qml"), {currentList: project.lists.get(0).modelData})
+            }
         }
     }
 
@@ -131,6 +163,10 @@ MainView {
     ]
 
     property var upcomingTasks: concat(backendModels, "upcomingTasks")
+
+    onUpcomingTasksChanged: {
+        //print("Upcoming tasks:", length(upcomingTasks))
+    }
 
     /* SETTINGS */
 
@@ -211,7 +247,7 @@ MainView {
     function saveProjects() {
         for (var i = 0; i < backendModels.length; i++) {
             var json = backendModels[i].save()
-            print(JSON.stringify(json))
+            //print(JSON.stringify(json))
             saveSetting("backend-" + backendModels[i].databaseName, json)
         }
     }
@@ -286,6 +322,8 @@ MainView {
                 list.push(task)
         }
 
+        //print("Filtered list:", list)
+
         return list
     }
 
@@ -336,7 +374,8 @@ MainView {
 
         for (var i = 0; i < length(list); i++) {
             var item = get(list, i)
-            value.concat(item[prop])
+            //print("Adding:", item[prop])
+            value = value.concat(item[prop])
         }
 
         //print("Concat:", prop, value, length(value))
@@ -356,7 +395,10 @@ MainView {
     }
 
     function length(model) {
-        return model.hasOwnProperty("count") ? model.count : model.length
+        if (model === undefined || model === null)
+            return 0
+        else
+            return model.hasOwnProperty("count") ? model.count : model.length
     }
 
     function newProject() {

@@ -30,6 +30,8 @@ Page {
 
     title: i18n.tr("Upcoming")
 
+    property string type: "upcoming"
+
     UpcomingTasksList {
         id: list
 

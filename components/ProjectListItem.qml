@@ -38,7 +38,9 @@ SingleValue {
         goToProject(project)
     }
 
-    visible: showArchived === project.archived
+    visible: project === null || showArchived === project.archived
+
+    selected: currentProject === project
 
     onPressAndHold: {
         print("PRESS AND HOLD!")
@@ -48,7 +50,7 @@ SingleValue {
                             })
     }
 
-    property int count: project === null ? 0 : project.uncompletedCount
+    property int count: project === null ? length(upcomingTasks) : project.uncompletedCount
 
     value: count === 0 ? "" : count
 }
