@@ -154,4 +154,8 @@ Item {
                 tasks.remove(i)
         }
     }
+
+    function remove() {
+        project.removeList(list)
+    }
 }

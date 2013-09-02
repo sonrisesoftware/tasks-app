@@ -63,13 +63,13 @@ GenericBackend {
     }
 
     function load(json) {
-        loadU1db(json)
-
         token = getSetting("trelloToken", "")
         print("Trello token:", token, trelloIntegration)
 
-        if (token != "" && trelloIntegration)
+        if (token != "" && trelloIntegration) {
+            loadU1db(json)
             authorized()
+        }
     }
 
     function authorized() {
@@ -94,7 +94,7 @@ GenericBackend {
             if (board === undefined) {
                 board = internal_newProject()
                 board.loadTrello(json[i])
-                //board.refresh(json[i])
+                board.refresh()
             } else {
                 board.loadTrello(json[i])
             }
@@ -114,6 +114,18 @@ GenericBackend {
             if (!found)
                 project.remove()
         }
+    }
+
+    // For loading a project from U1db
+    function loadProjectU1db(docId) {
+        print("TRELLO LOAD!")
+        var project = createProject({
+                                        docId: docId
+                                    })
+        internal_addProject(project)
+        project.loadU1db()
+        project.refresh()
+        return project
     }
 
     projectComponent: Component {
@@ -148,6 +160,9 @@ GenericBackend {
 
     function request(path, call, options, callback, args) {
         var address = "https://trello.com/1" + path + "?key=" + key + "&token=" + token
+        print(token)
+        if (token === "")
+            Qt.quit()
         if (options.length > 0)
             address += "&" + options.join("&").replace(" ", "+")
 
@@ -158,7 +173,7 @@ GenericBackend {
             if (doc.readyState === XMLHttpRequest.DONE) {
                 loading--
                 print(call, path, options.join("&").replace(" ", "+"))
-                print(doc.responseText)
+                print("Response:", doc.responseText)
                 if (callback !== undefined)
                     callback(doc.responseText, args)
             }

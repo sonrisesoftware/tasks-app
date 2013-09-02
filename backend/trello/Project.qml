@@ -21,7 +21,6 @@
  ***************************************************************************/
 import QtQuick 2.0
 import U1db 1.0 as U1db
-import "Trello.js" as Trello
 import ".."
 
 GenericProject {
@@ -36,6 +35,13 @@ GenericProject {
         if (!updating)
             document.set("boardID", boardID)
     }
+
+//    function fieldChanged(name, value) {
+//        if (!updating) {
+//            document.lock(name, value)
+
+//        }
+//    }
 
     /* To be called after the document changes,
        either after loading from U1db or after loading from a remote model */
@@ -58,39 +64,34 @@ GenericProject {
         archived = json.closed
     }
 
-    function refresh(json) {
-        var tasks = json.tasks
-        if (tasks === undefined)
-            tasks = []
+    function refresh() {
+        get("/boards/" + boardID + "/lists", [], loadLists)
+    }
 
-        for (var i = 0; i < tasks.length; i++) {
-            var task = newTask()
-            task.load(tasks[i])
-            task.refresh()
+    function internal_newList() {
+        if (!supportsLists) {
+            console.log("FATAL: Creating lists is unsupported for", backend.name)
+            Qt.quit()
         }
-
-        var lists = json.lists
-        if (lists === undefined)
-            lists = []
-
-        for (var j = 0; j < lists.length; j++) {
-            var list = newList()
-            list.load(lists[j])
-        }
-
-        Trello.get("/boards/" + boardID + "/cards", [], loadCards)
-
-        Trello.get("/boards/" + boardID + "/lists", [], loadLists)
+        //print("Adding new list...")
+        var list = createList({
+                          docId: nextDocId++
+                      })
+        internal_addList(list)
+        list.loadU1db()
+        return list
     }
 
     function loadLists(response) {
+        print("Loading lists...")
         var json = JSON.parse(response)
 
         for (var i = 0; i < json.length; i++) {
             var list = getList(json[i].id)
             if (list === undefined) {
-                list = newList()
+                list = internal_newList()
                 list.loadTrello(json[i])
+                list.refresh()
             } else {
                 list.loadTrello(json[i])
             }
@@ -98,15 +99,18 @@ GenericProject {
 
         for (var k = 0; k < lists.count; k++) {
             var found = false
+            var list = lists.get(k).modelData
+            if (list.locked) return
+
             for (var j = 0; j < json.length; j++) {
-                if (lists.get(k).modelData.index === json[j].id) {
+                if (list.index === json[j].id) {
                     found = true
                     break
                 }
             }
 
             if (!found)
-                lists.remove(k)
+                list.remove()
         }
     }
 
@@ -117,58 +121,9 @@ GenericProject {
         }
     }
 
-    function loadCards(response) {
-        var json = JSON.parse(response)
-
-        for (var i = 0; i < json.length; i++) {
-            var task = getCard(json[i].id)
-            if (task === undefined) {
-                task = newTask()
-                task.loadTrello(json[i])
-                task.refresh()
-            } else {
-                task.loadTrello(json[i])
-            }
-        }
-
-        for (var k = 0; k < tasks.count; k++) {
-            var found = false
-            for (var j = 0; j < json.length; j++) {
-                if (tasks.get(k).modelData.index === json[j].id) {
-                    found = true
-                    break
-                }
-            }
-
-            if (!found)
-                tasks.remove(k)
-        }
-    }
-
-    function getCard(cardID) {
-        for (var i = 0; i < tasks.count; i++) {
-            if (tasks.get(i).modelData.index === cardID)
-                return tasks.get(i).modelData
-        }
-    }
-
-    function save() {
-        var json = {}
-        json.name = name
-        json.id = boardID
-        json.closed =archived
-        json.tasks = []
-
-        for (var i = 0; i < tasks.count; i++) {
-            json.tasks.push(tasks.get(i).modelData.save())
-        }
-
-        return json
-    }
-
     listComponent: Component {
 
-        GenericList {
+        List {
 
         }
     }

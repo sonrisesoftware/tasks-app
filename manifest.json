@@ -13,5 +13,6 @@
         }
     },
     "title": "Tasks",
+    "icon": "ubuntu-tasks.svg",
     "version": "0.1"
 }

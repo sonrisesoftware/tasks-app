@@ -122,6 +122,7 @@ Item {
                       })
         list.name = name
         internal_addList(list)
+        list.loadU1db()
         return list
     }
 
