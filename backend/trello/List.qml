@@ -52,12 +52,60 @@ GenericList {
     }
 
     function refresh() {
+        get("/lists/" + listID + "/cards", [], loadTasks)
+    }
 
+    function loadTasks(response) {
+        var json = JSON.parse(response)
+
+        for (var i = 0; i < json.length; i++) {
+            var task = getTask(json[i].id)
+            if (task === undefined) {
+                task = internal_newTask()
+                task.loadTrello(json[i])
+                task.refresh()
+            } else {
+                task.loadTrello(json[i])
+            }
+        }
+
+        for (var k = 0; k < tasks.count; k++) {
+            var found = false
+            var task = tasks.get(k).modelData
+            if (task.locked) return
+
+            for (var j = 0; j < json.length; j++) {
+                if (task.taskID === json[j].id) {
+                    found = true
+                    break
+                }
+            }
+
+            if (!found)
+                task.remove()
+        }
+    }
+
+    function getTask(taskID) {
+        for (var i = 0; i < tasks.count; i++) {
+            if (tasks.get(i).modelData.taskID === taskID)
+                return tasks.get(i).modelData
+        }
+    }
+
+    function internal_newTask() {
+        //print("Adding new task...")
+        var task = createTask({
+                          docId: nextDocId++
+                      })
+        internal_addTask(task)
+        task.loadU1db()
+        return task
     }
 
     taskComponent: Component {
 
-        GenericTask {
+        Task {
 
         }
     }

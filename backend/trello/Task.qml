@@ -21,7 +21,6 @@
  ***************************************************************************/
 import QtQuick 2.0
 import ".."
-import "Trello.js" as Trello
 
 GenericTask {
     id: task
@@ -29,17 +28,34 @@ GenericTask {
     editable: false
 
     property string checklistID: ""
-    property string listID: ""
+    property string taskID
 
-    property var list: project.getList(listID)
+    onTaskIDChanged: {
+        if (!updating)
+            document.set("taskID", taskID)
+    }
 
-    onListChanged: {
-        if (list !== undefined && list.name === "Done")
-            completed = true
+    function reloadFields() {
+        updating = true
+
+        name = document.get("name", "")
+        description = document.get("description", "")
+        creationDate = document.get("creationDate", new Date())
+        dueDate = document.get("dueDate", new Date(""))
+        repeat = document.get("repeat", "never")
+        completed = document.get("completed", false)
+        completionDate = document.get("completionDate", new Date(""))
+        priority = document.get("priority", "low")
+        tags = document.get("tags", [])
+        checklist.load(document.get("checklist", {}))
+
+        taskID = document.get("taskID", "")
+
+        updating = false
     }
 
     function loadTrello(json) {
-        index = json.id
+        taskID = json.id
         name = json.name
         completed = json.closed
         listID = json.idList
@@ -48,9 +64,6 @@ GenericTask {
         else
             checklistID = ""
         description = json.badges.description ? json.desc : ""
-
-        if (name === "Create PPA")
-            Trello.put("/cards/" + index + "/actions/comments", ["text=Hello from jsfiddle.net!"])
     }
 
     function refresh() {
@@ -59,7 +72,7 @@ GenericTask {
 
     onChecklistIDChanged: {
         if (checklistID !== "") {
-            Trello.call("/checklists/" + checklistID, [], loadChecklist)
+            get("/checklists/" + checklistID, [], loadChecklist)
         }
     }
 
@@ -71,15 +84,5 @@ GenericTask {
         for (var i = 0; i < items.length; i++) {
             checklist.add(items[i].name, items[i].state === "complete")
         }
-    }
-
-    function remove() {
-        project.removeTask(task)
-    }
-
-    function moveTo(project) {
-        task.project.removeTask(task)
-        task.project = project
-        project.addTask(task)
     }
 }

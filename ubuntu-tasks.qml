@@ -198,7 +198,7 @@ MainView {
         if (wideAspect) {
             homePage.currentProject = project
         } else {
-            pageStack.push(Qt.resolvedUrl("ui/TasksPage.qml"), {currentList: project.lists.get(0).modelData})
+            pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: project})
         }
     }
 
@@ -207,7 +207,7 @@ MainView {
             homePage.currentProject = list.project
             homePage.currentList = list
         } else {
-            pageStack.push(Qt.resolvedUrl("ui/TasksPage.qml"), {currentList: list})
+            pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: list.project, currentList: list})
         }
     }
 

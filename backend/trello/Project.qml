@@ -82,6 +82,18 @@ GenericProject {
         return list
     }
 
+    // For loading a project from U1db
+    function loadListU1db(docId) {
+        print("TRELLO LOAD!")
+        var list = createList({
+                                        docId: docId
+                                    })
+        internal_addList(list)
+        list.loadU1db()
+        list.refresh()
+        return list
+    }
+
     function loadLists(response) {
         print("Loading lists...")
         var json = JSON.parse(response)
