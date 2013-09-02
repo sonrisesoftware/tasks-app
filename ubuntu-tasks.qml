@@ -316,7 +316,7 @@ MainView {
         for (var i = 0; i < backendModels.length; i++) {
             var json = backendModels[i].save()
             //print(JSON.stringify(json))
-            saveSetting("backend-" + backendModels[i].databaseName, json)
+            saveSetting("backend-" + backendModels[i].databaseName, JSON.stringify(json))
         }
     }
 
@@ -332,7 +332,7 @@ MainView {
         reloadSettings()
 
         for (var i = 0; i < backendModels.length; i++) {
-            var json = getSetting("backend-" + backendModels[i].databaseName, {})
+            var json = JSON.parse(getSetting("backend-" + backendModels[i].databaseName, "{}"))
             backendModels[i].load(json)
         }
 
