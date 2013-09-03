@@ -77,7 +77,7 @@ Page {
             iconSource: icon("add")
 
             onTriggered: {
-                list.addTask(taskItem.task)
+                list.internal_addTask(taskItem.task)
                 pageStack.pop()
             }
         }
