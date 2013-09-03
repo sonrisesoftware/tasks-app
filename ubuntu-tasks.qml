@@ -497,7 +497,7 @@ MainView {
     }
 
     function newProject(caller) {
-        if (backendModels.length > 1)
+        if (count(backendModels, function(backend) { return backend.enabled }) > 1)
             PopupUtils.open(newProjectPopover, caller)
         else
             PopupUtils.open(newProjectDialog, root, {
@@ -584,7 +584,7 @@ MainView {
                 Repeater {
                     model: backendModels
                     delegate: ListItem.Standard {
-                        //visible: modelData.editable
+                        visible: modelData.enabled // && modelData.editable
 
                         //FIXME: Hack because of Suru theme!
                         Label {
