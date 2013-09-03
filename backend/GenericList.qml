@@ -150,7 +150,7 @@ Item {
         //print("Removing task...")
         document.remove(task.docId)
         for (var i = 0; i < tasks.count; i++) {
-            if (tasks.get(i).modelData === project)
+            if (tasks.get(i).modelData === task)
                 tasks.remove(i)
         }
     }
