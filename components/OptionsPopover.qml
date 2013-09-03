@@ -55,9 +55,12 @@ Popover {
             }
 
             visible: currentProject !== null
+
+            showDivider: showArchivedProjectsAction.visible || refreshTrelloAction.visible
         }
 
         Standard {
+            id: showArchivedProjectsAction
             //FIXME: Hack because of Suru theme!
             Label {
                 anchors {
@@ -71,16 +74,35 @@ Popover {
                 color: Theme.palette.normal.overlayText
             }
 
-//            control: CheckBox {
-//                checked: showArchivedProjects
-//                onCheckedChanged: saveSetting("showArchivedProjects", checked ? "true" : "false")
-//            }
-
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("../ui/ProjectsPage.qml"), {showArchived: true, objectName: "archivedProjectsPage"})
             }
 
             visible: wideAspect
+
+            showDivider: refreshTrelloAction.visible
+        }
+
+        Standard {
+            id: refreshTrelloAction
+            //FIXME: Hack because of Suru theme!
+            Label {
+                anchors {
+                    verticalCenter: parent.verticalCenter
+                    left: parent.left
+                    margins: units.gu(2)
+                }
+
+                text: i18n.tr("Refresh Trello boards")
+                fontSize: "medium"
+                color: Theme.palette.normal.overlayText
+            }
+
+            onClicked: {
+                trello.load()
+            }
+
+            visible: (wideAspect || currentProject === null || currentProject.backend === trello) && trelloIntegration
 
             showDivider: false
         }
