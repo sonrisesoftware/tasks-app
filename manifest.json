@@ -1,5 +1,5 @@
 {
-    "description": "Your tasks, every device, everywhere. Create and synchronize tasks using Ubuntu One, and connect to your boards in Trello.s",
+    "description": "Your tasks, every device, everywhere. Create and synchronize tasks using Ubuntu One, and connect to your boards in Trello.",
     "framework": "ubuntu-sdk-13.10",
     "hooks": {
         "ubuntu-tasks": {

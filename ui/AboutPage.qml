@@ -23,63 +23,20 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
-import "../components"
-import "../backend/trello" as Trello
 
 Page {
     id: root
 
-    title: i18n.tr("Settings")
+    title: i18n.tr("About")
 
-    property string type: "settings"
-
-    Flickable {
-        id: flickable
+    Label {
         anchors.fill: parent
+        anchors.margins: units.gu(2)
 
-        // FIXME: REALLY uggly hack (no idea why)
-        anchors.topMargin: -1
-        topMargin: 1
+        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 
-        contentHeight: column.height
-        contentWidth: width
-        //clip: true
-
-        Column {
-            id: column
-            width: parent.width
-
-            Standard {
-                text: i18n.tr("Connect to Trello")
-
-                control: Switch {
-                    checked: trelloIntegration
-                    onCheckedChanged: {
-                        saveSetting("trelloIntegration", checked ? "true" : "false")
-                        checked = Qt.binding(function() { return trelloIntegration })
-                        if (trelloIntegration && getSetting("trelloToken", "") === "")
-                            PopupUtils.open(trelloAuthentication, root)
-                    }
-                }
-            }
-
-            Standard {
-                text: i18n.tr("About Ubuntu Tasks")
-                onClicked: pageStack.push(Qt.resolvedUrl("AboutPage.qml"))
-            }
-        }
-    }
-
-    Scrollbar {
-        flickableItem: flickable
-    }
-
-    Component {
-        id: trelloAuthentication
-
-        Trello.TrelloAuthenticationDialog {
-            onAccepted: trello.load({})
-            onRejected: trelloIntegration = false
-        }
+        text: i18n.tr("Your tasks, every device, everywhere.\n" +
+                      "\n" +
+                      "Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>")
     }
 }
