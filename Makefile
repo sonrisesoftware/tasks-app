@@ -18,7 +18,7 @@ check:
 	qmltestrunner -input tests/unit
 
 run:
-	/usr/bin/qmlscene $@ tasks-app.qml
+	/usr/bin/qmlscene $@ ubuntu-tasks.qml
 
 icon:
 	inkscape --export-png=icons/$(ICON).png --export-dpi=32 --export-background-opacity=0 --without-gui /usr/share/icons/ubuntu-mobile/actions/scalable/$(ICON).svg

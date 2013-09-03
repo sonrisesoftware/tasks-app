@@ -41,9 +41,8 @@ Page {
 
     TaskItem {
         id: taskItem
-        visible: task !== null
+        //visible: task !== null
         task: root.task
-        page: root
         anchors.fill: parent
     }
 

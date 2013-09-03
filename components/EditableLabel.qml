@@ -74,9 +74,10 @@ Item {
     property bool customClicking: false
 
     function edit() {
-        if (editable)
+        if (editable) {
             editing = true
             textField.forceActiveFocus()
+        }
     }
 
     function done() {

@@ -44,7 +44,6 @@ Page {
         task: root.task
         anchors.fill: parent
 
-        editing: true
         creating: true
     }
 

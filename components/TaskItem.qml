@@ -31,9 +31,7 @@ Item {
 
     property var task
 
-    property bool editing: false
     property bool creating: false
-    property var page
 
     property var flickable: flickable
 
@@ -57,14 +55,7 @@ Item {
             width: flickable.width
 
             Item {
-//                height: textDivider.visible
-//                        ? headerItem.height + descriptionTextArea.height + units.gu(6)
-//                        : root.height
                 height: headerItem.height + descriptionTextArea.height + units.gu(6)
-
-//                Behavior on height {
-//                    UbuntuNumberAnimation {}
-//                }
 
                 width: parent.width
 
@@ -111,7 +102,7 @@ Item {
                         text: task.name
                         editable: task.editable
                         placeholderText: i18n.tr("Title")
-                        parentEditing: taskItem.editing
+                        parentEditing: creating
 
                         onDoneEditing: {
                             task.name = text
