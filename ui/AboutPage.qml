@@ -29,14 +29,81 @@ Page {
 
     title: i18n.tr("About")
 
-    Label {
-        anchors.fill: parent
-        anchors.margins: units.gu(2)
+    property string type: "about"
 
-        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+    Column {
+        anchors {
+            centerIn: parent
+            margins: units.gu(3)
+            topMargin: units.gu(8)
+        }
 
-        text: i18n.tr("Your tasks, every device, everywhere.\n" +
-                      "\n" +
-                      "Copyright (C) 2013 Michael Spencer <sonrisesoftware@gmail.com>")
+        spacing: units.gu(3)
+
+        UbuntuShape {
+            image: Image {
+                source: "../ubuntu-tasks-128.png"
+            }
+
+            width: 128
+            height: width
+            radius: "medium"
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        Grid {
+            anchors.horizontalCenter: parent.horizontalCenter
+            columns: 2
+            spacing: units.gu(1)
+
+            Label {
+                text: i18n.tr("Author:          ")
+            }
+
+            Label {
+                font.bold: true
+                text: "Michael Spencer"
+            }
+
+            Label {
+                text: i18n.tr("Icon:")
+            }
+
+            Label {
+                font.bold: true
+                text: "Lucas Romero Di Benedetto"
+            }
+
+            Label {
+                text: i18n.tr("Contact:")
+            }
+
+            Label {
+                font.bold: true
+                text: "sonrisesoftware@gmail.com"
+            }
+        }
+
+        Label {
+            text: i18n.tr("<a href=\"https://github.com/iBeliever/tasks-app/issues/\">Report a Bug</a>")
+            anchors.horizontalCenter: parent.horizontalCenter
+            onLinkActivated: Qt.openUrlExternally(link)
+        }
+
+        Label {
+            text: "<a href=\"https://github.com/iBeliever/tasks-app/\">https://github.com/iBeliever/tasks-app/</a>"
+            anchors.horizontalCenter: parent.horizontalCenter
+            onLinkActivated: Qt.openUrlExternally(link)
+        }
+
+        Label {
+            text: i18n.tr("Version <b>%1</b>").arg("0.2.2")
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        Label {
+            text: i18n.tr("Copyright (C) 2013 Michael Spencer")
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
     }
 }

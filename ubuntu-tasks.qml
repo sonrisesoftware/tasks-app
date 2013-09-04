@@ -160,6 +160,11 @@ MainView {
                 homePage.currentProject = currentTask.project
                 homePage.currentList = currentTask.list
                 goToTask(currentTask)
+            } else if (viewing === "settings") {
+                tabs.selectedTabIndex = 2
+            } else if (viewing === "about") {
+                tabs.selectedTabIndex = 2
+                pageStack.push(Qt.resolvedUrl("ui/AboutPage.qml"))
             }
         } else {
             if (viewing === "project") {
@@ -174,6 +179,11 @@ MainView {
                tabs.selectedTabIndex = 1
                 goToList(currentTask.list)
                 goToTask(currentTask)
+            } else if (viewing === "settings") {
+                tabs.selectedTabIndex = 2
+            } else if (viewing === "about") {
+                tabs.selectedTabIndex = 2
+                pageStack.push(Qt.resolvedUrl("ui/AboutPage.qml"))
             }
         }
     }

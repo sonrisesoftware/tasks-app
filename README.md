@@ -106,3 +106,11 @@ Day 27 - 9/2/2013
  * Ability to create Trello projects
 
 **Released version 0.2**
+
+Day 28 - 9/3/2013
+ * Worked on fixing various bugs
+ * Improved the About page
+
+
+Day 29 - 9/4/2013
+ * Worked on fixing various bugs
