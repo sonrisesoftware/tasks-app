@@ -72,6 +72,14 @@ Page {
 
     tools: ToolbarItems {
         ToolbarButton {
+            id: moveButton
+            text: i18n.tr("Move")
+            enabled: task.editable
+            iconSource: icon("location")
+            onTriggered: PopupUtils.open(projectsPopover, moveButton, {task: task})
+        }
+
+        ToolbarButton {
             text: i18n.tr("Delete")
             enabled: task.editable
             iconSource: icon("delete")
