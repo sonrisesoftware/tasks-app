@@ -128,6 +128,7 @@ Item {
 
     property var document: Document {
         id: document
+        name: "Task"
         docId: task.docId
         parent: list.document
     }
@@ -223,12 +224,32 @@ Item {
     }
 
     function remove() {
-        // Do something...
         list.removeTask(task)
+        docId = ""
     }
 
-    function moveTo(project) {
-        // TODO: Do something...
+    function canMoveToProject(project) {
+        return project.editable && project.lists.count > 0
+    }
+
+    function moveToProject(project) {
+        if (project === task.project) return
+
+        remove()
+        print(JSON.stringify(database.save()))
+        project.lists.get(0).modelData.internal_addTask(task)
+        print(JSON.stringify(database.save()))
+    }
+
+    function canMoveToList(list) {
+        return list.editable
+    }
+
+    function moveToList(list) {
+        if (list === task.list) return
+
+        remove()
+        list.internal_addTask(task)
     }
 }
 

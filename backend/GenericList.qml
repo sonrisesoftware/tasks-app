@@ -74,6 +74,7 @@ Item {
 
     property var document: Document {
         id: document
+        name: "List"
         parent: project.document
         docId: list.docId
     }
@@ -120,7 +121,7 @@ Item {
 
         args.list = list
 
-        var task = taskComponent.createObject(project, args)
+        var task = taskComponent.createObject(list, args)
 
         if (task === null) {
             console.log("Unable to create:", newName)
@@ -131,6 +132,8 @@ Item {
 
     // This adds a task to the model
     function internal_addTask(task) {
+        if (task.list !== list)
+            task.list = list
         if (task.docId === "")
             task.docId = nextDocId++
         tasks.append({modelData: task})
@@ -147,7 +150,7 @@ Item {
 
     // This removes a task from the model
     function internal_removeTask(task) {
-        //print("Removing task...")
+        print("Removing task...")
         document.remove(task.docId)
         for (var i = 0; i < tasks.count; i++) {
             if (tasks.get(i).modelData === task)
@@ -157,5 +160,6 @@ Item {
 
     function remove() {
         project.removeList(list)
+        docId = ""
     }
 }

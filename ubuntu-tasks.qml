@@ -700,17 +700,17 @@ MainView {
             property var task
 
             actions: ActionList {
-//                Action {
-//                    id: moveAction
+                Action {
+                    id: moveAction
 
-//                    text: i18n.tr("Move")
-//                    enabled: task.editable
-//                    onTriggered: {
-//                        PopupUtils.open(projectsPopover, caller, {
-//                                            task: task
-//                                        })
-//                    }
-//                }
+                    text: i18n.tr("Move")
+                    enabled: task.editable
+                    onTriggered: {
+                        PopupUtils.open(projectsPopover, caller, {
+                                            task: task
+                                        })
+                    }
+                }
 
                 Action {
                     id: deleteAction
@@ -721,5 +721,11 @@ MainView {
                 }
             }
         }
+    }
+
+    Component {
+        id: projectsPopover
+
+        ProjectsPopover {}
     }
 }

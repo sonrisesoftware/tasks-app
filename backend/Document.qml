@@ -5,6 +5,7 @@ import U1db 1.0 as U1db
 Object {
     id: root
 
+    property string name
     property string docId: ""
     property var reload
     property var locked: []
@@ -22,18 +23,27 @@ Object {
     onDocIdChanged: loadFromParent()
 
     function loadFromParent() {
-        if (parent !== undefined && docId != "") {
-            //print(parent)
-            //print("Loading from parent:", docId, parent.docId)
+        //print("Loading from parent:", root, name, docId)
+        if (parent !== undefined && docId !== "") {
+            //print("  Parent", parent.name, parent.docId)
             if (parent.childrenDocs === undefined)
                 parent.childrenDocs = []
-            parent.childrenDocs.push(root)
-            if (!parent.children.hasOwnProperty(docId)) {
-                //print("Creating child...")
-                parent.children[docId] = save()
+
+            var found = false
+            for (var i = 0; i < parent.childrenDocs.length; i++) {
+                if (parent.childrenDocs[i] === root) found = true
             }
 
-            load(parent.children[docId])
+            if (found) {
+                console.log("FATAL: Document already exists!")
+                Qt.quit()
+            } else {
+                parent.childrenDocs.push(root)
+            }
+
+            if (parent.children.hasOwnProperty(docId)) {
+                load(parent.children[docId])
+            }
         }
     }
 
@@ -83,6 +93,7 @@ Object {
         var json = values
 
         if (childrenDocs != undefined) {
+            //print("Sub documents:", childrenDocs)
             for (var i = 0; i < childrenDocs.length; i++) {
                 //print("Found subdocument", childrenDocs[i].docId, "for", docId)
                 children[childrenDocs[i].docId] = childrenDocs[i].save()
@@ -128,14 +139,17 @@ Object {
     }
 
     function remove(docId) {
-        //print("Removing", docId)
+        //print("Removing docId:", docId)
         if (children.hasOwnProperty(docId)) {
+            //print("Deleting child item")
             delete children[docId]
         }
 
         for (var i = 0; i < childrenDocs.length; i++) {
-            if (childrenDocs[i].docId === docId)
+            if (childrenDocs[i].docId === docId) {
+                //print("Found subdoc, removing...")
                 childrenDocs.splice(i, 1)
+            }
         }
     }
 

@@ -78,6 +78,7 @@ Item {
 
     property var document: Document {
         id: document
+        name: "Project"
         parent: backend.database
         docId: project.docId
     }
@@ -154,6 +155,10 @@ Item {
 
     // This adds a list to the model
     function internal_addList(list) {
+        if (list.project !== project)
+            list.project = project
+        if (list.docId === "")
+            list.docId = nextDocId++
         //print("ADDING LIST", list.name, "to", name)
         lists.append({modelData: list})
     }
@@ -179,6 +184,7 @@ Item {
     /* DELETION OF THE PROJECT */
 
     function remove() {
+        docId = ""
         //print("Deleting project...")
         backend.removeProject(project)
     }

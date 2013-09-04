@@ -37,6 +37,7 @@ Popover {
         }
 
         Repeater {
+            id: repeater
             model: localProjectsModel.projects
 
             delegate: Standard {
@@ -54,47 +55,41 @@ Popover {
                 }
 
                 selected: task.project === modelData
-
-//                control: CheckBox {
-//                    checked: showCompletedTasks
-//                    onCheckedChanged: saveSetting("showCompletedTasks", checked ? "true" : "false")
-//                }
+                enabled: task.canMoveToProject(modelData)
 
                 onClicked: {
-                    task.moveTo(modelData)
+                    task.moveToProject(modelData)
                     PopupUtils.close(root)
                 }
 
-                showDivider: index < count - 1
+                showDivider: index < repeater.count - 1
             }
         }
 
-        Divider {
+//        Divider {
 
-        }
+//        }
 
-        Standard {
-            //FIXME: Hack because of Suru theme!
-            Label {
-                anchors {
-                    verticalCenter: parent.verticalCenter
-                    left: parent.left
-                    margins: units.gu(2)
-                }
+//        Standard {
+//            //FIXME: Hack because of Suru theme!
+//            Label {
+//                anchors {
+//                    verticalCenter: parent.verticalCenter
+//                    left: parent.left
+//                    margins: units.gu(2)
+//                }
 
-                text: i18n.tr("<i>New Project...</i>")
-                fontSize: "medium"
-                color: Theme.palette.normal.overlayText
-            }
+//                text: i18n.tr("<i>New Project...</i>")
+//                fontSize: "medium"
+//                color: Theme.palette.normal.overlayText
+//            }
 
-            onClicked: {
-                PopupUtils.close(root)
-                PopupUtils.open(newProjectDialog, null, {
-                                      task: root.task
-                                  })
-            }
+//            onClicked: {
+//                PopupUtils.close(root)
+//                newProject(root.caller)
+//            }
 
-            showDivider: false
-        }
+//            showDivider: false
+//        }
     }
 }

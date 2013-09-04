@@ -127,6 +127,7 @@ Item {
     property var database: Document {
         id: database
         docId: databaseName
+        name: "Plugin"
     }
 
     function loadU1db(json) {

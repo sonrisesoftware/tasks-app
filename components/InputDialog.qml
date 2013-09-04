@@ -33,6 +33,8 @@ Dialog {
     property alias value: textField.text
     property alias placeholderText: textField.placeholderText
 
+    Component.onCompleted: textField.forceActiveFocus()
+
     TextField {
         id: textField
         objectName: "inputField"
