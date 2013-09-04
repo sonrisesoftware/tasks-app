@@ -111,10 +111,10 @@ MainView {
 
         pageStack.push(Qt.resolvedUrl("ui/ProjectsPage.qml"))
         pageStack.pop()
-        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: null})
-        pageStack.pop()
-        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: null})
-        pageStack.pop()
+//        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: null})
+//        pageStack.pop()
+//        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: null})
+//        pageStack.pop()
     }
 
     Notification {
@@ -212,6 +212,9 @@ MainView {
     }
 
     function goToTask(task) {
+        if (wideAspect) {
+            clearPageStack()
+        }
         pageStack.push(Qt.resolvedUrl("ui/TaskViewPage.qml"), {task: task})
     }
 
