@@ -35,7 +35,8 @@ SingleValue {
           : project.name
 
     onClicked: {
-        project.archived = false
+        if (project !== null)
+            project.archived = false
 
         goToProject(project)
     }

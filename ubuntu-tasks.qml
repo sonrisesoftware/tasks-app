@@ -124,7 +124,7 @@ MainView {
         }
     ]
 
-    property Page currentPage: pageStack.currentPage.hasOwnProperty("currentPage")
+    property Page currentPage: pageStack.currentPage && pageStack.currentPage.hasOwnProperty("currentPage")
                                ? pageStack.currentPage.currentPage
                                : pageStack.currentPage
 

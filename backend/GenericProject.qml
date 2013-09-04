@@ -184,8 +184,8 @@ Item {
     /* DELETION OF THE PROJECT */
 
     function remove() {
-        docId = ""
         //print("Deleting project...")
         backend.removeProject(project)
+        docId = ""
     }
 }
