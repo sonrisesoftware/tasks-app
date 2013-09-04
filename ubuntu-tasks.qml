@@ -105,16 +105,6 @@ MainView {
         while (pageStack.depth > 0)
             pageStack.pop()
         pageStack.push(tabs)
-
-        tabs.selectedTabIndex = 1
-        tabs.selectedTabIndex = 0
-
-        pageStack.push(Qt.resolvedUrl("ui/ProjectsPage.qml"))
-        pageStack.pop()
-//        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: null})
-//        pageStack.pop()
-//        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: null})
-//        pageStack.pop()
     }
 
     Notification {
@@ -197,6 +187,7 @@ MainView {
     function goToProject(project) {
         if (wideAspect) {
             homePage.currentProject = project
+            clearPageStack()
         } else {
             pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: project})
         }
