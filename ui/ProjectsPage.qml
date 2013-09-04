@@ -112,19 +112,11 @@ Page {
         flickableItem: flickable
     }
 
-    states: [
-        State {
-            when: showToolbar
-            PropertyChanges {
-                target: root.tools
-                locked: true
-                opened: true
-            }
-        }
-    ]
+    onActiveChanged: tools.opened = wideAspect
 
     tools: ToolbarItems {
-        id: tools
+        locked: wideAspect
+        opened: wideAspect
 
         ToolbarButton {
             id: newProjectButton

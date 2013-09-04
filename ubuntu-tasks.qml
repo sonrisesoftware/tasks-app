@@ -125,7 +125,7 @@ MainView {
 
     states: [
         State {
-            when: showToolbar && root.toolbar.locked && root.toolbar.opened
+            when: showToolbar && toolbar.tools.opened && toolbar.tools.locked
 
             PropertyChanges {
                 target: pageStack
@@ -212,9 +212,6 @@ MainView {
     }
 
     function goToTask(task) {
-        if (wideAspect) {
-            clearPageStack()
-        }
         pageStack.push(Qt.resolvedUrl("ui/TaskViewPage.qml"), {task: task})
     }
 

@@ -68,14 +68,10 @@ Page {
         autoSize: true
     }
 
-    states: [
-        State {
-            when: showToolbar
-            PropertyChanges {
-                target: root.tools
-                locked: true
-                opened: true
-            }
-        }
-    ]
+    onActiveChanged: tools.opened = wideAspect
+
+    tools: ToolbarItems {
+        locked: wideAspect
+        opened: wideAspect
+    }
 }

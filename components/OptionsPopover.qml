@@ -25,6 +25,7 @@ import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
 
 Popover {
+    id: optionsPopover
 
     Column {
         anchors {
@@ -75,6 +76,8 @@ Popover {
             }
 
             onClicked: {
+                __makeInvisible()
+                PopupUtils.close(optionsPopover)
                 pageStack.push(Qt.resolvedUrl("../ui/ProjectsPage.qml"), {showArchived: true, objectName: "archivedProjectsPage"})
             }
 
@@ -99,6 +102,7 @@ Popover {
             }
 
             onClicked: {
+                PopupUtils.close(optionsPopover)
                 trello.load()
             }
 

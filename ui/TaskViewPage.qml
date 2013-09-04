@@ -38,6 +38,8 @@ Page {
 //    property color backgroundColor: labelColor(task.label)
 //    property color footerColor: labelFooterColor(task.label)
 
+    Keys.onEscapePressed: pageStack.pop()
+    Component.onCompleted: root.forceActiveFocus()
 
     TaskItem {
         id: taskItem
@@ -59,18 +61,12 @@ Page {
         }
     }
 
-    states: [
-        State {
-            when: showToolbar
-            PropertyChanges {
-                target: root.tools
-                locked: true
-                opened: true
-            }
-        }
-    ]
+    onActiveChanged: tools.opened = wideAspect
 
     tools: ToolbarItems {
+        locked: wideAspect
+        opened: wideAspect
+
         ToolbarButton {
             id: moveButton
             text: i18n.tr("Move")

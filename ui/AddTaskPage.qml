@@ -39,6 +39,9 @@ Page {
 //    property color backgroundColor: labelColor(taskItem.task.label)
 //    property color footerColor: labelFooterColor(taskItem.task.label)
 
+    Keys.onEscapePressed: pageStack.pop()
+    Component.onCompleted: root.forceActiveFocus()
+
     TaskItem {
         id: taskItem
         task: root.task
@@ -46,17 +49,6 @@ Page {
 
         creating: true
     }
-
-    states: [
-        State {
-            when: showToolbar
-            PropertyChanges {
-                target: root.tools
-                locked: true
-                opened: true
-            }
-        }
-    ]
 
     tools: ToolbarItems {
         locked: true

@@ -43,8 +43,16 @@ Page {
         currentList = null
 
         if (currentProject !== null) {
-            if (currentProject.lists.count > 0)
+            if (currentProject.lists.count > 0) {
                 currentList = currentProject.lists.get(0).modelData
+
+                for (var i = 0; i < length(currentProject.lists); i++) {
+                    if (get(currentProject.lists, i).name === "To Do") {
+                        currentList = get(currentProject.lists, i)
+                        break
+                    }
+                }
+            }
         }
     }
 
@@ -180,18 +188,12 @@ Page {
         anchors.left: sidebar.right
     }
 
-    states: [
-        State {
-            when: showToolbar
-            PropertyChanges {
-                target: root.tools
-                locked: true
-                opened: true
-            }
-        }
-    ]
+    onActiveChanged: tools.opened = wideAspect
 
     tools: ToolbarItems {
+        locked: wideAspect
+        opened: wideAspect
+
         ToolbarButton {
             id: newProjectButton
             iconSource: icon("add")
@@ -239,9 +241,8 @@ Page {
             visible: currentProject !== null && !currentProject.archived
 
             onTriggered: {
-                while (pageStack.depth > 1)
-                    pageStack.pop()
                 currentProject.archived = true
+                currentProject = null
             }
         }
 
