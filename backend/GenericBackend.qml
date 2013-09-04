@@ -36,7 +36,7 @@ Item {
     property bool supportsStatistics: true      // Supports showing the statistics page?
     property bool supportsLists: true           // Supports multiple tasks lists?
     property var projectComponent
-    property var upcomingTasks: concat(projects, "upcomingTasks")
+    property var upcomingTasks: concat(projects, "upcomingTasks", function(project) { return !project.archived })
     property int loading: 0
 
     property int nextDocId: 0

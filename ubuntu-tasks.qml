@@ -447,13 +447,15 @@ MainView {
         return list
     }
 
-    function concat(list, prop) {
+    function concat(list, prop, filter) {
         var value = []
 
         //print("Concat:", prop, length(list))
 
         for (var i = 0; i < length(list); i++) {
             var item = get(list, i)
+            if (filter && !filter(item)) continue
+
             //print("Adding:", item[prop])
             if (item[prop].hasOwnProperty("length")) {
                 value = value.concat(item[prop])
