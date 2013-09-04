@@ -93,7 +93,7 @@ Empty {
             fontSize: "small"
             font.italic: true
             text: task.subText
-            visible: Qt.formatDate(task.dueDate) != ""
+            visible: text !== ""
             elide: Text.ElideRight
         }
     }
