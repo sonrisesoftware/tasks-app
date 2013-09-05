@@ -97,6 +97,8 @@ Page {
             left: sidebar.right
         }
 
+        noneMessage: i18n.tr("No items match your search")
+
         showAddBar: false
         tasks: allTasks
         filter: function(task) {

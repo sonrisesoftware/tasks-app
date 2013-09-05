@@ -34,9 +34,10 @@ Page {
 
     property bool showArchived: false
 
-    property bool hasProjects: filteredSum(backendModels, "projects", function(project) {
-        return showArchived === project.archived
-    }) > 0
+    property var filter: function(project) {
+        return (showArchived === project.archived) && !project.special
+    }
+    property bool hasProjects: filteredSum(backendModels, "projects", filter) > 0
 
     property var currentProject: null
 
@@ -66,9 +67,7 @@ Page {
                     Header {
                         id: header
                         text: modelData.name
-                        visible: count(modelData.projects, function(project) {
-                            return showArchived === project.archived
-                        }) > 0
+                        visible: count(modelData.projects, filter) > 0
 
                         ActivityIndicator {
                             anchors {
