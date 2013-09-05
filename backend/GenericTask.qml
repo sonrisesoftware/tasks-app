@@ -35,7 +35,7 @@ Item {
 
     property string name
     property string description
-    property date creationDate: new Date()
+    property date creationDate
     property date dueDate
     property string repeat: "never" // or "daily", "weekly", "monthly", "yearly"
     property bool completed
@@ -44,6 +44,10 @@ Item {
     property var tags
     property var comments
     property bool createdRepeat
+
+    Component.onCompleted: {
+        creationDate = document.get("creationDate", new Date())
+    }
 
     onNameChanged:  fieldChanged("name", name)
     onDescriptionChanged: fieldChanged("description", description)
