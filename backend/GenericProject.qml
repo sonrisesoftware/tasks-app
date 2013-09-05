@@ -33,6 +33,7 @@ Item {
     property string description         // The description of the project
     property bool archived              // Is the project archived?
     property var tags                   // The possible tags
+    property bool special               // Is this a special project that lives under Upcoming, such as Uncategorized?
     property bool editable: backend.editable
     property bool supportsLists: backend.supportsLists
     property var backend
@@ -49,6 +50,7 @@ Item {
     onNameChanged:  fieldChanged("name", name)
     onDescriptionChanged: fieldChanged("description", description)
     onArchivedChanged: fieldChanged("archived", archived)
+    onSpecialChanged: fieldChanged("special", special)
     onTagsChanged: fieldChanged("tags", tags)
 
     property bool updating: false       // Used to prevent sending changes to remote backend
@@ -72,6 +74,7 @@ Item {
         name = document.get("name", "")
         description = document.get("description", "")
         archived = document.get("archived", false)
+        special = document.get("special", false)
         tags = document.get("tags", [])
 
         if (customUploadFields)

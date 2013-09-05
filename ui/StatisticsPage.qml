@@ -41,7 +41,7 @@ Page {
 
     BarGraph {
         anchors.fill: parent
-        colors: ["green", "red"]
+        colors: ["#59B159", "#FF4141"]
         names: ["To do", "Overdue"]
 
         values: {

@@ -41,13 +41,13 @@ SingleValue {
         goToProject(project)
     }
 
-    visible: project === null || showArchived === project.archived
+    visible: project === null || (showArchived === project.archived && !project.special)
 
     selected: currentProject === project
 
     onPressAndHold: {
         print("PRESS AND HOLD!")
-        if (project !== null && project.editable)
+        if (project !== null && project.editable && !project.special)
             PopupUtils.open(projectActionsPopover, root, {
                                 project: project
                             })

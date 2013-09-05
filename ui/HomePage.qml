@@ -81,6 +81,15 @@ Page {
             }
 
             Repeater {
+                model: localProjectsModel.projects
+
+                delegate: ProjectListItem {
+                    project: modelData
+                    visible: modelData.special
+                }
+            }
+
+            Repeater {
                 model: backendModels
 
                 delegate: Column {

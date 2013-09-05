@@ -119,3 +119,8 @@ Day 29 - 9/4/2013
  * Fixed repeating tasks
 
 **Released version 0.2.3**
+
+Day 30 - 9/5/2013
+ * Fixed completion date
+
+**Released version 0.2.4**

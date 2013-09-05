@@ -364,6 +364,11 @@ MainView {
             backendModels[i].load(json)
         }
 
+//        if (hasItem(localProjectsModel, function(project) { return project.special }) === undefined) {
+//            var project = localProjectsModel.newProject("Uncategorized")
+//            project.special = true
+//        }
+
         if (!runBefore) {
             saveSetting("runBefore", "true")
             firstRun()
@@ -406,6 +411,14 @@ MainView {
     }
 
     /* UTILITY FUNCTIONS */
+
+    function hasItem(list, filter) {
+        for (var i = 0; i < length(list); i++) {
+            var item = get(list, i)
+            if (filter(item))
+                return item
+        }
+    }
 
     function filter(tasks, filter, name) {
         //print("Running filter:", name)
