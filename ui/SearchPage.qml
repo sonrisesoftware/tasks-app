@@ -101,8 +101,7 @@ Page {
         tasks: allTasks
         filter: function(task) {
             var result = true
-            if (task.name.indexOf(filterBar.text) === -1 &&
-                    task.description.indexOf(filterBar.text) === -1) result = false
+            if (!task.matches(filterText)) result = false
             if (completedSelector.selectedIndex === 0 && !task.completed) result = false
             if (completedSelector.selectedIndex === 1 && task.completed) result = false
 

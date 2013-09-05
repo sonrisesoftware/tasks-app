@@ -114,3 +114,5 @@ Day 28 - 9/3/2013
 
 Day 29 - 9/4/2013
  * Worked on fixing various bugs
+ * Tags
+ * Search page

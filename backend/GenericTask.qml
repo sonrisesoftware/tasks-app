@@ -255,5 +255,9 @@ Item {
         remove()
         list.internal_addTask(task)
     }
+
+    function matches(text) {
+        return task.name.indexOf(text) !== -1 || task.description.indexOf(text) !== -1
+    }
 }
 
