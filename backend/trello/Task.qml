@@ -35,23 +35,8 @@ GenericTask {
             document.set("taskID", taskID)
     }
 
-    function reloadFields() {
-        updating = true
-
-        name = document.get("name", "")
-        description = document.get("description", "")
-        creationDate = document.get("creationDate", new Date())
-        dueDate = document.get("dueDate", new Date(""))
-        repeat = document.get("repeat", "never")
-        completed = document.get("completed", false)
-        completionDate = document.get("completionDate", new Date(""))
-        priority = document.get("priority", "low")
-        tags = document.get("tags", [])
-        checklist.load(document.get("checklist", {}))
-
+    customUploadFields: function() {
         taskID = document.get("taskID", "")
-
-        updating = false
     }
 
     function loadTrello(json) {

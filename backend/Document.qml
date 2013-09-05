@@ -80,8 +80,8 @@ Object {
     }
 
     function set(name, value) {
-        if (get(name) !== value && locked.indexOf(name) === -1) {
-            //print("Setting", name, "to", value)
+        if (locked.indexOf(name) === -1) {
+            debug("document", "Setting " + name + " to " + value)
             values[name] = value
 
             if (reload !== undefined)
@@ -103,7 +103,7 @@ Object {
         if (listDocs().length > 0) {
             json.children = children
         }
-        //print("Saving", docId, JSON.stringify(json))
+        debug("document", "Saving: " + docId + " " + JSON.stringify(json))
 
         return json
     }

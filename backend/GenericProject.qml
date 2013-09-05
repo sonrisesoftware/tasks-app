@@ -32,6 +32,7 @@ Item {
     property string name                // The name of the project
     property string description         // The description of the project
     property bool archived              // Is the project archived?
+    property var tags                   // The possible tags
     property bool editable: backend.editable
     property bool supportsLists: backend.supportsLists
     property var backend
@@ -41,12 +42,14 @@ Item {
 
     property int nextDocId: 0
     property var listComponent
+    property var customUploadFields
 
     onNextDocIdChanged: document.set("nextDocId", nextDocId)
 
     onNameChanged:  fieldChanged("name", name)
     onDescriptionChanged: fieldChanged("description", description)
     onArchivedChanged: fieldChanged("archived", archived)
+    onTagsChanged: fieldChanged("tags", tags)
 
     property bool updating: false       // Used to prevent sending changes to remote backend
                                         // when loading changes from the remote or local backend
@@ -69,6 +72,10 @@ Item {
         name = document.get("name", "")
         description = document.get("description", "")
         archived = document.get("archived", false)
+        tags = document.get("tags", [])
+
+        if (customUploadFields)
+            customUploadFields()
 
         updating = false
         //print("Done.")

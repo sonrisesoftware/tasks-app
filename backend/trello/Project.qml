@@ -45,17 +45,8 @@ GenericProject {
 
     /* To be called after the document changes,
        either after loading from U1db or after loading from a remote model */
-    function reloadFields() {
-        //print("Reloading project", name)
-        updating = true
-
-        name = document.get("name", "")
-        description = document.get("description", "")
-        archived = document.get("archived", false)
+    customUploadFields: function() {
         boardID = document.get("boardID", "")
-
-        updating = false
-        //print("Done.")
     }
 
     function loadTrello(json) {

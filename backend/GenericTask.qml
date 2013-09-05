@@ -29,6 +29,7 @@ Item {
     property var project: list.project
     property var list
     property bool editable: project.editable
+    property var customUploadFields
 
     /* Properties describing the task */
 
@@ -40,8 +41,8 @@ Item {
     property bool completed
     property date completionDate
     property string priority: "low"
-    property var tags: []
-    property var comments: []
+    property var tags
+    property var comments
 
     onNameChanged:  fieldChanged("name", name)
     onDescriptionChanged: fieldChanged("description", description)
@@ -147,6 +148,9 @@ Item {
         tags = document.get("tags", [])
         checklist.load(document.get("checklist", {}))
 
+        if (customUploadFields)
+            customUploadFields()
+
         updating = false
     }
 
@@ -170,7 +174,7 @@ Item {
     property string subText: task.completed
                              ? i18n.tr("Completed %1").arg(formattedDate(task.completionDate))
                              : Qt.formatDate(task.dueDate) === ""
-                               ? ""
+                               ? task.tags.join(", ")
                                : task.overdue
                                  ? i18n.tr("Overdue (due %1)").arg(formattedDate(task.dueDate))
                                  : i18n.tr("Due %1").arg(formattedDate(task.dueDate))

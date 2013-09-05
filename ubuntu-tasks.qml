@@ -216,6 +216,18 @@ MainView {
         pageStack.push(Qt.resolvedUrl("ui/TaskViewPage.qml"), {task: task})
     }
 
+    /* DEBUGGING */
+
+    property var debugList: [
+        //"database",
+        //"document"
+    ]
+
+    function debug(name, text) {
+        if (debugList.indexOf(name) !== -1)
+            print(name.toUpperCase() + ":", text)
+    }
+
     /* TASK MANAGEMENT */
 
     TrelloBackend.TrelloBackend {
@@ -316,7 +328,7 @@ MainView {
     function saveProjects() {
         for (var i = 0; i < backendModels.length; i++) {
             var json = backendModels[i].save()
-            //print(JSON.stringify(json))
+            debug("database", JSON.stringify(json))
             saveSetting("backend-" + backendModels[i].databaseName, JSON.stringify(json))
         }
     }
@@ -481,6 +493,10 @@ MainView {
     }
 
     function icon(name) {
+        return "../icons/" + name + ".png"
+    }
+
+    function getIcon(name) {
         return "../icons/" + name + ".png"
     }
 
@@ -730,5 +746,11 @@ MainView {
         id: projectsPopover
 
         ProjectsPopover {}
+    }
+
+    Component {
+        id: tagsPopover
+
+        TagsPopover {}
     }
 }
