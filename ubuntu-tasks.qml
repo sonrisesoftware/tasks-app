@@ -88,6 +88,13 @@ MainView {
 
             Tab {
                 title: page.title
+                page: SearchPage {
+                    id: searchPage
+                }
+            }
+
+            Tab {
+                title: page.title
                 page: SettingsPage {
                     id: settingsPage
                 }
@@ -141,6 +148,7 @@ MainView {
         var currentTask = root.currentTask
 
         clearPageStack()
+        tabs.modelChanged()
         homePage.currentProject = null
 
         print("Switching to %1 in %2".arg(wideAspect ? "Wide Aspect" : "Phone").arg(viewing))
@@ -165,6 +173,8 @@ MainView {
             } else if (viewing === "about") {
                 tabs.selectedTabIndex = 2
                 pageStack.push(Qt.resolvedUrl("ui/AboutPage.qml"))
+            } else if (viewing === "search") {
+                tabs.selectedTabIndex = 1
             }
         } else {
             if (viewing === "project") {
@@ -180,12 +190,16 @@ MainView {
                 goToList(currentTask.list)
                 goToTask(currentTask)
             } else if (viewing === "settings") {
-                tabs.selectedTabIndex = 2
+                tabs.selectedTabIndex = 3
             } else if (viewing === "about") {
-                tabs.selectedTabIndex = 2
+                tabs.selectedTabIndex = 3
                 pageStack.push(Qt.resolvedUrl("ui/AboutPage.qml"))
+            } else if (viewing === "search") {
+                tabs.selectedTabIndex = 2
             }
         }
+
+        tabs.modelChanged()
     }
 
     /* NAVIGATION */
@@ -242,6 +256,7 @@ MainView {
        localProjectsModel, trello
     ]
 
+    property var allTasks: concat(backendModels, "allTasks")
     property var upcomingTasks: concat(backendModels, "upcomingTasks")
 
     onUpcomingTasksChanged: {

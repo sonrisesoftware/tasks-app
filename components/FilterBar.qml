@@ -25,78 +25,54 @@ import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
 import "../ui"
 
-Item {
-    id: root
+Rectangle {
+    id: addBar
 
-    property alias showAddBar: addBar.visible
-    property var filter: function(task) {
-        return !task.completed || showCompletedTasks
+    property bool expanded: visible
+
+    color: Qt.rgba(0.2,0.2,0.2,0.2)
+
+    property alias text: filterField.text
+
+    anchors {
+        left: parent.left
+        right: parent.right
+        top: parent.top
+//        topMargin: expanded ? 0 : -addBar.height
+
+//        Behavior on topMargin {
+//            UbuntuNumberAnimation { }
+//        }
     }
 
-    property string noneMessage: i18n.tr("No tasks")
-    property var model: sort(tasks, sortBy)
-    property var project: list ? list.project : null
-    property var list
-    property var tasks: list ? list.tasks : []
+    height: expanded ? filterField.height + addBarDivider.height + units.gu(2) : 0
+    clip: true
 
-    property alias addBarColor: addBar.color
+    Behavior on height {
+        UbuntuNumberAnimation { }
+    }
 
-    property var flickable: taskListView
-    property alias header: taskListView.header
-
-    ListView {
-        id: taskListView
-        objectName: "taskListView"
-
+    TextField {
+        id: filterField
         anchors {
-            top: parent.top
             left: parent.left
             right: parent.right
-            bottom: addBar.top
+            bottom: addBarDivider.bottom
+            margins: units.gu(1)
         }
 
-        clip: true
-
-        model: root.model
-
-        delegate: TaskListItem {
-            objectName: "task" + index
-
-            task: modelData
-            show: filter(task)
-        }
+        placeholderText: i18n.tr("Search...")
     }
 
-    Scrollbar {
-        flickableItem: taskListView
-    }
+    ThinDivider {
+        id: addBarDivider
 
-    QuickAddBar {
-        id: addBar
-        anchors.bottomMargin: 0
-        height: expanded ? implicitHeight : 0
-    }
+        //rotation: 180
 
-    Item {
         anchors {
-            top: parent.top
             left: parent.left
             right: parent.right
-            bottom: addBar.top
-        }
-
-        Label {
-            id: noTasksLabel
-            objectName: "noTasksLabel"
-
-            anchors.centerIn: parent
-
-            visible: count(model, filter) === 0
-            opacity: 0.5
-
-            fontSize: "large"
-
-            text: root.noneMessage
+            bottom: parent.bottom
         }
     }
 }

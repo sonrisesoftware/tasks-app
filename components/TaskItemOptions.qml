@@ -170,12 +170,12 @@ Column {
         }
     }
 
-        MultiValue {
-            id: tagsSelector
+    MultiValue {
+        id: tagsSelector
 
-            text: i18n.tr("Tags")
+        text: i18n.tr("Tags")
 
-            values: task.tags
-            onClicked: PopupUtils.open(tagsPopover, tagsSelector, {task: task})
-        }
+        values: task.tags
+        onClicked: PopupUtils.open(tagsPopover, tagsSelector, {task: task})
+    }
 }
