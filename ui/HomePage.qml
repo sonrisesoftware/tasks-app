@@ -222,7 +222,8 @@ Page {
         ToolbarButton {
             iconSource: icon("add")
             text: i18n.tr("Add Task")
-            enabled: (currentProject === null && !wideAspect) || (currentProject !== null && currentProject.editable)
+            enabled: currentProject === null ? true : currentProject.editable
+            visible: (currentProject === null && !wideAspect) || currentProject !== null
 
             onTriggered: {
                 var list = currentList
