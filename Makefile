@@ -25,3 +25,6 @@ icon:
 
 clean:
 	rm ~/.local/share/Qt\ Project/QtQmlViewer/ubuntu-tasks.db
+
+package:
+	./clickpkg $(VERSION)

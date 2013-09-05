@@ -18,6 +18,14 @@ Once Code Units is installed, you can get the Ubuntu UI Extras by running
 
 To run Ubuntu Tasks, simply open in Qt Creator/Ubuntu SDK, and click the run button!
 
+NOTE: To help the packaging process, I have an automaticed script that does several things, including updating version numbers. Because of this, the version number is not included in either `manifest.json` or the About page.
+
+To package the app, run
+
+../clickpkg <version number, such as 1.2.3>
+
+This will create a package in ../releases/ubuntu-tasks/
+
 ### App Showdown Progress ###
 
 Day 1 - 8/7/2013
@@ -122,5 +130,6 @@ Day 29 - 9/4/2013
 
 Day 30 - 9/5/2013
  * Fixed completion date
+ * Added uncategorized feature
 
-**Released version 0.2.4**
+**Released version 0.3**

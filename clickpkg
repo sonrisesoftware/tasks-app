@@ -1,0 +1,13 @@
+VERSION=$1
+RELEASE_DIR=../releases/ubuntu-tasks/v$VERSION
+
+cp . $RELEASE_DIR -r
+cd $RELEASE_DIR
+sed -e 's/$APP_VERSION/'$VERSION'/' manifest.json >manifest2.json; mv manifest2.json manifest.json
+sed -e 's/$APP_VERSION/'$VERSION'/' ui/AboutPage.qml >ui/AboutPage2.qml; mv ui/AboutPage2.qml ui/AboutPage.qml
+sudo rm .git* -r
+rm ubuntu-ui-extras -r
+cp ../../../ubuntu-ui-extras . -r
+sudo rm ubuntu-ui-extras/.git* -r
+cd ..
+click build v$VERSION
