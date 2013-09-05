@@ -584,12 +584,13 @@ MainView {
             return model.hasOwnProperty("count") ? model.count : model.length
     }
 
-    function newProject(caller) {
+    function newProject(caller, task) {
         if (count(backendModels, function(backend) { return backend.enabled }) > 1)
-            PopupUtils.open(newProjectPopover, caller)
+            PopupUtils.open(newProjectPopover, caller, {task: task})
         else
             PopupUtils.open(newProjectDialog, root, {
-                                backend: backendModels[0]
+                                backend: backendModels[0],
+                                task: task
                             })
     }
 
@@ -648,11 +649,14 @@ MainView {
 
         InputDialog {
             property var backend
+            property var task
 
             title: i18n.tr("New %1").arg(backend.newName)
             onAccepted: {
                 var project = backend.newProject(value)
                 goToProject(project)
+                if (task !== undefined)
+                    task.moveToProject(project)
             }
         }
     }
@@ -662,6 +666,9 @@ MainView {
 
         Popover {
             id: newProjectPopoverItem
+
+            property var task
+
             Column {
                 anchors {
                     left: parent.left
@@ -689,7 +696,7 @@ MainView {
 
                         onClicked: {
                             PopupUtils.close(newProjectPopoverItem)
-                            PopupUtils.open(newProjectDialog, root, {backend: modelData})
+                            PopupUtils.open(newProjectDialog, root, {backend: modelData, task: task})
                         }
 
                         //showDivider: index < count - 1
@@ -782,6 +789,27 @@ MainView {
     }
 
     Component {
+        id: confirmDeleteTaskDialog
+
+        ConfirmDialog {
+            property var task
+
+            id: confirmDeleteProjectDialogItem
+            title: i18n.tr("Delete Task")
+            text: i18n.tr("Are you sure you want to delete '%1'?").arg(task.name)
+
+            onAccepted: {
+                PopupUtils.close(confirmDeleteProjectDialogItem)
+
+                var list = task.list
+                task.remove()
+                clearPageStack()
+                goToList(list)
+            }
+        }
+    }
+
+    Component {
         id: taskActionsPopover
 
         ActionSelectionPopover {
@@ -805,7 +833,7 @@ MainView {
                     enabled: task.editable
 
                     text: i18n.tr("Delete")
-                    onTriggered: task.remove()
+                    onTriggered: PopupUtils.open(confirmDeleteTaskDialog, root, {task: task})
                 }
             }
         }

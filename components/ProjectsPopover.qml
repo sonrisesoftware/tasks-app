@@ -66,30 +66,30 @@ Popover {
             }
         }
 
-//        Divider {
+        Divider {
 
-//        }
+        }
 
-//        Standard {
-//            //FIXME: Hack because of Suru theme!
-//            Label {
-//                anchors {
-//                    verticalCenter: parent.verticalCenter
-//                    left: parent.left
-//                    margins: units.gu(2)
-//                }
+        Standard {
+            //FIXME: Hack because of Suru theme!
+            Label {
+                anchors {
+                    verticalCenter: parent.verticalCenter
+                    left: parent.left
+                    margins: units.gu(2)
+                }
 
-//                text: i18n.tr("<i>New Project...</i>")
-//                fontSize: "medium"
-//                color: Theme.palette.normal.overlayText
-//            }
+                text: i18n.tr("<i>New Project...</i>")
+                fontSize: "medium"
+                color: Theme.palette.normal.overlayText
+            }
 
-//            onClicked: {
-//                PopupUtils.close(root)
-//                newProject(root.caller)
-//            }
+            onClicked: {
+                PopupUtils.close(root)
+                newProject(root.caller, task)
+            }
 
-//            showDivider: false
-//        }
+            showDivider: false
+        }
     }
 }
