@@ -74,7 +74,7 @@ Empty {
             right: doneCheckBox.left
         }
 
-        Text {
+        Label {
             id: titleLabel
 
             width: parent.width
@@ -82,6 +82,7 @@ Empty {
             text: task.name
 
             color: selected ? UbuntuColors.orange : Theme.palette.selected.backgroundText
+            fontSize: "medium"
         }
 
         Label {
@@ -91,7 +92,7 @@ Empty {
             height: visible ? implicitHeight: 0
             color: Theme.palette.normal.backgroundText
             fontSize: "small"
-            font.italic: true
+            //font.italic: true
             text: task.subText
             visible: text !== ""
             elide: Text.ElideRight
