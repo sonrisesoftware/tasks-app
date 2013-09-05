@@ -35,15 +35,8 @@ GenericList {
 
     /* To be called after the document changes,
        either after loading from U1db or after loading from a remote model */
-    function reloadFields() {
-        //print("Reloading list", name)
-        updating = true
-
-        name = document.get("name", "")
+    customReloadFields: function () {
         listID = document.get("listID", "")
-
-        updating = false
-        //print("Done.")
     }
 
     function loadTrello(json) {

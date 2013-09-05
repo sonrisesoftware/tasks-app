@@ -32,6 +32,8 @@ Item {
     property string name                // The name of the list
     property var project
     property bool editable: project.editable
+    property var customReloadFields
+
     property var upcomingTasks: filter(tasks, function(task) {
         return task.upcoming
     }, "Upcoming tasks")
@@ -65,6 +67,9 @@ Item {
         updating = true
 
         name = document.get("name", "")
+
+        if (customUploadFields)
+            customUploadFields()
 
         updating = false
         //print("Done.")

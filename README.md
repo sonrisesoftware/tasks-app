@@ -18,7 +18,7 @@ Once Code Units is installed, you can get the Ubuntu UI Extras by running
 
 To run Ubuntu Tasks, simply open in Qt Creator/Ubuntu SDK, and click the run button!
 
-### Progress ###
+### App Showdown Progress ###
 
 Day 1 - 8/7/2013
  * Showdown announced
@@ -111,8 +111,11 @@ Day 28 - 9/3/2013
  * Worked on fixing various bugs
  * Improved the About page
 
-
 Day 29 - 9/4/2013
  * Worked on fixing various bugs
  * Tags
+ * Better about page
  * Search page
+ * Fixed repeating tasks
+
+**Released version 0.2.3**
