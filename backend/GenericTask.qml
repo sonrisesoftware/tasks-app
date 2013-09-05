@@ -43,12 +43,14 @@ Item {
     property string priority: "low"
     property var tags
     property var comments
+    property bool createdRepeat
 
     onNameChanged:  fieldChanged("name", name)
     onDescriptionChanged: fieldChanged("description", description)
     onCreationDateChanged: fieldChanged("creationDate", creationDate)
     onDueDateChanged: fieldChanged("dueDate", dueDate)
     onRepeatChanged: fieldChanged("repeat", repeat)
+    onCreatedRepeatChanged: fieldChanged("createdRepeat", createdRepeat)
     onCompletedChanged: {
         fieldChanged("completed", completed)
         updateRepeat()
@@ -96,11 +98,10 @@ Item {
 
     function updateRepeat() {
         if (completed) {
-            var json = toJSON()
-
             // If the task has never been completed before
             // Then create the repeat of it
-            if (repeat !== "never" && Qt.formatDate(completionDate) === "") {
+            if (!createdRepeat && repeat !== "never") {
+                var json = toJSON()
 
                 do {
                     if (repeat === "daily") {
@@ -114,17 +115,19 @@ Item {
                     }
                 } while (dateIsBeforeOrSame(json.dueDate, today))
 
-                if (repeat !== "never")
+                if (repeat !== "never") {
                     if (list === undefined)
                         console.log("Unable to create repeating task!")
                     else {
-                        //print("Adding new task...")
+                        print("Adding new REPEAT task...")
                         json.completed = false
                         var docId = String(list.nextDocId++)
                         list.document.children[docId] = json
-                        print(JSON.stringify(list.document.children))
                         list.loadTaskU1db(docId)
                     }
+
+                    createdRepeat = true
+                }
             }
 
             completionDate = new Date()
@@ -148,6 +151,7 @@ Item {
         creationDate = document.get("creationDate", new Date())
         dueDate = document.get("dueDate", new Date(""))
         repeat = document.get("repeat", "never")
+        createdRepeat = document.get("createdRepeat", false)
         completed = document.get("completed", false)
         completionDate = document.get("completionDate", new Date(""))
         priority = document.get("priority", "low")

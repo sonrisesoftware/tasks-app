@@ -49,7 +49,7 @@ Object {
 
     function get(name, def) {
         var value = values[name]
-        return value === undefined ? def : value
+        return value ? value : def
     }
 
     function lock(name, value) {
