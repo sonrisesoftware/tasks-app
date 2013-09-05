@@ -74,13 +74,31 @@ MainView {
                 title: page.title
                 page: HomePage {
                     id: homePage
+
+                    property int tabIndex: 0
                 }
+            }
+
+            HideableTab {
+                title: page.title
+                page: HomePage {
+                    id: uncategorizedPage
+                    currentProject: uncategorizedProject
+
+                    type: "uncategorized"
+
+                    property int tabIndex: 1
+                }
+
+                show: !wideAspect
             }
 
             HideableTab {
                 title: page.title
                 page: ProjectsPage {
                     id: projectsPage
+
+                    property int tabIndex: 2
                 }
 
                 show: !wideAspect
@@ -90,6 +108,8 @@ MainView {
                 title: page.title
                 page: SearchPage {
                     id: searchPage
+
+                    property int tabIndex: wideAspect ? 1 : 3
                 }
             }
 
@@ -97,6 +117,8 @@ MainView {
                 title: page.title
                 page: SettingsPage {
                     id: settingsPage
+
+                    property int tabIndex: wideAspect ? 2 : 4
                 }
             }
 
@@ -155,47 +177,51 @@ MainView {
 
         if (wideAspect) {
             if (viewing === "projects" || viewing === "upcoming") {
-                tabs.selectedTabIndex = 0
+                tabs.selectedTabIndex = homePage.tabIndex
             } else if (viewing === "project") {
-                tabs.selectedTabIndex = 0
+                tabs.selectedTabIndex = homePage.tabIndex
                 homePage.currentProject = currentProject
             } else if (viewing === "list") {
-                tabs.selectedTabIndex = 0
+                tabs.selectedTabIndex = homePage.tabIndex
                 homePage.currentProject = currentProject
                 homePage.currentList = currentList
             } else if (viewing === "task") {
-                tabs.selectedTabIndex = 0
+                tabs.selectedTabIndex = homePage.tabIndex
                 homePage.currentProject = currentTask.project
                 homePage.currentList = currentTask.list
                 goToTask(currentTask)
             } else if (viewing === "settings") {
-                tabs.selectedTabIndex = 2
+                tabs.selectedTabIndex = settingsPage.tabIndex
             } else if (viewing === "about") {
-                tabs.selectedTabIndex = 2
+                tabs.selectedTabIndex = settingsPage.tabIndex
                 pageStack.push(Qt.resolvedUrl("ui/AboutPage.qml"))
             } else if (viewing === "search") {
-                tabs.selectedTabIndex = 1
+                tabs.selectedTabIndex = searchPage.tabIndex
+            } else if (viewing === "uncategorized") {
+                tabs.selectedTabIndex = uncategorizedPage.tabIndex
             }
         } else {
             if (viewing === "project") {
-                tabs.selectedTabIndex = 1
+                tabs.selectedTabIndex = projectsPage.tabIndex
                 goToProject(currentProject)
             } else if (viewing === "upcoming") {
-                tabs.selectedTabIndex = 0
+                tabs.selectedTabIndex = homePage.tabIndex
             } else if (viewing === "list") {
-                tabs.selectedTabIndex = 1
+                tabs.selectedTabIndex = projectsPage.tabIndex
                 goToList(currentList)
             } else if (viewing === "task") {
-               tabs.selectedTabIndex = 1
+               tabs.selectedTabIndex = projectsPage.tabIndex
                 goToList(currentTask.list)
                 goToTask(currentTask)
             } else if (viewing === "settings") {
-                tabs.selectedTabIndex = 3
+                tabs.selectedTabIndex = settingsPage.tabIndex
             } else if (viewing === "about") {
-                tabs.selectedTabIndex = 3
+                tabs.selectedTabIndex = settingsPage.tabIndex
                 pageStack.push(Qt.resolvedUrl("ui/AboutPage.qml"))
             } else if (viewing === "search") {
-                tabs.selectedTabIndex = 2
+                tabs.selectedTabIndex = searchPage.tabIndex
+            } else if (viewing === "uncategorized") {
+                tabs.selectedTabIndex = uncategorizedPage.tabIndex
             }
         }
 
@@ -213,7 +239,12 @@ MainView {
             homePage.currentProject = project
             clearPageStack()
         } else {
-            pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: project})
+            if (project.special) {
+                tabs.selectedTabIndex = uncategorizedPage.tabIndex
+            } else {
+                tabs.selectedTabIndex = projectsPage.tabIndex
+                pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: project})
+            }
         }
     }
 
@@ -221,8 +252,14 @@ MainView {
         if (wideAspect) {
             homePage.currentProject = list.project
             homePage.currentList = list
+            clearPageStack()
         } else {
-            pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: list.project, currentList: list})
+            if (list.project.special) {
+                tabs.selectedTabIndex = uncategorizedPage.tabIndex
+            } else {
+                tabs.selectedTabIndex = projectsPage.tabIndex
+                pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: list.project, currentList: list})
+            }
         }
     }
 
@@ -355,6 +392,8 @@ MainView {
         onTriggered: saveProjects()
     }
 
+    property var uncategorizedProject: getItem(localProjectsModel.projects, function(project) { return project.special })
+
     Component.onCompleted: {
         notification.show("Undo", icon("back"), print, "Undoing test...")
         reloadSettings()
@@ -364,10 +403,10 @@ MainView {
             backendModels[i].load(json)
         }
 
-//        if (hasItem(localProjectsModel, function(project) { return project.special }) === undefined) {
-//            var project = localProjectsModel.newProject("Uncategorized")
-//            project.special = true
-//        }
+        if (!uncategorizedProject) {
+            var project = localProjectsModel.newProject(i18n.tr("Uncategorized"))
+            project.special = true
+        }
 
         if (!runBefore) {
             saveSetting("runBefore", "true")
@@ -412,12 +451,14 @@ MainView {
 
     /* UTILITY FUNCTIONS */
 
-    function hasItem(list, filter) {
+    function getItem(list, filter) {
         for (var i = 0; i < length(list); i++) {
             var item = get(list, i)
             if (filter(item))
                 return item
         }
+
+        return null
     }
 
     function filter(tasks, filter, name) {

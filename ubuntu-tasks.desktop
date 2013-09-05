@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Tasks
-Comment=My project description
-Exec=ubuntu-tasks
+Comment=Your tasks, every device, everywhere.
+Exec=qmlscene $@ ubuntu-tasks.qml
 Icon=ubuntu-tasks
 Terminal=false
 Type=Application

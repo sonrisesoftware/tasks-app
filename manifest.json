@@ -10,5 +10,5 @@
     "maintainer": "Michael Spencer <sonrisesoftware@gmail.com>",
     "name": "com.ubuntu.developer.mdspencer.ubuntu-tasks",
     "title": "Ubuntu Tasks",
-    "version": "0.2.4"
+    "version": "$APP_VERSION"
 }

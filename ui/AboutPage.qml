@@ -97,7 +97,7 @@ Page {
         }
 
         Label {
-            text: i18n.tr("Version <b>%1</b>").arg("0.2.4")
+            text: i18n.tr("Version <b>%1</b>").arg("$APP_VERSION")
             anchors.horizontalCenter: parent.horizontalCenter
         }
 

@@ -222,18 +222,22 @@ Page {
         ToolbarButton {
             iconSource: icon("add")
             text: i18n.tr("Add Task")
-            visible: currentProject !== null
-            enabled: currentProject !== null && currentProject.editable
+            enabled: (currentProject === null && !wideAspect) || (currentProject !== null && currentProject.editable)
 
             onTriggered: {
-                pageStack.push(Qt.resolvedUrl("AddTaskPage.qml"), {list: currentList})
+                var list = currentList
+                if (list === null)
+                    list = uncategorizedProject.lists.get(0).modelData
+                if (currentProject === null)
+                    tabs.selectedTabIndex = uncategorizedPage.tabIndex
+                pageStack.push(Qt.resolvedUrl("AddTaskPage.qml"), {list: list})
             }
         }
 
         ToolbarButton {
             iconSource: icon("edit")
             text: i18n.tr("Rename")
-            visible: currentProject !== null
+            visible: currentProject !== null && !currentProject.special
             enabled: currentProject !== null && currentProject.editable
 
             onTriggered: {
@@ -247,7 +251,7 @@ Page {
             iconSource: icon("save")
             text: i18n.tr("Archive")
             enabled: currentProject !== null && currentProject.editable
-            visible: currentProject !== null && !currentProject.archived
+            visible: currentProject !== null && !currentProject.special
 
             onTriggered: {
                 currentProject.archived = true
