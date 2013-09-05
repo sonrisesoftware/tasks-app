@@ -2,6 +2,6 @@
 *~
 *.click
 *.pyc
-*.qmlproject.user
+*.qmlproject.user*
 *.db
 ubuntu-ui-extras
