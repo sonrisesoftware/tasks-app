@@ -119,6 +119,7 @@ Item {
         if (args === undefined)
             args = {}
 
+        if (args.docId === "") args.docId = nextDocId++
         args.list = list
 
         var task = taskComponent.createObject(list, args)

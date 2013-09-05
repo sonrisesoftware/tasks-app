@@ -147,7 +147,7 @@ Column {
         id: repeatSelector
         text: i18n.tr("Repeat")
         visible: task.hasOwnProperty("repeat")
-        enabled: task.editable
+        enabled: task.editable && task.hasDueDate
 
         values: [i18n.tr("Never"), i18n.tr("Daily"), i18n.tr("Weekly"), i18n.tr("Monthly"), i18n.tr("Yearly")]
         selectedIndex: getSelectedIndex()

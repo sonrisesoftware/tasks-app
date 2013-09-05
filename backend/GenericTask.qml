@@ -100,7 +100,7 @@ Item {
 
             // If the task has never been completed before
             // Then create the repeat of it
-            if (repeat !== "never" && Qt.formatDate(task.completionDate) === "") {
+            if (repeat !== "never" && Qt.formatDate(completionDate) === "") {
 
                 do {
                     if (repeat === "daily") {
@@ -117,8 +117,14 @@ Item {
                 if (repeat !== "never")
                     if (list === undefined)
                         console.log("Unable to create repeating task!")
-                    else
-                        list.newTask(json)
+                    else {
+                        //print("Adding new task...")
+                        json.completed = false
+                        var docId = String(list.nextDocId++)
+                        list.document.children[docId] = json
+                        print(JSON.stringify(list.document.children))
+                        list.loadTaskU1db(docId)
+                    }
             }
 
             completionDate = new Date()
@@ -171,13 +177,14 @@ Item {
         return dateIsBefore(dueDate, new Date())
     }
 
+    property bool hasDueDate: Qt.formatDate(task.dueDate) !== ""
+
     property string subText: task.completed
                              ? i18n.tr("Completed %1").arg(formattedDate(task.completionDate))
-                             : Qt.formatDate(task.dueDate) === ""
-                               ? task.tags.join(", ")
-                               : task.overdue
-                                 ? i18n.tr("Overdue (due %1)").arg(formattedDate(task.dueDate))
-                                 : i18n.tr("Due %1").arg(formattedDate(task.dueDate))
+                             : hasDueDate ? task.overdue
+                                            ? i18n.tr("Overdue (due %1)").arg(formattedDate(task.dueDate))
+                                            : i18n.tr("Due %1").arg(formattedDate(task.dueDate))
+                                          : task.tags ? task.tags.join(", ") : ""
 
     property string dueDateInfo: task.completed
                                  ? i18n.tr("Completed %1").arg(formattedDate(task.completionDate))

@@ -135,7 +135,7 @@ MainView {
                                ? pageStack.currentPage.currentPage
                                : pageStack.currentPage
 
-    property var viewing: currentPage.hasOwnProperty("type") ? currentPage.type : "unknown"
+    property var viewing: currentPage && currentPage.hasOwnProperty("type") ? currentPage.type : "unknown"
 
     property var currentProject: currentPage && currentPage.hasOwnProperty("currentProject") ? currentPage.currentProject : null
     property var currentList: currentPage && currentPage.hasOwnProperty("currentList") ? currentPage.currentList : null
