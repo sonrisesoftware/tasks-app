@@ -41,6 +41,9 @@ Item {
     property int loading: 0
     property int totalLoading: 0
 
+    property int archivedProjectsCount: count(projects, function(project) { return project.archived && !project.special })
+    property int openProjectsCount: count(projects, function(project) { return !project.archived && !project.special })
+
     property int nextDocId: 0
 
     /* The actual projects model */

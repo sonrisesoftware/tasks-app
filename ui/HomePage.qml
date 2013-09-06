@@ -72,73 +72,8 @@ Page {
     Sidebar {
         id: sidebar
 
-        Column {
-            id: column
-            width: parent.width
-
-            ProjectListItem {
-                project: null
-            }
-
-            Repeater {
-                model: localProjectsModel.projects
-
-                delegate: ProjectListItem {
-                    project: modelData
-                    visible: modelData.special
-                }
-            }
-
-            Repeater {
-                model: backendModels
-
-                delegate: Column {
-                    width: parent.width
-                    visible: modelData.enabled
-                    Header {
-                        text: modelData.name
-
-                        ProgressBar {
-                            id: progressBar
-
-                            anchors {
-                                left: parent.horizontalCenter
-                                //leftMargin: units.gu(1)
-                                right: parent.right
-                                rightMargin: units.gu(2)
-                                verticalCenter: parent.verticalCenter
-                            }
-                            //width: units.gu(20)
-
-                            height: units.gu(2.5)
-
-                            value: maximumValue - modelData.loading
-                            minimumValue: 0
-                            maximumValue: modelData.totalLoading
-                            visible: maximumValue > 0
-                        }
-
-//                        ActivityIndicator {
-//                            anchors {
-//                                verticalCenter: parent.verticalCenter
-//                                right: parent.right
-//                                rightMargin: units.gu(2)
-//                            }
-
-//                            visible: running
-//                            running: modelData.loading > 0
-//                        }
-                    }
-
-                    Repeater {
-                        model: modelData.projects
-
-                        delegate: ProjectListItem {
-                            project: modelData
-                        }
-                    }
-                }
-            }
+        ProjectsList {
+            id: projectsList
         }
 
         expanded: wideAspect
@@ -178,16 +113,18 @@ Page {
                     color: Qt.rgba(0.2,0.2,0.2,0.2)
                 }
 
+                selectedIndex: values.indexOf("To Do")
                 text: i18n.tr("List")
                 values: {
                     var list = subList(currentProject === null ? [] : currentProject.lists, "name")
-                    list.push(i18n.tr("<i>New List...</i>"))
+                    if (list.editable)
+                        list.push(i18n.tr("<i>New List...</i>"))
                     return list
                 }
                 visible: currentProject && currentProject.supportsLists
 
                 onSelectedIndexChanged: {
-                    if (selectedIndex === values.length - 1) {
+                    if (list.editable && selectedIndex === values.length - 1) {
                         print("NEW LIST...")
                     } else {
                         currentList = currentProject.lists.get(selectedIndex).modelData

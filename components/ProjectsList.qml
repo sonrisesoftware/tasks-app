@@ -22,92 +22,61 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
-import "../components"
-import "../ubuntu-ui-extras"
 
-Page {
+Column {
     id: root
+    width: parent.width
 
-    title: i18n.tr("Search")
+    ProjectListItem {
+        project: null
+    }
 
-    property string type: "search"
+    Repeater {
+        model: localProjectsModel.projects
 
-    Sidebar {
-        id: sidebar
+        delegate: ProjectListItem {
+            project: modelData
+            visible: modelData.special
+        }
+    }
 
-        Column {
-            id: column
+    Repeater {
+        model: backendModels
+
+        delegate: Column {
             width: parent.width
+            visible: modelData.enabled && (showArchived ? modelData.archivedProjectsCount : modelData.openProjectsCount) > 0
+            Header {
+                text: modelData.name
 
-            Empty {
-                TextField {
-                    id: filterField
+                ProgressBar {
+                    id: progressBar
 
                     anchors {
-                        left: parent.left
+                        left: parent.horizontalCenter
+                        //leftMargin: units.gu(1)
                         right: parent.right
+                        rightMargin: units.gu(2)
                         verticalCenter: parent.verticalCenter
-                        margins: units.gu(1)
                     }
+                    //width: units.gu(20)
 
-                    placeholderText: i18n.tr("Search...")
+                    height: units.gu(2.5)
+
+                    value: maximumValue - modelData.loading
+                    minimumValue: 0
+                    maximumValue: modelData.totalLoading
+                    visible: maximumValue > 0
                 }
             }
 
-            ValueSelector {
-                id: completedSelector
-                text: i18n.tr("Completed")
-                values: [
-                    i18n.tr("Yes"),
-                    i18n.tr("No"),
-                    i18n.tr("Maybe")
-                ]
+            Repeater {
+                model: modelData.projects
 
-                selectedIndex: 2
+                delegate: ProjectListItem {
+                    project: modelData
+                }
             }
-        }
-
-        expanded: wideAspect
-
-        onExpandedChanged: {
-            if (expanded) {
-                filterField.text = filterBar.text
-            } else {
-                filterBar.text = filterField.text
-            }
-        }
-    }
-
-    FilterBar {
-        id: filterBar
-        anchors.left: sidebar.right
-        expanded: !sidebar.expanded
-    }
-
-
-    property var filterText: sidebar.expanded ? filterField.text : filterBar.text
-
-    TasksList {
-        id: list
-
-        anchors {
-            top: filterBar.bottom
-            bottom: parent.bottom
-            right: parent.right
-            left: sidebar.right
-        }
-
-        noneMessage: i18n.tr("No items match your search")
-
-        showAddBar: false
-        tasks: root.active ? allTasks : []
-        filter: function(task) {
-            var result = true
-            if (!task.matches(filterText)) result = false
-            if (completedSelector.selectedIndex === 0 && !task.completed) result = false
-            if (completedSelector.selectedIndex === 1 && task.completed) result = false
-
-            return result
         }
     }
 }

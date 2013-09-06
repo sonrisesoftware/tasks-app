@@ -49,47 +49,12 @@ Page {
         anchors.topMargin: -1
         topMargin: 1
 
-        contentHeight: column.height
+        contentHeight: projectsList.height
         contentWidth: width
         //clip: true
 
-        Column {
-            id: column
-            width: parent.width
-
-            Repeater {
-                model: backendModels
-
-                delegate: Column {
-                    id: modelColumn
-                    visible: modelData.enabled
-                    width: parent.width
-                    Header {
-                        id: header
-                        text: modelData.name
-                        visible: count(modelData.projects, filter) > 0
-
-                        ActivityIndicator {
-                            anchors {
-                                verticalCenter: parent.verticalCenter
-                                right: parent.right
-                                rightMargin: units.gu(2)
-                            }
-
-                            visible: running
-                            running: modelData.loading > 0
-                        }
-                    }
-
-                    Repeater {
-                        model: modelData.projects
-
-                        delegate: ProjectListItem {
-                            project: modelData
-                        }
-                    }
-                }
-            }
+        ProjectsList {
+            id: projectsList
         }
     }
 
