@@ -89,7 +89,7 @@ ListView {
         }
 
         text: i18n.tr("Add item")
-        enabled: task.editable
+        enabled: task.canEdit("checklist")
 
         onClicked: {
             task.checklist.add(i18n.tr("New Item"))

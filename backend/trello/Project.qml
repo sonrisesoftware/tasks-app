@@ -75,7 +75,6 @@ GenericProject {
 
     // For loading a project from U1db
     function loadListU1db(docId) {
-        print("TRELLO LOAD!")
         var list = createList({
                                         docId: docId
                                     })
@@ -102,18 +101,18 @@ GenericProject {
 
         for (var k = 0; k < lists.count; k++) {
             var found = false
-            var list = lists.get(k).modelData
-            if (list.locked) return
+            var list2 = lists.get(k).modelData
+            if (list2.locked) return
 
             for (var j = 0; j < json.length; j++) {
-                if (list.listID === json[j].id) {
+                if (list2.listID === json[j].id) {
                     found = true
                     break
                 }
             }
 
             if (!found)
-                list.remove()
+                list2.remove()
         }
     }
 

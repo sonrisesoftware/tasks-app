@@ -98,16 +98,36 @@ Page {
                     Header {
                         text: modelData.name
 
-                        ActivityIndicator {
+                        ProgressBar {
+                            id: progressBar
+
                             anchors {
-                                verticalCenter: parent.verticalCenter
+                                left: parent.horizontalCenter
+                                //leftMargin: units.gu(1)
                                 right: parent.right
                                 rightMargin: units.gu(2)
+                                verticalCenter: parent.verticalCenter
                             }
+                            //width: units.gu(20)
 
-                            visible: running
-                            running: modelData.loading > 0
+                            height: units.gu(2.5)
+
+                            value: maximumValue - modelData.loading
+                            minimumValue: 0
+                            maximumValue: modelData.totalLoading
+                            visible: maximumValue > 0
                         }
+
+//                        ActivityIndicator {
+//                            anchors {
+//                                verticalCenter: parent.verticalCenter
+//                                right: parent.right
+//                                rightMargin: units.gu(2)
+//                            }
+
+//                            visible: running
+//                            running: modelData.loading > 0
+//                        }
                     }
 
                     Repeater {

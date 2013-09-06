@@ -25,10 +25,22 @@ import ".."
 GenericTask {
     id: task
 
-    editable: false
+    editable: true
 
     property string checklistID: ""
     property string taskID
+    property bool loadingTrello: false
+
+    nonEditableFields: [
+        "repeat", "tags", "checklist", "priority"
+    ]
+
+    property var trelloFields: {
+        "name": "name",
+        "description": "desc",
+        "completed": "closed",
+        "dueDate": "due"
+    }
 
     onTaskIDChanged: {
         if (!updating)
@@ -39,16 +51,39 @@ GenericTask {
         taskID = document.get("taskID", "")
     }
 
+    function fieldChanged(name, value) {
+        if (!updating) {
+            if (!loadingTrello && trelloFields.hasOwnProperty(name)) {
+                document.lock(name, value)
+                if (name === "dueDate" && Qt.formatDate(value) === "") {
+                    put("/cards/" + taskID + "/" + trelloFields[name], ["value=" + null], onFieldPosted, name)
+                } else {
+                    put("/cards/" + taskID + "/" + trelloFields[name], ["value=" + value], onFieldPosted, name)
+                }
+            } else {
+                document.set(name, value)
+            }
+        }
+    }
+
+    function onFieldPosted(response, name) {
+        document.unlock(name)
+    }
+
     function loadTrello(json) {
+        loadingTrello = true
+
         taskID = json.id
         name = json.name
         completed = json.closed
-        listID = json.idList
+        dueDate = json.due === null ? new Date("") : json.due
         if (json.idChecklists.length > 0)
             checklistID = json.idChecklists[0] // FIXME: support more than one checklist!
         else
             checklistID = ""
         description = json.badges.description ? json.desc : ""
+
+        loadingTrello = false
     }
 
     function refresh() {

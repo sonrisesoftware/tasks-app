@@ -35,7 +35,7 @@ GenericList {
 
     /* To be called after the document changes,
        either after loading from U1db or after loading from a remote model */
-    customReloadFields: function () {
+    customUploadFields: function() {
         listID = document.get("listID", "")
     }
 

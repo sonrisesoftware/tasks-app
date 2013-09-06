@@ -100,7 +100,7 @@ Item {
                         fontSize: "large"
                         bold: true
                         text: task.name
-                        editable: task.editable
+                        editable: task.canEdit("name")
                         placeholderText: i18n.tr("Title")
                         parentEditing: creating
 
@@ -118,7 +118,7 @@ Item {
                         }
 
                         visible: !creating && !titleLabel.editing
-                        __acceptEvents: task.canComplete && task.editable
+                        __acceptEvents: task.canComplete && task.canEdit("completed")
 
 
                         checked: task.completed
@@ -147,7 +147,7 @@ Item {
                         __styleInstance.color = (focus ? Theme.palette.normal.overlayText : "white")
                     }
 
-                    readOnly: !task.editable
+                    readOnly: !task.canEdit("description")
                     text: task.description
                     placeholderText: i18n.tr("Description")
 

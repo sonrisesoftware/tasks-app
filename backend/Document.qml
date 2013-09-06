@@ -86,6 +86,8 @@ Object {
 
             if (reload !== undefined)
                 reload()
+        } else {
+            print("WARNING>>>>>>>>>>>>>>>>>>>>> FIELD IS LOCKED!!!!", name, value)
         }
     }
 

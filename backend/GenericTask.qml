@@ -29,7 +29,12 @@ Item {
     property var project: list.project
     property var list
     property bool editable: project.editable
+    property var nonEditableFields: []
     property var customUploadFields
+
+    function canEdit(name) {
+        return editable && nonEditableFields.indexOf(name) === -1
+    }
 
     /* Properties describing the task */
 

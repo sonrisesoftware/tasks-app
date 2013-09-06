@@ -32,7 +32,8 @@ Column {
     property var task
 
     Standard {
-        visible: !task.hasChecklist && task.editable
+        visible: !task.hasChecklist
+        enabled: task.canEdit("checklist")
 
         text: i18n.tr("Add Checklist...")
         onClicked: {
@@ -44,7 +45,7 @@ Column {
         id: prioritySelector
 
         text: i18n.tr("Priority")
-        enabled: task.editable
+        enabled: task.canEdit("priority")
 
 //        Row {
 //            spacing: units.gu(1)
@@ -133,7 +134,7 @@ Column {
         id: dueDateField
 
         text: i18n.tr("Due Date")
-        enabled: task.editable
+        enabled: task.canEdit("dueDate")
 
         value: task.dueDateInfo
         visible: task.hasOwnProperty("dueDate")
@@ -147,7 +148,7 @@ Column {
         id: repeatSelector
         text: i18n.tr("Repeat")
         visible: task.hasOwnProperty("repeat")
-        enabled: task.editable && task.hasDueDate
+        enabled: task.canEdit("repeat") && task.hasDueDate
 
         values: [i18n.tr("Never"), i18n.tr("Daily"), i18n.tr("Weekly"), i18n.tr("Monthly"), i18n.tr("Yearly")]
         selectedIndex: getSelectedIndex()
@@ -174,6 +175,7 @@ Column {
         id: tagsSelector
 
         text: i18n.tr("Tags")
+        enabled: task.canEdit("tags")
 
         values: task.tags
         onClicked: PopupUtils.open(tagsPopover, tagsSelector, {task: task})

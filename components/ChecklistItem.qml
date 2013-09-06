@@ -45,7 +45,7 @@ Empty {
 
             anchors.verticalCenter: parent.verticalCenter
 
-            __acceptEvents: task.editable
+            __acceptEvents: task.canEdit("checklist")
             checked: modelData.completed
             onCheckedChanged: {
                 task.checklist.setCompletion(itemIndex, checked)
@@ -57,7 +57,7 @@ Empty {
             anchors.verticalCenter: parent.verticalCenter
             width: parent.width - checkBox.width - parent.spacing
 
-            editable: task.editable
+            editable: task.canEdit("checklist")
             text: modelData.name
             onTextChanged: {
                 task.checklist.setName(itemIndex, text)
@@ -69,7 +69,7 @@ Empty {
 
     highlightWhenPressed: false
 
-    removable: true
+    removable: task.canEdit("checklist")
     onItemRemoved: {
         task.checklist.remove(index)
     }

@@ -118,7 +118,6 @@ GenericBackend {
 
     // For loading a project from U1db
     function loadProjectU1db(docId) {
-        print("TRELLO LOAD!")
         var project = createProject({
                                         docId: docId
                                     })
@@ -150,30 +149,33 @@ GenericBackend {
         request(path, "POST", options, callback, args)
     }
 
-    function put(path, options, callback) {
-        request(path, "PUT", options, callback)
+    function put(path, options, callback, args) {
+        request(path, "PUT", options, callback, args)
     }
 
-    function get(path, options, callback) {
-        request(path, "GET", options, callback)
+    function get(path, options, callback, args) {
+        request(path, "GET", options, callback, args)
     }
 
     function request(path, call, options, callback, args) {
         var address = "https://trello.com/1" + path + "?key=" + key + "&token=" + token
-        print(token)
+        //print(token)
+
         if (token === "")
             Qt.quit()
         if (options.length > 0)
             address += "&" + options.join("&").replace(" ", "+")
 
-        print(call, address)
+        //print(call, address)
 
         var doc = new XMLHttpRequest();
         doc.onreadystatechange = function() {
             if (doc.readyState === XMLHttpRequest.DONE) {
                 loading--
-                print(call, path, options.join("&").replace(" ", "+"))
-                print("Response:", doc.responseText)
+                if (loading === 0)
+                    totalLoading = 0
+                //print(call, path, options.join("&").replace(" ", "+"))
+                //print("Response:", doc.responseText)
                 if (callback !== undefined)
                     callback(doc.responseText, args)
             }
@@ -184,6 +186,7 @@ GenericBackend {
         doc.send();
 
         loading++
+        totalLoading++
     }
 
     function authenticate(name) {

@@ -39,6 +39,7 @@ Item {
     property var allTasks: concat(projects, "allTasks")
     property var upcomingTasks: concat(projects, "upcomingTasks", function(project) { return !project.archived })
     property int loading: 0
+    property int totalLoading: 0
 
     property int nextDocId: 0
 

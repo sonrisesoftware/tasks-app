@@ -32,7 +32,7 @@ Item {
     property string name                // The name of the list
     property var project
     property bool editable: project.editable
-    property var customReloadFields
+    property var customUploadFields
 
     property var upcomingTasks: filter(tasks, function(task) {
         return task.upcoming
