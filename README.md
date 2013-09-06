@@ -139,3 +139,7 @@ Day 30 - 9/5/2013
  * Added editing of some Trello card fields
 
 ** Released version 0.3.1**
+
+Day 31 - 9/6/2013
+ * Improved performance on startup
+ * Fixed Trello field locking

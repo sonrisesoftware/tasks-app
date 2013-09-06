@@ -29,7 +29,6 @@ GenericTask {
 
     property string checklistID: ""
     property string taskID
-    property bool loadingTrello: false
 
     nonEditableFields: [
         "repeat", "tags", "checklist", "priority"
@@ -53,7 +52,7 @@ GenericTask {
 
     function fieldChanged(name, value) {
         if (!updating) {
-            if (!loadingTrello && trelloFields.hasOwnProperty(name)) {
+            if (trelloFields.hasOwnProperty(name)) {
                 document.lock(name, value)
                 if (name === "dueDate" && Qt.formatDate(value) === "") {
                     put("/cards/" + taskID + "/" + trelloFields[name], ["value=" + null], onFieldPosted, name)
@@ -71,19 +70,17 @@ GenericTask {
     }
 
     function loadTrello(json) {
-        loadingTrello = true
-
-        taskID = json.id
-        name = json.name
-        completed = json.closed
-        dueDate = json.due === null ? new Date("") : json.due
+        document.set("taskID", json.id)
+        document.set("name", json.name)
+        document.set("completed", json.closed)
+        document.set("dueDate", json.due === null ? new Date("") : json.due)
         if (json.idChecklists.length > 0)
             checklistID = json.idChecklists[0] // FIXME: support more than one checklist!
         else
             checklistID = ""
-        description = json.badges.description ? json.desc : ""
+        document.set("description", json.badges.description ? json.desc : "")
 
-        loadingTrello = false
+        reloadFields()
     }
 
     function refresh() {

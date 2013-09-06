@@ -143,15 +143,19 @@ Item {
 
                     Component.onCompleted: __styleInstance.color = "white"
 
-                    onFocusChanged: {
-                        __styleInstance.color = (focus ? Theme.palette.normal.overlayText : "white")
-                    }
-
                     readOnly: !task.canEdit("description")
                     text: task.description
                     placeholderText: i18n.tr("Description")
 
-                    onTextChanged: task.description = text
+                    onFocusChanged: {
+                        __styleInstance.color = (focus ? Theme.palette.normal.overlayText : "white")
+
+                        if (focus) {
+                            text = Qt.binding(function() { return task.description})
+                        } else {
+                            task.description = text
+                        }
+                    }
                 }
             }
 

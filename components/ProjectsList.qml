@@ -29,6 +29,7 @@ Column {
 
     ProjectListItem {
         project: null
+        visible: wideAspect
     }
 
     Repeater {
@@ -36,7 +37,7 @@ Column {
 
         delegate: ProjectListItem {
             project: modelData
-            visible: modelData.special
+            visible: modelData.special && wideAspect
         }
     }
 
@@ -53,13 +54,13 @@ Column {
                     id: progressBar
 
                     anchors {
-                        left: parent.horizontalCenter
-                        //leftMargin: units.gu(1)
+                        //left: parent.horizontalCenter
+                        //leftMargin: units.gu(5)
                         right: parent.right
                         rightMargin: units.gu(2)
                         verticalCenter: parent.verticalCenter
                     }
-                    //width: units.gu(20)
+                    width: 1/3 * parent.width
 
                     height: units.gu(2.5)
 

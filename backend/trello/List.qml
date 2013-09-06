@@ -40,8 +40,10 @@ GenericList {
     }
 
     function loadTrello(json) {
-        name = json.name
-        listID = json.id
+        document.set("name", json.name)
+        document.set("listID", json.id)
+
+        reloadFields()
     }
 
     function refresh() {

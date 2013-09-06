@@ -50,9 +50,11 @@ GenericProject {
     }
 
     function loadTrello(json) {
-        name = json.name
-        boardID = json.id
-        archived = json.closed
+        document.set("name", json.name)
+        document.set("boardID", json.id)
+        document.set("archived", json.closed)
+
+        reloadFields()
     }
 
     function refresh() {
