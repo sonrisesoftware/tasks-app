@@ -133,3 +133,9 @@ Day 30 - 9/5/2013
  * Added uncategorized feature
 
 **Released version 0.3**
+
+Day 30 - 9/5/2013
+ * Fixed label font size in tasks list
+ * Added editing of some Trello card fields
+
+** Released version 0.3.1**
