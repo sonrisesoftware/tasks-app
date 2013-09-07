@@ -113,7 +113,7 @@ Page {
                     color: Qt.rgba(0.2,0.2,0.2,0.2)
                 }
 
-                selectedIndex: values.indexOf("To Do")
+                selectedIndex: values.indexOf(currentList.name)
                 text: i18n.tr("List")
                 values: {
                     var list = subList(currentProject === null ? [] : currentProject.lists, "name")
@@ -126,9 +126,11 @@ Page {
                 onSelectedIndexChanged: {
                     if (list.editable && selectedIndex === values.length - 1) {
                         print("NEW LIST...")
-                    } else {
+                    } else if (selectedIndex > -1) {
                         currentList = currentProject.lists.get(selectedIndex).modelData
                     }
+
+                    selectedIndex = Qt.binding(function() { return currentList === null ? -1 : values.indexOf(currentList.name) })
                 }
             }
 
