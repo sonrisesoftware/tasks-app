@@ -33,6 +33,9 @@ Item {
     property bool editing
     property bool editable
 
+    property color color: overlay ? Theme.palette.normal.overlayText : Theme.palette.selected.backgroundText
+    property bool overlay
+
     onEditingChanged: {
         if (editing)
             textField.focus = true
@@ -68,6 +71,7 @@ Item {
         font.italic: root.labelText === ""
         elide: Text.ElideRight
         visible: !(editing || parentEditing)
+        color: root.color
         text: root.labelText != "" ? root.labelText : root.placeholderText
     }
 
@@ -104,7 +108,7 @@ Item {
             verticalCenter: parent.verticalCenter
         }
 
-        Component.onCompleted: __styleInstance.color = "white"
+        Component.onCompleted: __styleInstance.color = root.color
 
         //width: Math.min(parent.width, units.gu(50))
 
@@ -112,7 +116,7 @@ Item {
         visible: editing || parentEditing
 
         onFocusChanged:  {
-            focus ? __styleInstance.color = Theme.palette.normal.overlayText : __styleInstance.color = "white"
+            focus ? __styleInstance.color = Theme.palette.normal.overlayText : __styleInstance.color = root.color
 
             if (focus === false) {
                 print("Saving text...")

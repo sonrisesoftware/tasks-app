@@ -840,6 +840,12 @@ MainView {
     }
 
     Component {
+        id: projectPopover
+
+        ProjectInfoPopover {}
+    }
+
+    Component {
         id: projectsPopover
 
         ProjectsPopover {}

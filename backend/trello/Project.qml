@@ -36,6 +36,7 @@ GenericProject {
     property var trelloFields: {
         "name": "name",
         "archived": "closed",
+        "description": "desc",
     }
 
     onBoardIDChanged: {

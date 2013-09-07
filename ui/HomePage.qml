@@ -195,27 +195,13 @@ Page {
         }
 
         ToolbarButton {
+            id: projectButton
             iconSource: icon("edit")
-            text: i18n.tr("Rename")
-            visible: currentProject !== null && !currentProject.special
-            enabled: currentProject !== null && currentProject.editable
+            text: i18n.tr("Project")
+            visible:  currentProject !== null
 
             onTriggered: {
-                PopupUtils.open(renameProjectDialog, root, {
-                                    project: currentProject
-                                })
-            }
-        }
-
-        ToolbarButton {
-            iconSource: icon("save")
-            text: i18n.tr("Archive")
-            enabled: currentProject !== null && currentProject.editable
-            visible: currentProject !== null && !currentProject.special
-
-            onTriggered: {
-                currentProject.archived = true
-                currentProject = null
+                PopupUtils.open(projectPopover, projectButton, {project: currentProject})
             }
         }
 
