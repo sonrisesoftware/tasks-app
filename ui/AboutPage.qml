@@ -42,7 +42,7 @@ Page {
 
         UbuntuShape {
             image: Image {
-                source: "../ubuntu-tasks-128.png"
+                source: "../icons/ubuntu-tasks-128.png"
             }
 
             width: 128
