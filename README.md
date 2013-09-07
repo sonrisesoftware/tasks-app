@@ -138,7 +138,7 @@ Day 30 - 9/5/2013
  * Fixed label font size in tasks list
  * Added editing of some Trello card fields
 
-** Released version 0.3.1**
+**Released version 0.3.1**
 
 Day 31 - 9/6/2013
  * Improved performance on startup
@@ -147,3 +147,5 @@ Day 31 - 9/6/2013
  * Added support for adding tasks to a Trello board
  * Added support for renaming/archiving Trello projects
  * Fixed Trello refresh
+
+**Released version 0.4**
