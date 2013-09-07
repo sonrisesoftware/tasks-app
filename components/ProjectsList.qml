@@ -80,4 +80,10 @@ Column {
             }
         }
     }
+
+    property var filter: function(project) {
+        return (showArchived === project.archived) && !project.special
+    }
+
+    property bool hasProjects: filteredSum(backendModels, "projects", filter) > 0
 }

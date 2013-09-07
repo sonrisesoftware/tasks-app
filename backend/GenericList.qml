@@ -33,11 +33,21 @@ Item {
     property var project
     property bool editable: project.editable
     property var customUploadFields
+    property var nonEditableFields: []
+    property var invalidActions: []
+
+    function supportsAction(name) {
+        return editable && invalidActions.indexOf(name) === -1
+    }
+
+    function canEdit(name) {
+        return editable && nonEditableFields.indexOf(name) === -1
+    }
 
     property var upcomingTasks: filter(tasks, function(task) {
         return task.upcoming
     }, "Upcoming tasks")
-    property int uncompletedCount: count(tasks, function(task) {
+    property int uncompletedCount: name === "Done" ? 0 : count(tasks, function(task) {
         return !task.completed
     })
 
@@ -145,6 +155,8 @@ Item {
         tasks.append({modelData: task})
         //print("TASKS", tasks.count)
     }
+
+    function addTask(task) { internal_addTask(task) }
 
     /* Deletion of tasks */
 

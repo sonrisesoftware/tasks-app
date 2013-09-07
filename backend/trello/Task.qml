@@ -26,12 +26,16 @@ GenericTask {
     id: task
 
     editable: true
-
     property string checklistID: ""
     property string taskID
+    property bool locked: false
 
     nonEditableFields: [
         "repeat", "tags", "checklist", "priority"
+    ]
+
+    invalidActions: [
+        "delete"
     ]
 
     property var trelloFields: {

@@ -34,7 +34,7 @@ GenericBackend {
     requiresInternet: true
     databaseName: "trello"
     enabled: token !== "" && trelloIntegration
-    editable: false
+    //editable: false
     supportsStatistics: false
 
     function newProject(name) {

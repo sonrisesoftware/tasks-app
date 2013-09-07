@@ -41,6 +41,17 @@ Item {
     property var allTasks: concat(lists, "tasks")
     property int uncompletedCount: sum(lists, "uncompletedCount")
 
+    property var nonEditableFields: []
+    property var invalidActions: []
+
+    function supportsAction(name) {
+        return editable && invalidActions.indexOf(name) === -1
+    }
+
+    function canEdit(name) {
+        return editable && nonEditableFields.indexOf(name) === -1
+    }
+
     property int nextDocId: 0
     property var listComponent
     property var customUploadFields

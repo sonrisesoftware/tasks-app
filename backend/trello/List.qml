@@ -27,6 +27,11 @@ GenericList {
     id: list
 
     property string listID
+    editable: true
+
+    invalidActions: [
+        "rename", "delete"
+    ]
 
     onListIDChanged: {
         if (!updating)
@@ -96,6 +101,35 @@ GenericList {
         internal_addTask(task)
         task.loadU1db()
         return task
+    }
+
+    function newTask(name) {
+        //print("Adding new task...")
+        var task = createTask({
+                          docId: nextDocId++
+                      })
+        task.name = name
+        task.locked = true
+        addTask(task)
+        return task
+    }
+
+    function addTask(task) {
+        if (task.list !== list)
+            task.list = list
+        if (task.docId === "")
+            task.docId = nextDocId++
+        print("Adding task:", task.name)
+        post("/lists/" + listID + "/cards", ["name=" + task.name], onNewTask, task)
+        tasks.append({modelData: task})
+        //print("TASKS", tasks.count)
+    }
+
+    function onNewTask(response, task) {
+        print("Response:", response)
+        var json = JSON.parse(response)
+        task.taskID = json.id
+        task.locked = false
     }
 
     taskComponent: Component {

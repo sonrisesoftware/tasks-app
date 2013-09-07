@@ -29,8 +29,13 @@ Item {
     property var project: list.project
     property var list
     property bool editable: project.editable
-    property var nonEditableFields: []
     property var customUploadFields
+    property var nonEditableFields: []
+    property var invalidActions: []
+
+    function supportsAction(name) {
+        return editable && invalidActions.indexOf(name) === -1
+    }
 
     function canEdit(name) {
         return editable && nonEditableFields.indexOf(name) === -1
@@ -253,7 +258,7 @@ Item {
     }
 
     function canMoveToProject(project) {
-        return project.editable && project.lists.count > 0
+        return project.lists.count > 0 && task.supportsAction("delete") && get(project.lists, 0).supportsAction("addTask")
     }
 
     function moveToProject(project) {
@@ -261,19 +266,19 @@ Item {
 
         remove()
         print(JSON.stringify(database.save()))
-        project.lists.get(0).modelData.internal_addTask(task)
+        project.lists.get(0).modelData.addTask(task)
         print(JSON.stringify(database.save()))
     }
 
     function canMoveToList(list) {
-        return list.editable
+        return task.supportsAction("delete") && task.list.supportsAction("addTask")
     }
 
     function moveToList(list) {
         if (list === task.list) return
 
         remove()
-        list.internal_addTask(task)
+        list.addTask(task)
     }
 
     function matches(text) {

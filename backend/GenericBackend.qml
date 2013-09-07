@@ -40,6 +40,16 @@ Item {
     property var upcomingTasks: concat(projects, "upcomingTasks", function(project) { return !project.archived })
     property int loading: 0
     property int totalLoading: 0
+    property var nonEditableFields: []
+    property var invalidActions: []
+
+    function supportsAction(name) {
+        return editable && invalidActions.indexOf(name) === -1
+    }
+
+    function canEdit(name) {
+        return editable && nonEditableFields.indexOf(name) === -1
+    }
 
     property int archivedProjectsCount: count(projects, function(project) { return project.archived && !project.special })
     property int openProjectsCount: count(projects, function(project) { return !project.archived && !project.special })

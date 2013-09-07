@@ -34,11 +34,6 @@ Page {
 
     property bool showArchived: false
 
-    property var filter: function(project) {
-        return (showArchived === project.archived) && !project.special
-    }
-    property bool hasProjects: filteredSum(backendModels, "projects", filter) > 0
-
     property var currentProject: null
 
     Flickable {
@@ -56,15 +51,17 @@ Page {
         ProjectsList {
             id: projectsList
         }
+
+
     }
 
     Label {
-        id: noTasksLabel
+        id: noneItem
         objectName: "noProjectsLabel"
 
         anchors.centerIn: parent
 
-        visible: !hasProjects
+        visible: !projectsList.hasProjects
         opacity: 0.5
 
         fontSize: "large"
@@ -106,7 +103,7 @@ Page {
             text: i18n.tr("Clear")
             iconSource: icon("clear")
             visible: showArchived
-            enabled: hasProjects
+            enabled: projectsList.hasProjects
 
             onTriggered: {
                 for (var i = 0; i < backendModels.length; i++) {

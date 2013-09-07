@@ -820,7 +820,7 @@ MainView {
                     id: moveAction
 
                     text: i18n.tr("Move")
-                    enabled: task.editable
+                    enabled: task.supportsAction("delete")
                     onTriggered: {
                         PopupUtils.open(projectsPopover, caller, {
                                             task: task
@@ -830,7 +830,7 @@ MainView {
 
                 Action {
                     id: deleteAction
-                    enabled: task.editable
+                    enabled: task.supportsAction("delete")
 
                     text: i18n.tr("Delete")
                     onTriggered: PopupUtils.open(confirmDeleteTaskDialog, root, {task: task})

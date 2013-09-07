@@ -150,7 +150,7 @@ Page {
 
     QuickAddBar {
         id: addBar
-        expanded: currentProject !== null && currentProject.editable
+        expanded: currentProject !== null && currentList === null ? false : currentList.supportsAction("addTask")
         anchors.left: sidebar.right
     }
 
@@ -179,7 +179,7 @@ Page {
         ToolbarButton {
             iconSource: icon("add")
             text: i18n.tr("Add Task")
-            enabled: currentProject === null ? true : currentProject.editable
+            enabled: currentProject === null ? true : currentList === null ? false : currentList.supportsAction("addTask")
             visible: (currentProject === null && !wideAspect) || currentProject !== null
 
             onTriggered: {
