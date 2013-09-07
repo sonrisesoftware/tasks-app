@@ -78,7 +78,7 @@ Page {
         id: trelloAuthentication
 
         Trello.TrelloAuthenticationDialog {
-            onAccepted: trello.load({})
+            onAccepted: trello.connect()
             onRejected: trelloIntegration = false
         }
     }

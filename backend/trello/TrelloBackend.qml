@@ -36,6 +36,7 @@ GenericBackend {
     enabled: token !== "" && trelloIntegration
     //editable: false
     supportsStatistics: false
+    property bool firstLoad: false
 
     function newProject(name) {
         var project = createProject({
@@ -70,6 +71,11 @@ GenericBackend {
             loadU1db(json)
             authorized()
         }
+    }
+
+    function connect() {
+        firstLoad = true
+        authorized()
     }
 
     function internal_newProject() {
@@ -187,9 +193,11 @@ GenericBackend {
         var doc = new XMLHttpRequest();
         doc.onreadystatechange = function() {
             if (doc.readyState === XMLHttpRequest.DONE) {
-                loading--
-                if (loading === 0)
-                    totalLoading = 0
+                if (call !== "GET" || firstLoad) {
+                    loading--
+                    if (loading === 0)
+                        totalLoading = 0
+                }
                 //print(call, path, options.join("&").replace(" ", "+"))
                 //print("Response:", doc.responseText)
                 if (callback !== undefined)
@@ -201,8 +209,10 @@ GenericBackend {
         //doc.setRequestHeader("Accept", "application/json")
         doc.send();
 
-        loading++
-        totalLoading++
+        if (call !== "GET" | firstLoad) {
+            loading++
+            totalLoading++
+        }
     }
 
     function authenticate(name) {
