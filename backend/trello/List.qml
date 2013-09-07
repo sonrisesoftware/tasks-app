@@ -28,6 +28,7 @@ GenericList {
 
     property string listID
     editable: true
+    property var deleteList: []
 
     invalidActions: [
         "rename", "delete"
@@ -59,6 +60,8 @@ GenericList {
         var json = JSON.parse(response)
 
         for (var i = 0; i < json.length; i++) {
+            if (deleteList.indexOf(json[i].id) !== -1) continue
+
             var task = getTask(json[i].id)
             if (task === undefined) {
                 task = internal_newTask()
@@ -82,7 +85,7 @@ GenericList {
             }
 
             if (!found)
-                task.remove()
+                internal_removeTask(task)
         }
     }
 
@@ -134,8 +137,13 @@ GenericList {
 
     function removeTask(task) {
         // For implementation by backend...
-        httpDELETE("/cards/" + task.taskID)
+        httpDELETE("/cards/" + task.taskID, [], onRemoveTask, task)
+        deleteList.push(task.taskID)
         internal_removeTask(task)
+    }
+
+    function onRemoveTask(response, task) {
+        deleteList.splice(deleteList.indexOf(task), 1)
     }
 
     taskComponent: Component {

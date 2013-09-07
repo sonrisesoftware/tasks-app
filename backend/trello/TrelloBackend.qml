@@ -114,7 +114,7 @@ GenericBackend {
             }
 
             if (!found)
-                project.remove()
+                internal_removeProject(project)
         }
     }
 

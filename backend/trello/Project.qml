@@ -129,7 +129,7 @@ GenericProject {
             }
 
             if (!found)
-                list2.remove()
+                internal_removeList(list2)
         }
     }
 
