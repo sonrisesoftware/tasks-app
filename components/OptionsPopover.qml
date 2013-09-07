@@ -103,7 +103,7 @@ Popover {
 
             onClicked: {
                 PopupUtils.close(optionsPopover)
-                trello.load()
+                trello.refresh()
             }
 
             visible: (wideAspect || currentProject === null || currentProject.backend === trello) && trelloIntegration

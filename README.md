@@ -143,3 +143,7 @@ Day 30 - 9/5/2013
 Day 31 - 9/6/2013
  * Improved performance on startup
  * Fixed Trello field locking
+ * Added support for deleting tasks in Trello
+ * Added support for adding tasks to a Trello board
+ * Added support for renaming/archiving Trello projects
+ * Fixed Trello refresh

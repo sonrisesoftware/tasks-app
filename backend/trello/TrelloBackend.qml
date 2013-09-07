@@ -72,10 +72,6 @@ GenericBackend {
         }
     }
 
-    function authorized() {
-        httpGET("/members/my/boards", [], onBoardsLoaded)
-    }
-
     function internal_newProject() {
         print("Creating new project...")
         var project = createProject({
@@ -113,6 +109,19 @@ GenericBackend {
 
             if (!found)
                 project.remove()
+        }
+    }
+
+    function authorized() {
+        httpGET("/members/my/boards", [], onBoardsLoaded)
+    }
+
+    function refresh() {
+        httpGET("/members/my/boards", [], onBoardsLoaded)
+        for (var i = 0; i < length(projects); i++) {
+            var board = getItem(projects, i)
+            if (board !== undefined)
+                board.refresh()
         }
     }
 
