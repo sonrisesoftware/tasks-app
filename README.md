@@ -149,3 +149,11 @@ Day 31 - 9/6/2013
  * Fixed Trello refresh
 
 **Released version 0.4**
+
+Day 32 - 9/7/2013
+ * Only display the Trello progress bar on first load or user action (not startup sync)
+ * Fixed icon in About page
+ * Fixed deleted tasks from reappearing on Trello syncing
+ * Added description UI and merged project actions into Project popover
+
+**Released version 0.4.1**
