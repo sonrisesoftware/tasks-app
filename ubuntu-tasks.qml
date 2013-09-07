@@ -717,7 +717,7 @@ MainView {
                 Action {
                     objectName: "rename"
                     text: i18n.tr("Rename")
-                    enabled: project.editable
+                    enabled: project.canEdit("name")
                     onTriggered: {
                         PopupUtils.open(renameProjectDialog, caller, {
                                             project: project
@@ -728,7 +728,7 @@ MainView {
                 Action {
                     objectName: "archive"
                     text: project.archived ? i18n.tr("Unarchive") : i18n.tr("Archive")
-                    enabled: project.editable
+                    enabled: project.canEdit("archived")
                     onTriggered: {
                         project.archived = !project.archived
                         if (project.archived)
@@ -740,7 +740,7 @@ MainView {
 
                 Action {
                     objectName: "delete"
-                    enabled: project.editable
+                    enabled: project.supportsAction("delete")
                     text: i18n.tr("Delete")
                     onTriggered: {
                         PopupUtils.open(confirmDeleteProjectDialog, root, {project: project})
@@ -820,7 +820,7 @@ MainView {
                     id: moveAction
 
                     text: i18n.tr("Move")
-                    enabled: task.supportsAction("delete")
+                    enabled: task.supportsAction("move")
                     onTriggered: {
                         PopupUtils.open(projectsPopover, caller, {
                                             task: task

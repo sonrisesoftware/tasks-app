@@ -27,26 +27,41 @@ GenericProject {
     id: root
 
     property var boardID
-    editable: false
+    editable: true
     enabled: true
     property bool locked: false
+
+    invalidActions: ["delete"]
+
+    property var trelloFields: {
+        "name": "name",
+        "archived": "closed",
+    }
 
     onBoardIDChanged: {
         if (!updating)
             document.set("boardID", boardID)
     }
 
-//    function fieldChanged(name, value) {
-//        if (!updating) {
-//            document.lock(name, value)
-
-//        }
-//    }
-
     /* To be called after the document changes,
        either after loading from U1db or after loading from a remote model */
     customUploadFields: function() {
         boardID = document.get("boardID", "")
+    }
+
+    function fieldChanged(name, value) {
+        if (!updating) {
+            if (trelloFields.hasOwnProperty(name)) {
+                document.lock(name, value)
+                httpPUT("/board/" + boardID + "/" + trelloFields[name], ["value=" + value], onFieldPosted, name)
+            } else {
+                document.set(name, value)
+            }
+        }
+    }
+
+    function onFieldPosted(response, name) {
+        document.unlock(name)
     }
 
     function loadTrello(json) {
@@ -58,7 +73,7 @@ GenericProject {
     }
 
     function refresh() {
-        get("/boards/" + boardID + "/lists", [], loadLists)
+        httpGET("/boards/" + boardID + "/lists", [], loadLists)
     }
 
     function internal_newList() {

@@ -28,6 +28,7 @@ Popover {
     id: root
 
     property var task
+    property bool showArchived: false
 
     Column {
         anchors {
@@ -37,32 +38,46 @@ Popover {
         }
 
         Repeater {
-            id: repeater
-            model: localProjectsModel.projects
+            id: modelRepeater
+            model: backendModels
 
-            delegate: Standard {
-                //FIXME: Hack because of Suru theme!
-                Label {
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                        left: parent.left
-                        margins: units.gu(2)
-                    }
-
+            delegate: Column {
+                width: parent.width
+                visible: modelData.enabled && (modelData.openProjectsCount) > 0
+                Header {
                     text: modelData.name
-                    fontSize: "medium"
-                    color: selected ? UbuntuColors.orange : Theme.palette.normal.overlayText
                 }
 
-                selected: task.project === modelData
-                enabled: task.canMoveToProject(modelData)
+                Repeater {
+                    id: repeater
+                    model: modelData.projects
 
-                onClicked: {
-                    task.moveToProject(modelData)
-                    PopupUtils.close(root)
+                    delegate: Standard {
+                        //FIXME: Hack because of Suru theme!
+                        Label {
+                            anchors {
+                                verticalCenter: parent.verticalCenter
+                                left: parent.left
+                                margins: units.gu(2)
+                            }
+
+                            text: modelData.name
+                            fontSize: "medium"
+                            color: selected ? UbuntuColors.orange : Theme.palette.normal.overlayText
+                        }
+
+                        selected: task.project === modelData
+                        enabled: task.canMoveToProject(modelData)
+                        visible: !(modelData.special || modelData.archived)
+
+                        onClicked: {
+                            task.moveToProject(modelData)
+                            PopupUtils.close(root)
+                        }
+
+                        showDivider: index < repeater.count - 1
+                    }
                 }
-
-                showDivider: index < repeater.count - 1
             }
         }
 

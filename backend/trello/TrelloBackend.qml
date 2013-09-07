@@ -45,7 +45,7 @@ GenericBackend {
         internal_addProject(project)
         project.loadU1db()
         project.locked = true
-        post("/boards", ["name=" + name], onNewProject, project)
+        httpPOST("/boards", ["name=" + name], onNewProject, project)
         return project
     }
 
@@ -73,7 +73,7 @@ GenericBackend {
     }
 
     function authorized() {
-        get("/members/my/boards", [], onBoardsLoaded)
+        httpGET("/members/my/boards", [], onBoardsLoaded)
     }
 
     function internal_newProject() {
@@ -142,24 +142,31 @@ GenericBackend {
     property string responseText
 
     function call(path, options, callback) {
-        get(path, options, callback)
+        httpGET(path, options, callback)
     }
 
-    function post(path, options, callback, args) {
+    function httpPOST(path, options, callback, args) {
         request(path, "POST", options, callback, args)
     }
 
-    function put(path, options, callback, args) {
+    function httpPUT(path, options, callback, args) {
         request(path, "PUT", options, callback, args)
     }
 
-    function get(path, options, callback, args) {
+    function httpDELETE(path, options, callback, args) {
+        request(path, "DELETE", options, callback, args)
+    }
+
+    function httpGET(path, options, callback, args) {
         request(path, "GET", options, callback, args)
     }
 
     function request(path, call, options, callback, args) {
         var address = "https://trello.com/1" + path + "?key=" + key + "&token=" + token
         //print(token)
+
+        if (options === undefined)
+            options = []
 
         if (token === "")
             Qt.quit()

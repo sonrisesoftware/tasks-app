@@ -52,7 +52,7 @@ GenericList {
     }
 
     function refresh() {
-        get("/lists/" + listID + "/cards", [], loadTasks)
+        httpGET("/lists/" + listID + "/cards", [], loadTasks)
     }
 
     function loadTasks(response) {
@@ -120,7 +120,7 @@ GenericList {
         if (task.docId === "")
             task.docId = nextDocId++
         print("Adding task:", task.name)
-        post("/lists/" + listID + "/cards", ["name=" + task.name], onNewTask, task)
+        httpPOST("/lists/" + listID + "/cards", ["name=" + task.name], onNewTask, task)
         tasks.append({modelData: task})
         //print("TASKS", tasks.count)
     }
@@ -130,6 +130,12 @@ GenericList {
         var json = JSON.parse(response)
         task.taskID = json.id
         task.locked = false
+    }
+
+    function removeTask(task) {
+        // For implementation by backend...
+        httpDELETE("/cards/" + task.taskID)
+        internal_removeTask(task)
     }
 
     taskComponent: Component {

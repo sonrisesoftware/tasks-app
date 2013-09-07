@@ -34,9 +34,7 @@ GenericTask {
         "repeat", "tags", "checklist", "priority"
     ]
 
-    invalidActions: [
-        "delete"
-    ]
+    invalidActions: ["move"]
 
     property var trelloFields: {
         "name": "name",
@@ -59,9 +57,9 @@ GenericTask {
             if (trelloFields.hasOwnProperty(name)) {
                 document.lock(name, value)
                 if (name === "dueDate" && Qt.formatDate(value) === "") {
-                    put("/cards/" + taskID + "/" + trelloFields[name], ["value=" + null], onFieldPosted, name)
+                    httpPUT("/cards/" + taskID + "/" + trelloFields[name], ["value=" + null], onFieldPosted, name)
                 } else {
-                    put("/cards/" + taskID + "/" + trelloFields[name], ["value=" + value], onFieldPosted, name)
+                    httpPUT("/cards/" + taskID + "/" + trelloFields[name], ["value=" + value], onFieldPosted, name)
                 }
             } else {
                 document.set(name, value)
@@ -93,7 +91,7 @@ GenericTask {
 
     onChecklistIDChanged: {
         if (checklistID !== "") {
-            get("/checklists/" + checklistID, [], loadChecklist)
+            httpGET("/checklists/" + checklistID, [], loadChecklist)
         }
     }
 

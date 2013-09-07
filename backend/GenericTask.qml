@@ -258,7 +258,7 @@ Item {
     }
 
     function canMoveToProject(project) {
-        return project.lists.count > 0 && task.supportsAction("delete") && get(project.lists, 0).supportsAction("addTask")
+        return project.lists.count > 0 && task.supportsAction("delete") && getItem(project.lists, 0).supportsAction("addTask")
     }
 
     function moveToProject(project) {
