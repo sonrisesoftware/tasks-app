@@ -1,7 +1,7 @@
 Ubuntu Tasks Feature List
 =========================
 
-Completed:
+**Completed:**
 
  * Projects
    * Create
@@ -11,9 +11,20 @@ Completed:
    * Clear archived projects
  * Lists
  * Tasks
+   * Create
+   * Quick add
+   * Rename
+   * Archive
+   * Delete
+   * Description
+   * Due date
+   * Repeating
+   * Priority
+   * Tags
  * Other
+   * Search
 
-To Do:
+**To Do:**
 
  * Projects
    * Statistics
@@ -23,14 +34,7 @@ To Do:
    * Archive
    * Delete
  * Tasks
-   * Create
-   * Quick create
-   * Rename
-   * Archive
-   * Delete
    * Dependencies
-   * Tags
  * Other
    * Sorting
-   * Search
    * Filters
