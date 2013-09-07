@@ -40,23 +40,27 @@ Page {
     property var currentProject: null
 
     onCurrentProjectChanged: {
-        currentList = null
+        currentList = Qt.binding(getList)
+    }
 
+    property var currentList: getList()
+
+    function getList() {
+        var list = null
         if (currentProject !== null) {
             if (currentProject.lists.count > 0) {
-                currentList = currentProject.lists.get(0).modelData
+                list =  currentProject.lists.get(0).modelData
 
                 for (var i = 0; i < length(currentProject.lists); i++) {
                     if (get(currentProject.lists, i).name === "To Do") {
-                        currentList = get(currentProject.lists, i)
-                        break
+                        list = get(currentProject.lists, i)
                     }
                 }
             }
         }
-    }
 
-    property var currentList: null
+        return list
+    }
 
     onCurrentListChanged: {
         if (currentList !== null && currentList.tasks.count > 0)
@@ -181,6 +185,7 @@ Page {
         ToolbarButton {
             iconSource: icon("add")
             text: i18n.tr("Add Task")
+
             enabled: currentProject === null ? true : currentList === null ? false : currentList.supportsAction("addTask")
             visible: (currentProject === null && !wideAspect) || currentProject !== null
 

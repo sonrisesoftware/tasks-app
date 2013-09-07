@@ -707,50 +707,6 @@ MainView {
     }
 
     Component {
-        id: projectActionsPopover
-
-        ActionSelectionPopover {
-            property var project
-            objectName: "projectActionsPopover"
-
-            actions: ActionList {
-                Action {
-                    objectName: "rename"
-                    text: i18n.tr("Rename")
-                    enabled: project.canEdit("name")
-                    onTriggered: {
-                        PopupUtils.open(renameProjectDialog, caller, {
-                                            project: project
-                                        })
-                    }
-                }
-
-                Action {
-                    objectName: "archive"
-                    text: project.archived ? i18n.tr("Unarchive") : i18n.tr("Archive")
-                    enabled: project.canEdit("archived")
-                    onTriggered: {
-                        project.archived = !project.archived
-                        if (project.archived)
-                            notification.show(i18n.tr("Archived %1").arg(project.name), icon("back"), function(project) {
-                                project.archived = false
-                            }, project)
-                    }
-                }
-
-                Action {
-                    objectName: "delete"
-                    enabled: project.supportsAction("delete")
-                    text: i18n.tr("Delete")
-                    onTriggered: {
-                        PopupUtils.open(confirmDeleteProjectDialog, root, {project: project})
-                    }
-                }
-            }
-        }
-    }
-
-    Component {
         id: renameProjectDialog
 
         InputDialog {

@@ -30,9 +30,47 @@ SingleValue {
 
     property var project
 
-    text: project === null
-          ? i18n.tr("Upcoming")
-          : project.name
+    Column {
+        id: labels
+
+        spacing: units.gu(0.1)
+
+        anchors {
+            verticalCenter: parent.verticalCenter
+            left: parent.left
+        }
+        width: parent.width * 0.8
+
+        Label {
+            id: titleLabel
+
+            width: parent.width
+            elide: Text.ElideRight
+            text: project === null
+                  ? i18n.tr("Upcoming")
+                  : project.name
+
+            color: selected ? UbuntuColors.orange : Theme.palette.selected.backgroundText
+            fontSize: "medium"
+        }
+
+        Label {
+            id: subLabel
+            width: parent.width
+
+            height: visible ? implicitHeight: 0
+            color: Theme.palette.normal.backgroundText
+            fontSize: "small"
+            //font.italic: true
+            text: project === null ? "" : project.description
+            visible: text !== ""
+            elide: Text.ElideRight
+        }
+    }
+
+//    text: project === null
+//          ? i18n.tr("Upcoming")
+//          : project.name
 
     onClicked: {
         if (project !== null)
