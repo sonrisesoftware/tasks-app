@@ -58,6 +58,7 @@ Empty {
             width: parent.width - checkBox.width - parent.spacing
 
             editable: task.canEdit("checklist")
+            inlineEdit: false
             text: modelData.name
             onTextChanged: {
                 task.checklist.setName(itemIndex, text)

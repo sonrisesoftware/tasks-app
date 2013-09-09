@@ -23,6 +23,7 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
+import Ubuntu.Components.Themes.Ambiance 0.1
 
 Item {
     id: root
@@ -58,11 +59,26 @@ Item {
 
     signal doneEditing()
 
+    property bool showEditIcon: inlineEdit
+    property bool inlineEdit: true
+
+    Image {
+        id: image
+        anchors {
+            left: parent.left
+            verticalCenter: parent.verticalCenter
+        }
+
+        visible: showEditIcon && editable
+        source: icon("pencil.svg")
+    }
+
     Label {
         id: label
 
         anchors {
-            left: parent.left
+            left: image.visible ? image.right : parent.left
+            leftMargin: image.visible ? units.gu(1) : 0
             right: parent.right
             verticalCenter: parent.verticalCenter
         }
@@ -98,54 +114,84 @@ Item {
         }
     }
 
-    TextField {
-        id: textField
-
+    Item {
+        id: textItem
         anchors {
-            left: parent.left
+            left: image.visible ? image.right : parent.left
+            leftMargin: image.visible ? units.gu(1) : 0
             right: okButton.visible ? okButton.left : parent.right
             rightMargin: okButton.visible ? units.gu(1) : 0
             verticalCenter: parent.verticalCenter
         }
 
-        Component.onCompleted: __styleInstance.color = root.color
-
-        //width: Math.min(parent.width, units.gu(50))
-
-        font.bold: root.bold
+        height: textField.height
         visible: editing || parentEditing
 
-        onFocusChanged:  {
-            focus ? __styleInstance.color = Theme.palette.normal.overlayText : __styleInstance.color = root.color
+        TextField {
+            id: textField
 
-            if (focus === false) {
-                print("Saving text...")
-                root.editing = false
-                root.text = text
-            } else {
-                text = root.text
+            anchors {
+                left: parent.left
+                right: parent.right
             }
-            doneEditing()
+
+            Component.onCompleted: {
+                if (inlineEdit)
+                    style = inlineStyle
+                __styleInstance.color = root.color
+            }
+
+            //width: Math.min(parent.width, units.gu(50))
+
+            font.bold: root.bold
+            hasClearButton: !inlineEdit
+
+
+            onFocusChanged:  {
+                focus ? __styleInstance.color = Theme.palette.normal.overlayText : __styleInstance.color = root.color
+
+                if (focus === false) {
+                    print("Saving text...")
+                    root.editing = false
+                    root.text = text
+                } else {
+                    text = root.text
+                }
+                doneEditing()
+            }
+
+            property Component inlineStyle: TextFieldStyle {
+                background: Item {}
+            }
+
+            onCursorVisibleChanged: {
+                if (cursorVisible === false)
+                    done()
+            }
+
+            Keys.onEscapePressed: done()
+
+            onAccepted: done()
         }
 
-        onCursorVisibleChanged: {
-            if (cursorVisible === false)
-                done()
+        Image {
+            visible: inlineEdit
+            anchors.bottom: parent.bottom
+            source: icon("dot.svg")
+            fillMode: Image.Tile
+            width: parent.width-units.gu(1)
+            height: units.gu(1)/2
         }
-
-        Keys.onEscapePressed: done()
-
-        onAccepted: done()
     }
 
     Button {
         id: okButton
-        visible: editing && !parentEditing
+        visible: editing && !parentEditing && !inlineEdit
 
         anchors {
             right: parent.right
-            top: textField.top
-            bottom: textField.bottom
+            top: textItem.top
+            bottom: textItem.bottom
         }
 
 //        gradient: Gradient {

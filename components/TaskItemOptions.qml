@@ -47,29 +47,6 @@ Column {
         text: i18n.tr("Priority")
         enabled: task.canEdit("priority")
 
-//        Row {
-//            spacing: units.gu(1)
-
-//            anchors {
-//                left: parent.left
-//                leftMargin: units.gu(2)
-//                top: parent.top
-//                topMargin: units.gu(1.5)
-//            }
-
-//            UbuntuShape {
-//                color: labelColor(task.label)
-//                width: units.gu(3)
-//                height: width
-//                anchors.verticalCenter: parent.verticalCenter
-//            }
-
-//            Label {
-//                anchors.verticalCenter: parent.verticalCenter
-//                text: i18n.tr("Priority")
-//            }
-//        }
-
         selectedIndex: getSelectedPriority()
 
         function getSelectedPriority() {

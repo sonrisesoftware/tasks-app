@@ -53,6 +53,7 @@ MainView {
     height: units.gu(75)
 
     property bool wideAspect: width > units.gu(80)
+    property bool extraWideAspect: width > units.gu(120)
 
     // Colors from Calculator app
     headerColor: "#323A5D"
@@ -562,11 +563,14 @@ MainView {
     }
 
     function icon(name) {
-        return "../icons/" + name + ".png"
+        return getIcon(name)
     }
 
     function getIcon(name) {
-        return "../icons/" + name + ".png"
+        if (name.indexOf(".") === -1)
+            return "../icons/" + name + ".png"
+        else
+            return "../icons/" + name
     }
 
     function get(model, index) {

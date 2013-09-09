@@ -60,6 +60,7 @@ Empty {
         width: units.gu(3)
         height: width
         color: priorityColor(task.priority)
+        //visible: task.priority !== "low"
     }
 
     Column {
@@ -69,8 +70,9 @@ Empty {
 
         anchors {
             verticalCenter: parent.verticalCenter
-            left: priorityShape.right
-            margins: units.gu(1)
+            left: priorityShape.visible ? priorityShape.right : parent.left
+            leftMargin: priorityShape.visible ? units.gu(1) : units.gu(2)
+            rightMargin: units.gu(1)
             right: doneCheckBox.left
         }
 

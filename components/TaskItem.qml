@@ -97,6 +97,7 @@ Item {
                             rightMargin: completedCheckBox.visible ? units.gu(1) : 0
                         }
 
+                        inlineEdit: false
                         fontSize: "large"
                         bold: true
                         text: task.name

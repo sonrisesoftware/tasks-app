@@ -114,6 +114,7 @@ Popover {
         }
 
         Empty {
+            showDivider: false
 
             TextField {
                 id: tagField
