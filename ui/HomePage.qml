@@ -52,8 +52,8 @@ Page {
                 list =  currentProject.lists.get(0).modelData
 
                 for (var i = 0; i < length(currentProject.lists); i++) {
-                    if (get(currentProject.lists, i).name === "To Do") {
-                        list = get(currentProject.lists, i)
+                    if (getItem(currentProject.lists, i).name === "To Do") {
+                        list = getItem(currentProject.lists, i)
                     }
                 }
             }

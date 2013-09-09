@@ -23,6 +23,7 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
+import Ubuntu.Components.Themes.Ambiance 0.1
 import "../ui"
 
 Empty {
@@ -48,19 +49,26 @@ Empty {
         UbuntuNumberAnimation {}
     }
 
-    UbuntuShape {
-        id: priorityShape
+    CheckBox {
+        id: doneCheckBox
+
         anchors {
-            left: parent.left
-            //top: parent.top
-            //bottom: parent.bottom
             verticalCenter: parent.verticalCenter
-            margins: units.gu(2)
+            left: parent.left
+            leftMargin: units.gu(2)
         }
-        width: units.gu(3)
-        height: width
-        color: priorityColor(task.priority)
-        //visible: task.priority !== "low"
+
+        checked: task.completed
+        __acceptEvents: task.canComplete && task.editable
+
+        onCheckedChanged: task.completed = checked
+        style: SuruCheckBoxStyle {}
+    }
+
+    Label {
+        anchors.centerIn: doneCheckBox
+        text: task.checklist.percent + "%"
+        visible: !task.canComplete && !task.completed
     }
 
     Column {
@@ -70,10 +78,10 @@ Empty {
 
         anchors {
             verticalCenter: parent.verticalCenter
-            left: priorityShape.visible ? priorityShape.right : parent.left
-            leftMargin: priorityShape.visible ? units.gu(1) : units.gu(2)
+            left: doneCheckBox.right
+            leftMargin: units.gu(1)
             rightMargin: units.gu(1)
-            right: doneCheckBox.left
+            right: taskOptions.left
         }
 
         Label {
@@ -101,58 +109,52 @@ Empty {
         }
     }
 
-//    Rectangle {
-//        id: priority
+    Row {
+        id: taskOptions
 
-//        anchors {
-//            top: parent.top
-//            left: parent.left
-//            bottom: parent.bottom
-//            topMargin: units.gu(1)
-//            bottomMargin: units.gu(1)
-//            leftMargin: units.gu(0.5)
-//        }
-
-//        radius: units.gu(0.4)
-//        smooth: true
-
-//        width: units.gu(0.8)
-
-//        color: priorityColor(task.priority)
-
-////        gradient: Gradient {
-////            GradientStop {
-////                position: 0
-////                color: Qt.lighter(task.priority, 1.2)
-////            }
-
-////            GradientStop {
-////                position: 1
-////                color: Qt.darker(task.priority, 1.2)
-////            }
-////        }
-//    }
-
-
-    CheckBox {
-        id: doneCheckBox
+        spacing: units.gu(1)
 
         anchors {
-            verticalCenter: parent.verticalCenter
             right: parent.right
-            rightMargin: units.gu(2)
+            verticalCenter: parent.verticalCenter
+            margins: units.gu(2)
         }
 
-        checked: task.completed
-        __acceptEvents: task.canComplete && task.editable
+//        Image {
+//            source: task.priority === "high" ? icon("favorite-selected") : icon("favorite-unselected")
+//            width: units.gu(4)
+//            height: width
 
-        onCheckedChanged: task.completed = checked
-    }
+//        }
 
-    Label {
-        anchors.centerIn: doneCheckBox
-        text: task.checklist.percent + "%"
-        visible: !task.canComplete && !task.completed
+        UbuntuShape {
+            id: priorityShape
+            anchors {
+                verticalCenter: parent.verticalCenter
+            }
+            width: units.gu(3)
+            height: width
+            color: task.priority !== "low" ? priorityColor(task.priority) : Qt.rgba(0.2,0.2,0.2,0.2)
+
+            Behavior on color {
+                ColorAnimation {
+                    duration: 250
+                }
+            }
+
+            //visible: task.priority !== "low"
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    if (task.priority === "high") {
+                        task.priority = "low"
+                    } else {
+                        task.priority = "high"
+                    }
+                }
+            }
+        }
     }
 
     onClicked: {

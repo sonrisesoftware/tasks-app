@@ -111,7 +111,7 @@ Page {
                     var index = 0;
                     //print("Removing tasks from", backend.name, backend.projects.count)
                     while (index < backend.projects.count) {
-                        var project = get(backend.projects, index)
+                        var project = getItem(backend.projects, index)
 
                         //print("Checking project:", index, project.name)
 

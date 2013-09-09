@@ -76,7 +76,7 @@ Item {
                             //bottom: parent.bottom
                             verticalCenter: headerItem.verticalCenter
                         }
-                        visible: !creating && !titleLabel.editing
+                        visible: !creating && !titleLabel.editing && task.priority !== "low"
                         width: units.gu(3)
                         height: width
                         color: priorityColor(task.priority)

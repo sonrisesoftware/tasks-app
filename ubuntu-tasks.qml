@@ -393,7 +393,7 @@ MainView {
         onTriggered: saveProjects()
     }
 
-    property var uncategorizedProject: getItem(localProjectsModel.projects, function(project) { return project.special })
+    property var uncategorizedProject: getItemByFilter(localProjectsModel.projects, function(project) { return project.special })
 
     Component.onCompleted: {
         notification.show("Undo", icon("back"), print, "Undoing test...")
@@ -452,9 +452,9 @@ MainView {
 
     /* UTILITY FUNCTIONS */
 
-    function getItem(list, filter) {
+    function getItemByFilter(list, filter) {
         for (var i = 0; i < length(list); i++) {
-            var item = get(list, i)
+            var item = getItem(list, i)
             if (filter(item))
                 return item
         }
@@ -467,7 +467,7 @@ MainView {
         var list = []
 
         for (var i = 0; i < length(tasks); i++) {
-            var task = get(tasks, i)
+            var task = getItem(tasks, i)
             //print("Filtering:", task.name)
             if (filter(task))
                 list.push(task)
@@ -486,7 +486,7 @@ MainView {
         var value = 0
 
         for (var i = 0; i < length(list); i++) {
-            var item = get(list, i)
+            var item = getItem(list, i)
             value += count(item[prop], func, name)
         }
 
@@ -497,7 +497,7 @@ MainView {
         var value = 0
 
         for (var i = 0; i < length(list); i++) {
-            var item = get(list, i)
+            var item = getItem(list, i)
             value += item[prop]
         }
 
@@ -510,7 +510,7 @@ MainView {
         //print("Concat:", prop, length(list))
 
         for (var i = 0; i < length(list); i++) {
-            var item = get(list, i)
+            var item = getItem(list, i)
             value.push(item[prop])
         }
 
@@ -522,7 +522,7 @@ MainView {
         var list = []
 
         for (var i = 0; i < model.count; i++) {
-            list.push(get(model, i))
+            list.push(getItem(model, i))
         }
 
         return list
@@ -545,7 +545,7 @@ MainView {
         //print("Concat:", prop, length(list))
 
         for (var i = 0; i < length(list); i++) {
-            var item = get(list, i)
+            var item = getItem(list, i)
             if (filter && !filter(item)) continue
 
             //print("Adding:", item[prop])
@@ -553,7 +553,7 @@ MainView {
                 value = value.concat(item[prop])
             } else {
                 for (var j = 0; j < item[prop].count; j++) {
-                    value.push(get(item[prop], j))
+                    value.push(getItem(item[prop], j))
                 }
             }
         }
@@ -573,7 +573,7 @@ MainView {
             return "../icons/" + name
     }
 
-    function get(model, index) {
+    function getItem(model, index) {
         var item = model.hasOwnProperty("get") ? model.get(index) : model[index]
         if (model.hasOwnProperty("get"))
             item = item.modelData
