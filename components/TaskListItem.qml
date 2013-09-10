@@ -78,10 +78,8 @@ Empty {
 
         anchors {
             verticalCenter: parent.verticalCenter
-            //left: doneCheckBox.right
-            //leftMargin: units.gu(1)
-            left: parent.left
-            leftMargin: units.gu(2)
+            left: priorityShape.visible ? priorityShape.right : parent.left
+            leftMargin: priorityShape.visible ? units.gu(1) : units.gu(2)
             rightMargin: units.gu(1)
             right: doneCheckBox.left//taskOptions.left
         }
@@ -93,7 +91,8 @@ Empty {
             elide: Text.ElideRight
             text: task.name
 
-            color: selected ? UbuntuColors.orange : Theme.palette.selected.backgroundText
+            //font.bold: task.priority !== "low"
+            color: selected ? UbuntuColors.orange : /*task.priority === "low" ? */Theme.palette.selected.backgroundText/* : priorityColor(task.priority)*/
             fontSize: "medium"
         }
 
@@ -102,7 +101,7 @@ Empty {
             width: parent.width
 
             height: visible ? implicitHeight: 0
-            color: Theme.palette.normal.backgroundText
+            color: task.overdue ? priorityColor("high") : task.isDueToday() ? priorityColor("medium") : Theme.palette.normal.backgroundText
             fontSize: "small"
             //font.italic: true
             text: task.subText
@@ -111,53 +110,18 @@ Empty {
         }
     }
 
-    Row {
-        id: taskOptions
-
-        spacing: units.gu(1)
-        visible: false
-
+    UbuntuShape {
+        id: priorityShape
         anchors {
-            right: parent.right
             verticalCenter: parent.verticalCenter
-            margins: units.gu(2)
+            left: parent.left
+            leftMargin: units.gu(2)
         }
-
-//        Image {
-//            source: task.priority === "high" ? icon("favorite-selected") : icon("favorite-unselected")
-//            width: units.gu(4)
-//            height: width
-
-//        }
-
-        UbuntuShape {
-            id: priorityShape
-            anchors {
-                verticalCenter: parent.verticalCenter
-            }
-            width: units.gu(3)
-            height: width
-            color: task.priority !== "low" ? priorityColor(task.priority) : Qt.rgba(0.2,0.2,0.2,0.2)
-
-            Behavior on color {
-                ColorAnimation {
-                    duration: 250
-                }
-            }
-
-            //visible: task.priority !== "low"
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    if (task.priority === "high") {
-                        task.priority = "low"
-                    } else {
-                        task.priority = "high"
-                    }
-                }
-            }
-        }
+        width: units.gu(3)
+        height: width
+        color: priorityColor(task.priority)
+        //visible: task.priority !== "low"
+        //visible: false
     }
 
     onClicked: {
