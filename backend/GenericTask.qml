@@ -201,6 +201,14 @@ Item {
 
     property bool hasDueDate: Qt.formatDate(task.dueDate) !== ""
 
+    property string tagsString: {
+        var list = []
+        for (var i = 0; i < tags.length; i++) {
+            list.push(project.getTag(tags[i]))
+        }
+        return list.join(", ")
+    }
+
     property string subText: task.completed
                              ? i18n.tr("Completed %1").arg(formattedDate(task.completionDate))
                              : hasDueDate ? task.overdue

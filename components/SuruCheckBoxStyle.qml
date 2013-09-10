@@ -28,7 +28,7 @@ Item {
     /*!
       The image to show inside the checkbox when it is checked.
      */
-    property url tickSource: icon("tick")
+    property url tickSource: getIcon("tick")
 
     opacity: enabled ? 1.0 : 0.5
 

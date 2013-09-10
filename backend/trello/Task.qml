@@ -40,7 +40,8 @@ GenericTask {
         "name": "name",
         "description": "desc",
         "completed": "closed",
-        "dueDate": "due"
+        "dueDate": "due",
+        "tags": "labels"
     }
 
     onTaskIDChanged: {
@@ -58,6 +59,14 @@ GenericTask {
                 document.lock(name, value)
                 if (name === "dueDate" && Qt.formatDate(value) === "") {
                     httpPUT("/cards/" + taskID + "/" + trelloFields[name], ["value=" + null], onFieldPosted, name)
+                } else if (name === "tags") {
+                    var list = []
+                    for (var i = 0; i < value.length; i++) {
+                        list.push({color: tags[i], name: project.getTag(tags[i])})
+                    }
+
+                    print("Setting labels as", JSON.stringify(list))
+                    httpPUT("/cards/" + taskID + "/" + trelloFields[name], ["value=" + JSON.stringify(list)], onFieldPosted, name)
                 } else {
                     httpPUT("/cards/" + taskID + "/" + trelloFields[name], ["value=" + value], onFieldPosted, name)
                 }
@@ -68,6 +77,7 @@ GenericTask {
     }
 
     function onFieldPosted(response, name) {
+        print(response)
         document.unlock(name)
     }
 
@@ -75,6 +85,14 @@ GenericTask {
         document.set("taskID", json.id)
         document.set("name", json.name)
         document.set("completed", json.closed)
+        var labels = json.labels
+        var list = []
+        for (var i = 0; i < labels.length; i++) {
+            list.push(labels[i].color)
+            //project.setTag(labels[i].color, labels[i].name)
+        }
+        document.set("tags", list)
+
         document.set("dueDate", json.due === null ? new Date("") : json.due)
         if (json.idChecklists.length > 0)
             checklistID = json.idChecklists[0] // FIXME: support more than one checklist!

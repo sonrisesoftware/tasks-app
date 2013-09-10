@@ -71,6 +71,15 @@ GenericProject {
         document.set("archived", json.closed)
         document.set("description", json.desc)
 
+        var labels = json.labelNames
+        print("Loading Trello labels:", JSON.stringify(labels))
+        var colors = ["yellow", "red", "purple", "orange", "green", "blue"]
+        var tags = {}
+        for (var i = 0; i < colors.length; i++) {
+            tags[colors[i]] = labels[colors[i]]
+        }
+        document.set("tags", tags)
+
         reloadFields()
     }
 

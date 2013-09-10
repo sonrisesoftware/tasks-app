@@ -32,8 +32,8 @@ Column {
     property var task
 
     Standard {
-        visible: !task.hasChecklist
-        enabled: task.canEdit("checklist")
+        visible: !task.hasChecklist && task.supportsField("checklist")
+        enabled: task.editable
 
         text: i18n.tr("Add Checklist...")
         onClicked: {
@@ -45,7 +45,8 @@ Column {
         id: prioritySelector
 
         text: i18n.tr("Priority")
-        enabled: task.canEdit("priority")
+        enabled: task.editable
+        visible: task.supportsField("priority")
 
         selectedIndex: getSelectedPriority()
 
@@ -69,52 +70,14 @@ Column {
         }
     }
 
-//    ValueSelector {
-//        id: projectSelector
-
-//        text: i18n.tr("Project")
-//        selectedIndex: getSelectedProject()
-//        enabled: task.editable
-
-//        function getSelectedProject() {
-//            for (var i = 0; i < localProjectsModel.projects.count; i++) {
-//                if (task.project === localProjectsModel.projects.get(i).modelData)
-//                    return i
-//            }
-//            return -1
-//        }
-
-//        values: {
-//            var values = []
-//            for (var i = 0; i < localProjectsModel.projects.count; i++) {
-//                values.push(localProjectsModel.projects.get(i).modelData.name)
-//            }
-//            values.push(i18n.tr("<i>Create New Project</i>"))
-//            return values
-//        }
-
-//        onSelectedIndexChanged: {
-//            print(selectedIndex,values.length)
-//            if (selectedIndex === values.length - 1) {
-//                PopupUtils.open(newProjectDialog, root)
-//                selectedIndex = values.length - 1
-//            }
-
-//            var newProject = localProjectsModel.projects.get(selectedIndex).modelData
-//            if (task.project !== newProject)
-//                task.moveTo(newProject)
-//            selectedIndex = Qt.binding(getSelectedProject)
-//        }
-//    }
-
     SingleValue {
         id: dueDateField
 
         text: i18n.tr("Due Date")
-        enabled: task.canEdit("dueDate")
+        visible: task.supportsField("dueDate")
+        enabled: task.editable
 
         value: task.dueDateInfo
-        visible: task.hasOwnProperty("dueDate")
 
         onClicked: PopupUtils.open(Qt.resolvedUrl("DatePicker.qml"), dueDateField, {
                                        task: task
@@ -124,8 +87,8 @@ Column {
     ValueSelector {
         id: repeatSelector
         text: i18n.tr("Repeat")
-        visible: task.hasOwnProperty("repeat")
-        enabled: task.canEdit("repeat") && task.hasDueDate
+        visible: task.supportsField("repeat")
+        enabled: task.editable && task.hasDueDate
 
         values: [i18n.tr("Never"), i18n.tr("Daily"), i18n.tr("Weekly"), i18n.tr("Monthly"), i18n.tr("Yearly")]
         selectedIndex: getSelectedIndex()
@@ -148,14 +111,80 @@ Column {
         }
     }
 
-    MultiValue {
-        id: tagsSelector
-
+    Header {
         text: i18n.tr("Tags")
-        enabled: task.canEdit("tags")
-
-        values: task.tags
-        onClicked: PopupUtils.open(tagsPopover, tagsSelector, {task: task})
-        visible: false
+        //visible: task.supportsField("tags")
     }
+
+    Repeater {
+        //model: task.supportsField("tags") ? ["yellow", "red", "purple", "orange", "green", "blue"] : []
+        model: ["yellow", "red", "purple", "orange", "green", "blue"]
+
+        delegate: Standard {
+            height: units.gu(5)
+            //enabled: task.editable
+            enabled: task.canEdit("tags")
+
+            UbuntuShape {
+                id: colorShape
+                height: units.gu(3)
+                width: height
+                anchors {
+                    verticalCenter: parent.verticalCenter
+                    left: parent.left
+                    margins: units.gu(2)
+                }
+                color: labelColor(modelData)
+            }
+
+            Label {
+                anchors {
+                    verticalCenter: parent.verticalCenter
+                    left: colorShape.right
+                    margins: units.gu(1)
+                }
+
+                width: parent.width - units.gu(9)
+
+                text: task.project.getTag(modelData)
+            }
+
+            control: CheckBox {
+                height: units.gu(3.5)
+                width: height
+                checked: task.tags.indexOf(modelData) !== -1
+                style: SuruCheckBoxStyle {}
+
+                //__acceptEvents: task.canEdit("tags")
+
+                onClicked: {
+                    var selected = task.tags.indexOf(modelData) !== -1
+                    if (selected) {
+                        var tags = task.tags
+                        tags.splice(task.tags.indexOf(modelData), 1)
+                        task.tags = tags
+                    } else {
+                        var tags = task.tags
+                        tags.push(modelData)
+                        task.tags = tags.sort()
+                    }
+
+                    checked = Qt.binding(function() {
+                        return task.tags.indexOf(modelData) !== -1
+                    })
+                }
+            }
+        }
+    }
+
+//    MultiValue {
+//        id: tagsSelector
+
+//        text: i18n.tr("Tags")
+//        //enabled: task.canEdit("tags")
+
+//        values: [task.tagsString]
+//        //onClicked: PopupUtils.open(tagsPopover, tagsSelector, {task: task})
+//        //visible: false
+//    }
 }

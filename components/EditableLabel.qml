@@ -41,6 +41,8 @@ Item {
 
     property alias font: textField.font
 
+    width: label.width
+
     onEditingChanged: {
         if (editing)
             textField.focus = true
@@ -53,7 +55,7 @@ Item {
             edit()
     }
 
-    height: editing
+    height: textField.visible
             ? textField.height
             : label.height
 
@@ -74,7 +76,7 @@ Item {
         }
 
         visible: showEditIcon && editable
-        source: icon("pencil.svg")
+        source: getIcon("pencil.svg")
     }
 
     Label {
@@ -185,7 +187,7 @@ Item {
         Image {
             visible: inlineEdit
             anchors.bottom: parent.bottom
-            source: icon("dot.svg")
+            source: getIcon("dot.svg")
             fillMode: Image.Tile
             width: parent.width-units.gu(1)
             height: units.gu(1)/2

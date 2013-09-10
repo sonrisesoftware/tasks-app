@@ -44,6 +44,19 @@ Item {
     property var nonEditableFields: []
     property var invalidActions: []
 
+    function getTag(color) {
+        return tags.hasOwnProperty(color) && tags[color] !== ""
+                ? tags[color]
+                : color.substring(0,1).toUpperCase() + color.substring(1)
+    }
+
+    function setTag(color, name) {
+        print(color, "=", name)
+        var list = tags
+        list[color] = name
+        tags = list
+    }
+
     function supportsAction(name) {
         return editable && invalidActions.indexOf(name) === -1
     }
@@ -86,7 +99,7 @@ Item {
         description = document.get("description", "")
         archived = document.get("archived", false)
         special = document.get("special", false)
-        tags = document.get("tags", [])
+        tags = document.get("tags", {})
 
         if (customUploadFields)
             customUploadFields()

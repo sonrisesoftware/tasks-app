@@ -458,6 +458,24 @@ MainView {
 
     /* UTILITY FUNCTIONS */
 
+    function labelColor(label) {
+        if (label === "green") {
+            return "#59B159"
+        } else if (label === "yellow") {
+            return "#FFFF41"
+        } else if (label === "red") {
+            return "#FF4141"
+        } else if (label === "orange") {
+            return UbuntuColors.orange
+        } else if (label === "purple") {
+            return "#9933CC"
+        } else if (label === "blue") {
+            return "#3A69E0"//"#4D77CB"
+        } else {
+            return label
+        }
+    }
+
     function getItemByFilter(list, filter) {
         for (var i = 0; i < length(list); i++) {
             var item = getItem(list, i)
