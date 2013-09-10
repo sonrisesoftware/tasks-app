@@ -69,7 +69,7 @@ Item {
             }
             PropertyChanges {
                 target: background
-                color: Qt.rgba(0.2,0.2,0.2,0.2)
+                color: Qt.rgba(0.2,0.2,0.2,0.3)
             }
         }
     ]

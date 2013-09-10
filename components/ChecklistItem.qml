@@ -50,6 +50,7 @@ Empty {
             onCheckedChanged: {
                 task.checklist.setCompletion(itemIndex, checked)
             }
+            style: SuruCheckBoxStyle {}
         }
 
         EditableLabel {

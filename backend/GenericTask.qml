@@ -37,6 +37,10 @@ Item {
         return editable && invalidActions.indexOf(name) === -1
     }
 
+    function supportsField(name) {
+        return nonEditableFields.indexOf(name) === -1
+    }
+
     function canEdit(name) {
         return editable && nonEditableFields.indexOf(name) === -1
     }

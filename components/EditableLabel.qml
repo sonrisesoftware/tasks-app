@@ -28,6 +28,8 @@ import Ubuntu.Components.Themes.Ambiance 0.1
 Item {
     id: root
 
+    property Label label: label
+
     property string labelText: text
     property var text
 
@@ -36,6 +38,8 @@ Item {
 
     property color color: overlay ? Theme.palette.normal.overlayText : Theme.palette.selected.backgroundText
     property bool overlay
+
+    property alias font: textField.font
 
     onEditingChanged: {
         if (editing)
@@ -132,12 +136,16 @@ Item {
 
             anchors {
                 left: parent.left
+                //leftMargin: inlineEdit ? -textField.__internal.spacing * 2 : 0
                 right: parent.right
             }
 
             Component.onCompleted: {
-                if (inlineEdit)
+                if (inlineEdit) {
                     style = inlineStyle
+                    font.pixelSize = label.font.pixelSize
+                    textField.color = label.color
+                }
                 __styleInstance.color = root.color
             }
 

@@ -54,8 +54,8 @@ Empty {
 
         anchors {
             verticalCenter: parent.verticalCenter
-            left: parent.left
-            leftMargin: units.gu(2)
+            right: parent.right
+            rightMargin: units.gu(2)
         }
 
         checked: task.completed
@@ -78,10 +78,12 @@ Empty {
 
         anchors {
             verticalCenter: parent.verticalCenter
-            left: doneCheckBox.right
-            leftMargin: units.gu(1)
+            //left: doneCheckBox.right
+            //leftMargin: units.gu(1)
+            left: parent.left
+            leftMargin: units.gu(2)
             rightMargin: units.gu(1)
-            right: taskOptions.left
+            right: doneCheckBox.left//taskOptions.left
         }
 
         Label {
@@ -113,6 +115,7 @@ Empty {
         id: taskOptions
 
         spacing: units.gu(1)
+        visible: false
 
         anchors {
             right: parent.right

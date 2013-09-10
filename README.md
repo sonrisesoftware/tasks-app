@@ -157,3 +157,6 @@ Day 32 - 9/7/2013
  * Added description UI and merged project actions into Project popover
 
 **Released version 0.4.1**
+
+Day 34 - 9/9/2013
+ * Added inline editing for project description

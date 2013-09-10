@@ -68,20 +68,6 @@ Item {
                         margins: units.gu(2)
                     }
 
-                    UbuntuShape {
-                        id: priorityShape
-                        anchors {
-                            left: parent.left
-                            //top: parent.top
-                            //bottom: parent.bottom
-                            verticalCenter: headerItem.verticalCenter
-                        }
-                        visible: !creating && !titleLabel.editing && task.priority !== "low"
-                        width: units.gu(3)
-                        height: width
-                        color: priorityColor(task.priority)
-                    }
-
                     height: completedCheckBox.visible
                             ? Math.max(titleLabel.height, completedCheckBox.height)
                             : titleLabel.height
@@ -91,13 +77,14 @@ Item {
 
                         anchors.verticalCenter: parent.verticalCenter
                         anchors {
+                            right: completedCheckBox.visible ? completedCheckBox.left : parent.right
+                            rightMargin: completedCheckBox.visible ? units.gu(2) : 0
                             left: priorityShape.visible ? priorityShape.right : parent.left
                             leftMargin: priorityShape.visible ? units.gu(2) : 0
-                            right: completedCheckBox.visible ? completedCheckBox.left : parent.right
-                            rightMargin: completedCheckBox.visible ? units.gu(1) : 0
                         }
 
                         inlineEdit: false
+                        showEditIcon: false
                         fontSize: "large"
                         bold: true
                         text: task.name
@@ -124,12 +111,25 @@ Item {
 
                         checked: task.completed
                         onCheckedChanged: task.completed = checked
+                        style: SuruCheckBoxStyle {}
                     }
 
                     Label {
                         anchors.centerIn: completedCheckBox
                         text: task.checklist.percent + "%"
                         visible: !task.canComplete && !task.completed && completedCheckBox.visible
+                    }
+
+                    UbuntuShape {
+                        id: priorityShape
+                        anchors {
+                            left: parent.left
+                            verticalCenter: headerItem.verticalCenter
+                        }
+                        visible: !creating && !titleLabel.editing// && task.priority !== "low"
+                        width: units.gu(3)
+                        height: width
+                        color: priorityColor(task.priority)
                     }
                 }
 
