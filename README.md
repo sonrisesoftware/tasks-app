@@ -160,3 +160,10 @@ Day 32 - 9/7/2013
 
 Day 34 - 9/9/2013
  * Added inline editing for project description
+
+Day 35 - 9/10/2013
+ * Added Suru theme for checkboxes
+ * Added coloring for upcoming and overdue tasks
+ * Disabled tags
+
+**Released version 0.4.2**

@@ -156,5 +156,6 @@ Column {
 
         values: task.tags
         onClicked: PopupUtils.open(tagsPopover, tagsSelector, {task: task})
+        visible: false
     }
 }
