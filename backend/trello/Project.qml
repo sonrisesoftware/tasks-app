@@ -69,6 +69,7 @@ GenericProject {
         document.set("name", json.name)
         document.set("boardID", json.id)
         document.set("archived", json.closed)
+        document.set("description", json.desc)
 
         reloadFields()
     }

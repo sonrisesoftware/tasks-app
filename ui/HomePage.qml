@@ -202,11 +202,25 @@ Page {
         ToolbarButton {
             id: projectButton
             iconSource: icon("edit")
-            text: i18n.tr("Project")
-            visible:  currentProject !== null
+            text: i18n.tr("Edit")
+            visible:  currentProject !== null && !currentProject.special
 
             onTriggered: {
-                PopupUtils.open(projectPopover, projectButton, {project: currentProject})
+                PopupUtils.open(editProjectDialog, projectButton, {project: currentProject})
+            }
+        }
+
+        ToolbarButton {
+            id: archiveButton
+            iconSource: icon("save")
+            text: i18n.tr("Archive")
+            visible:  currentProject !== null && !currentProject.special
+
+            onTriggered: {
+                if (!wideAspect)
+                    pageStack.pop()
+                undoStack.setProperty(i18n.tr("Archive %1").arg(currentProject.name), currentProject, "archived", true)
+                currentProject = null
             }
         }
 

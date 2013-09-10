@@ -311,6 +311,12 @@ MainView {
 
     /* CHECKING FOR INTERNET */
 
+    /* UNDO STACK */
+
+    UndoStack {
+        id: undoStack
+    }
+
     /* SETTINGS STORAGE */
 
     U1db.Database {
@@ -800,9 +806,88 @@ MainView {
     }
 
     Component {
-        id: projectPopover
+        id: projectActionsPopover
 
-        ProjectInfoPopover {}
+        ActionSelectionPopover {
+            property var project
+            objectName: "projectActionsPopover"
+
+            actions: ActionList {
+                Action {
+                    objectName: "edit"
+                    text: i18n.tr("Edit")
+                    enabled: project.canEdit("name") || project.canEdit("description")
+                    onTriggered: {
+                        PopupUtils.open(editProjectDialog, caller, {
+                                            project: project
+                                        })
+                    }
+                }
+
+                Action {
+                    objectName: "archive"
+                    text: project.archived ? i18n.tr("Unarchive") : i18n.tr("Archive")
+                    enabled: project.canEdit("archived")
+                    onTriggered: {
+                        project.archived = !project.archived
+                        if (project.archived)
+                            notification.show(i18n.tr("Archived %1").arg(project.name), icon("back"), function(project) {
+                                project.archived = false
+                            }, project)
+                    }
+                }
+
+                Action {
+                    objectName: "delete"
+                    enabled: project.supportsAction("delete")
+                    text: i18n.tr("Delete")
+                    onTriggered: {
+                        PopupUtils.open(confirmDeleteProjectDialog, root, {project: project})
+                    }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: editProjectDialog
+
+        Dialog {
+            id: projectDialogItem
+            property var project
+
+            title: i18n.tr("Edit Project")
+            text: i18n.tr("Edit the name and description of %1").arg(project.name)
+
+            TextField {
+                id: nameField
+                text: project.name
+                enabled: project.canEdit("name")
+                placeholderText: i18n.tr("Name")
+            }
+
+            TextArea {
+                id: descriptionField
+                text: project.description
+                readOnly: !project.canEdit("description")
+                placeholderText: i18n.tr("Description")
+            }
+
+            Button {
+                text: i18n.tr("Ok")
+                onTriggered: {
+                    PopupUtils.close(projectDialogItem)
+                    project.name = nameField.text
+                    project.description = descriptionField.text
+                }
+            }
+
+            Button {
+                text: i18n.tr("Cancel")
+                onTriggered: PopupUtils.close(projectDialogItem)
+                gradient: UbuntuColors.greyGradient
+            }
+        }
     }
 
     Component {
