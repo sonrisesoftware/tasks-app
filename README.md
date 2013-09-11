@@ -167,3 +167,7 @@ Day 35 - 9/10/2013
  * Disabled tags
 
 **Released version 0.4.2**
+
+Day 46 - 9/11/2013
+ * Removed quick add bar from upcoming page
+ * Removed Upcoming and Uncategorized projects from archived page
