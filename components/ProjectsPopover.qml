@@ -31,6 +31,7 @@ Popover {
     property bool showArchived: false
 
     Column {
+        id: projectsColumn
         anchors {
             left: parent.left
             right: parent.right
@@ -39,7 +40,7 @@ Popover {
 
         Repeater {
             id: modelRepeater
-            model: backendModels
+            model: [localProjectsModel]
 
             delegate: Column {
                 width: parent.width
@@ -81,9 +82,7 @@ Popover {
             }
         }
 
-        Divider {
-
-        }
+        Divider {}
 
         Standard {
             //FIXME: Hack because of Suru theme!
@@ -101,7 +100,11 @@ Popover {
 
             onClicked: {
                 PopupUtils.close(root)
-                newProject(root.caller, task)
+                //newProject(root.caller, task)
+                PopupUtils.open(newProjectDialog, root.caller, {
+                                    backend: localProjectsModel,
+                                    task: task
+                                })
             }
 
             showDivider: false
