@@ -156,7 +156,7 @@ Page {
 
     QuickAddBar {
         id: addBar
-        expanded: currentProject !== null && currentList === null ? false : currentList.supportsAction("addTask")
+        expanded: currentProject === null || currentList === null ? false : currentList.supportsAction("addTask")
         anchors.left: sidebar.right
     }
 

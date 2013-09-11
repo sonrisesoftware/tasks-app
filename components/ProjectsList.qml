@@ -29,16 +29,12 @@ Column {
 
     ProjectListItem {
         project: null
-        visible: wideAspect
+        visible: wideAspect && !showArchived
     }
 
-    Repeater {
-        model: localProjectsModel.projects
-
-        delegate: ProjectListItem {
-            project: modelData
-            visible: modelData.special && wideAspect
-        }
+    ProjectListItem {
+        project: uncategorizedProject
+        visible: project !== null && wideAspect && !showArchived
     }
 
     Repeater {

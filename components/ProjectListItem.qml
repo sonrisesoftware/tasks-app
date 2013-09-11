@@ -87,7 +87,8 @@ SingleValue {
         print("PRESS AND HOLD!")
         if (project !== null && project.editable && !project.special)
             PopupUtils.open(projectActionsPopover, root, {
-                                project: project
+                                project: project,
+                                showArchived: showArchived
                             })
     }
 

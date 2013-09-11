@@ -734,23 +734,23 @@ MainView {
         }
     }
 
-    Component {
-        id: renameProjectDialog
+//    Component {
+//        id: renameProjectDialog
 
-        InputDialog {
-            property var project
+//        InputDialog {
+//            property var project
 
-            id: renameProjectDialogItem
-            title: i18n.tr("Rename Project")
-            //text: i18n.tr("Are you sure you want to delete '%1'?").arg(project.name)
-            value: project.name
+//            id: renameProjectDialogItem
+//            title: i18n.tr("Rename Project")
+//            //text: i18n.tr("Are you sure you want to delete '%1'?").arg(project.name)
+//            value: project.name
 
-            onAccepted: {
-                PopupUtils.close(renameProjectDialogItem)
-                project.name = value
-            }
-        }
-    }
+//            onAccepted: {
+//                PopupUtils.close(renameProjectDialogItem)
+//                project.name = value
+//            }
+//        }
+//    }
 
     Component {
         id: confirmDeleteProjectDialog
@@ -828,13 +828,14 @@ MainView {
 
         ActionSelectionPopover {
             property var project
+            property bool showArchived
             objectName: "projectActionsPopover"
 
             actions: ActionList {
                 Action {
                     objectName: "edit"
                     text: i18n.tr("Edit")
-                    enabled: project.canEdit("name") || project.canEdit("description")
+                    enabled: (project.canEdit("name") || project.canEdit("description")) && !showArchived
                     onTriggered: {
                         PopupUtils.open(editProjectDialog, caller, {
                                             project: project
