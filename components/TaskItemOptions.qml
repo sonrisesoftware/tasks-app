@@ -31,6 +31,10 @@ Column {
 
     property var task
 
+    Header {
+        text: i18n.tr("Options")
+    }
+
     Standard {
         visible: !task.hasChecklist && task.supportsField("checklist")
         enabled: task.editable

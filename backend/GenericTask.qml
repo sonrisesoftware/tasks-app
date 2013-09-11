@@ -294,7 +294,8 @@ Item {
     }
 
     function matches(text) {
-        return task.name.indexOf(text) !== -1 || task.description.indexOf(text) !== -1
+        text = text.toUpperCase()
+        return task.name.toUpperCase().indexOf(text) !== -1 || task.description.toUpperCase().indexOf(text) !== -1
     }
 }
 

@@ -184,11 +184,6 @@ Item {
                 }
             }
 
-            Header {
-                text: i18n.tr("Options")
-                visible: !sidebar.expanded
-            }
-
             TaskItemOptions {
                 visible: !sidebar.expanded
                 width: parent.width
@@ -205,8 +200,6 @@ Item {
         id: sidebar
         mode: "right"
         expanded: wideAspect
-
-        header: i18n.tr("Options")
 
         TaskItemOptions {
             id: options
