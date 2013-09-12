@@ -61,7 +61,10 @@ Empty {
         __acceptEvents: task.canComplete && task.editable
         visible: task.canEdit("completed")
 
-        onCheckedChanged: task.completed = checked
+        onCheckedChanged: {
+            task.completed = checked
+            checked = Qt.binding(function() {return task.completed})
+        }
         style: SuruCheckBoxStyle {}
     }
 

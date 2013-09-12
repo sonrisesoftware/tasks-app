@@ -109,7 +109,10 @@ Item {
 
 
                         checked: task.completed
-                        onCheckedChanged: task.completed = checked
+                        onCheckedChanged: {
+                            task.completed = checked
+                            checked = Qt.binding(function() {return task.completed})
+                        }
                         style: SuruCheckBoxStyle {}
                     }
 

@@ -24,10 +24,14 @@ QtObject {
                     progress += 1
             }
 
-            if (progress === length)
-                completed = true
-            else
-                completed = false
+            if (!updating) {
+                if (progress === length) {
+                    print(">>>>>>>>>>>>MARKING AS COMPLETED BY CHECKLIST")
+                    completed = true
+                } else {
+                    completed = false
+                }
+            }
         }
     }
 

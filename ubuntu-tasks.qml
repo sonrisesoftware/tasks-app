@@ -380,7 +380,9 @@ MainView {
         reloadSettings()
 
         for (var i = 0; i < backendModels.length; i++) {
-            var json = JSON.parse(getSetting("backend-" + backendModels[i].databaseName, "{}"))
+            var text = getSetting("backend-" + backendModels[i].databaseName, "{}")
+            print(text)
+            var json = JSON.parse(text)
             backendModels[i].load(json)
         }
 
@@ -733,6 +735,7 @@ MainView {
                 //clearPageStack()
                 while (pageStack.depth > 1)
                     pageStack.clear()
+                goToProject(null)
                 project.remove()
             }
         }
@@ -819,6 +822,8 @@ MainView {
                             notification.show(i18n.tr("Archived %1").arg(project.name), icon("back"), function(project) {
                                 project.archived = false
                             }, project)
+                        if (project.archived)
+                            goToProject(null)
                     }
                 }
 
