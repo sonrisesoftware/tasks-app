@@ -35,12 +35,21 @@ Item {
     property var tags                   // The possible tags
     property bool special               // Is this a special project that lives under Upcoming, such as Uncategorized?
     property bool editable: backend.editable
-    property bool supportsLists: backend.supportsLists
     property var backend
-    property var assignedTasks: concat(lists, "assignedTasks")
-    property var upcomingTasks: concat(lists, "upcomingTasks")
-    property var allTasks: concat(lists, "tasks")
-    property int uncompletedCount: sum(lists, "uncompletedCount")
+
+    property var assignedTasks: filter(tasks, function(task) {
+        return task.isAssignedToMe() && !task.completed
+    }, "Upcoming tasks")
+    property var upcomingTasks: filter(tasks, function(task) {
+        return task.upcoming
+    }, "Upcoming tasks")
+    property int uncompletedCount: name === "Done" ? 0 : filteredCount(tasks, function(task) {
+        return !task.completed
+    })
+
+    property ListModel tasks: ListModel {
+
+    }
 
     property var nonEditableFields: []
     property var invalidActions: []
@@ -67,7 +76,13 @@ Item {
     }
 
     property int nextDocId: 0
-    property var listComponent
+    property var taskComponent: Component {
+
+        GenericTask {
+
+        }
+    }
+
     property var customUploadFields
 
     onNextDocIdChanged: document.set("nextDocId", nextDocId)
@@ -84,10 +99,6 @@ Item {
     function fieldChanged(name, value) {
         if (!updating)
             document.set(name, value)
-    }
-
-    property var lists: ListModel {
-        id: lists
     }
 
     /* To be called after the document changes,
@@ -118,101 +129,87 @@ Item {
         docId: project.docId
     }
 
+    /* U1db Storage */
+
     function loadU1db() {
         nextDocId = document.get("nextDocId", 0)
         reloadFields()
 
         var list = document.listDocs()
-        //print("Child lists:", list)
+        //print("Child tasks:", list)
 
         for (var i = 0; i < list.length; i++) {
-            loadListU1db(list[i])
-        }
-
-        if (!supportsLists && lists.count !== 1) {
-            //print("Creating default list...", lists.count)
-            lists.clear()
-            document.childrenDocs = []
-            document.children = {}
-            document.set("nextDocId", 0)
-            nextDocId = 0
-            var list = createList({
-                              docId: nextDocId++
-                          })
-            list.name = i18n.tr("Tasks")
-            internal_addList(list)
+            loadTaskU1db(list[i])
         }
     }
 
-    /* Creation of new lists */
+    /* Creation of new tasks */
 
-    // This is the front-end to creating new lists
-    function newList(name) {
-        if (!supportsLists) {
-            console.log("FATAL: Creating lists is unsupported for", backend.name)
-            Qt.quit()
-        }
-        //print("Adding new list...")
-        var list = createList({
+    // This is the front-end to creating new tasks
+    function newTask(name) {
+        //print("Adding new task...")
+        var task = createTask({
                           docId: nextDocId++
                       })
-        list.name = name
-        internal_addList(list)
-        list.loadU1db()
-        return list
+        task.name = name
+        internal_addTask(task)
+        return task
     }
 
-    // For loading a list from U1db
-    function loadListU1db(docId) {
-        var list = createList({
+    // For loading a task from U1db
+    function loadTaskU1db(docId) {
+        var task = createTask({
                                   docId: docId
                               })
-        internal_addList(list)
-        list.loadU1db()
-        return list
+        internal_addTask(task)
+        task.loadU1db()
+        return task
     }
 
-    // Creates a new list object
-    function createList(args) {
+    // Creates a new task object
+    function createTask(args) {
         if (args === undefined)
             args = {}
 
+        if (args.docId === "") args.docId = nextDocId++
         args.project = project
 
-        var list = listComponent.createObject(project, args)
+        var task = taskComponent.createObject(project, args)
 
-        if (list === null) {
+        if (task === null) {
             console.log("Unable to create:", newName)
         }
 
-        return list
+        return task
     }
 
-    // This adds a list to the model
-    function internal_addList(list) {
-        if (list.project !== project)
-            list.project = project
-        if (list.docId === "")
-            list.docId = nextDocId++
-        //print("ADDING LIST", list.name, "to", name)
-        lists.append({modelData: list})
+    // This adds a task to the model
+    function internal_addTask(task) {
+        if (task.project !== project)
+            task.project = project
+        if (task.docId === "")
+            task.docId = nextDocId++
+        tasks.append({modelData: task})
+        //print("TASKS", tasks.count)
     }
 
-    /* Deletion of lists */
+    function addTask(task) { internal_addTask(task) }
 
-    // This is the front-end to removing lists
-    function removeList(list) {
+    /* Deletion of tasks */
+
+    // This is the front-end to removing tasks
+    function removeTask(task) {
         // For implementation by backend...
-        internal_removeList(list)
+        internal_removeTask(task)
     }
 
-    // This removes a list from the model
-    function internal_removeList(list) {
-        //print("Removing list...")
-        document.remove(list.docId)
-        for (var i = 0; i < lists.count; i++) {
-            if (lists.get(i).modelData === list)
-                lists.remove(i)
+    // This removes a task from the model
+    function internal_removeTask(task) {
+        print("Removing task...")
+        document.remove(task.docId)
+        for (var i = 0; i < tasks.count; i++) {
+            if (tasks.get(i).modelData === task)
+                tasks.remove(i)
         }
     }
 

@@ -39,39 +39,7 @@ Page {
 
     property var currentProject: null
 
-    onCurrentProjectChanged: {
-        currentList = Qt.binding(getList)
-    }
-
-    property var currentList: getList()
-
-    function getList() {
-        var list = null
-        if (currentProject !== null) {
-            if (currentProject.lists.count > 0) {
-                list =  currentProject.lists.get(0).modelData
-
-                for (var i = 0; i < length(currentProject.lists); i++) {
-                    if (getItem(currentProject.lists, i).name === "To Do") {
-                        list = getItem(currentProject.lists, i)
-                    }
-                }
-            }
-        }
-
-        return list
-    }
-
-    onCurrentListChanged: {
-        if (currentList !== null && currentList.tasks.count > 0)
-            currentTask = currentList.tasks.get(0).modelData
-    }
-
-    property var currentTask: null
-
     property bool showArchived: false
-
-    property bool supportsLists: currentProject !== null && currentProject.supportsLists
 
     Sidebar {
         id: sidebar
@@ -99,64 +67,21 @@ Page {
             visible: overview
         }
 
-        Item {
+        TasksList {
+            id: list
+
             anchors.fill: parent
 
             visible: !overview
 
-            ValueSelector {
-                id: listSelector
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    top: parent.top
-                }
-
-                Rectangle {
-                    anchors.fill: parent
-                    color: Qt.rgba(0.2,0.2,0.2,0.2)
-                }
-
-                selectedIndex: currentList === null ? -1 : values.indexOf(currentList.name)
-                text: i18n.tr("List")
-                values: {
-                    var list = subList(currentProject === null ? [] : currentProject.lists, "name")
-                    if (list.editable)
-                        list.push(i18n.tr("<i>New List...</i>"))
-                    return list
-                }
-                visible: currentProject && currentProject.supportsLists
-
-                onSelectedIndexChanged: {
-                    if (list.editable && selectedIndex === values.length - 1) {
-                        print("NEW LIST...")
-                    } else if (selectedIndex > -1) {
-                        currentList = currentProject.lists.get(selectedIndex).modelData
-                    }
-
-                    selectedIndex = Qt.binding(function() { return currentList === null ? -1 : values.indexOf(currentList.name) })
-                }
-            }
-
-            TasksList {
-                id: list
-
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    top: listSelector.visible ? listSelector.bottom : parent.top
-                    bottom: parent.bottom
-                }
-
-                showAddBar: false
-                list: currentList
-            }
+            showAddBar: false
+            project: currentProject
         }
     }
 
     QuickAddBar {
         id: addBar
-        expanded: currentProject === null || currentList === null ? false : currentList.supportsAction("addTask")
+        expanded: currentProject === null ? false : currentProject.supportsAction("addTask")
         anchors.left: sidebar.right
     }
 
@@ -186,16 +111,13 @@ Page {
             iconSource: icon("add")
             text: i18n.tr("Add Task")
 
-            enabled: currentProject === null ? true : currentList === null ? false : currentList.supportsAction("addTask")
-            visible: (currentProject === null && !wideAspect) || currentProject !== null
+            enabled: currentProject === null ? true : currentProject.supportsAction("addTask")
+            visible: !wideAspect || currentProject !== null
 
             onTriggered: {
-                var list = currentList
-                if (list === null)
-                    list = uncategorizedProject.lists.get(0).modelData
                 if (currentProject === null)
                     tabs.selectedTabIndex = uncategorizedPage.tabIndex
-                pageStack.push(Qt.resolvedUrl("AddTaskPage.qml"), {list: list})
+                pageStack.push(Qt.resolvedUrl("AddTaskPage.qml"), {project: currentProject})
             }
         }
 

@@ -30,11 +30,4 @@ GenericBackend {
     newName: "Local Project"
     databaseName: "local-tasks"
     supportsLists: false
-
-    projectComponent: Component {
-
-        Project {
-
-        }
-    }
 }

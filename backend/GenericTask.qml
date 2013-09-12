@@ -26,8 +26,7 @@ Item {
     id: task
 
     property string docId
-    property var project: list.project
-    property var list
+    property var project
     property bool editable: project.editable
     property var customUploadFields
     property var nonEditableFields: []
@@ -161,7 +160,7 @@ Item {
         id: document
         name: "Task"
         docId: task.docId
-        parent: list.document
+        parent: project.document
     }
 
     function reloadFields() {
@@ -304,32 +303,21 @@ Item {
     }
 
     function remove() {
-        list.removeTask(task)
+        project.removeTask(task)
         docId = ""
     }
 
     function canMoveToProject(project) {
-        return project.lists.count > 0 && task.supportsAction("delete") && getItem(project.lists, 0).supportsAction("addTask")
+        return task.supportsAction("delete") && task.project.supportsAction("addTask")
     }
 
     function moveToProject(project) {
         if (project === task.project) return
 
         remove()
-        print(JSON.stringify(database.save()))
-        project.lists.get(0).modelData.addTask(task)
-        print(JSON.stringify(database.save()))
-    }
-
-    function canMoveToList(list) {
-        return task.supportsAction("delete") && task.list.supportsAction("addTask")
-    }
-
-    function moveToList(list) {
-        if (list === task.list) return
-
-        remove()
-        list.addTask(task)
+        //print(JSON.stringify(database.save()))
+        project.addTask(task)
+        //print(JSON.stringify(database.save()))
     }
 
     function matches(text) {

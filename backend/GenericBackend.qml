@@ -36,8 +36,13 @@ Item {
     property bool requiresInternet: false       // Requires the internet to sync?
     property bool supportsStatistics: true      // Supports showing the statistics page?
     property bool supportsLists: true           // Supports multiple tasks lists?
-    property var projectComponent
-    property var allTasks: concat(projects, "allTasks")
+    property var projectComponent: Component {
+
+        GenericProject {
+
+        }
+    }
+    property var allTasks: concat(projects, "tasks")
     property var upcomingTasks: concat(projects, "upcomingTasks", function(project) { return !project.archived })
     property var assignedTasks: concat(projects, "assignedTasks", function(project) { return !project.archived })
     property int loading: 0

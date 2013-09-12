@@ -35,9 +35,8 @@ Item {
 
     property string noneMessage: i18n.tr("No tasks")
     property var model: sort(tasks, sortBy)
-    property var project: list ? list.project : null
-    property var list
-    property var tasks: list ? list.tasks : []
+    property var project
+    property var tasks: project ? project.tasks : []
 
     property alias addBarColor: addBar.color
 

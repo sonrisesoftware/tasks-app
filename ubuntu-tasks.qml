@@ -159,13 +159,11 @@ MainView {
     property var viewing: currentPage && currentPage.hasOwnProperty("type") ? currentPage.type : "unknown"
 
     property var currentProject: currentPage && currentPage.hasOwnProperty("currentProject") ? currentPage.currentProject : null
-    property var currentList: currentPage && currentPage.hasOwnProperty("currentList") ? currentPage.currentList : null
     property var currentTask: currentPage && currentPage.hasOwnProperty("task") ? currentPage.task : null
 
     onWideAspectChanged: {
         var viewing = root.viewing
         var currentProject = root.currentProject
-        var currentList = root.currentList
         var currentTask = root.currentTask
 
         clearPageStack()
@@ -180,14 +178,9 @@ MainView {
             } else if (viewing === "project") {
                 tabs.selectedTabIndex = homePage.tabIndex
                 homePage.currentProject = currentProject
-            } else if (viewing === "list") {
-                tabs.selectedTabIndex = homePage.tabIndex
-                homePage.currentProject = currentProject
-                homePage.currentList = currentList
             } else if (viewing === "task") {
                 tabs.selectedTabIndex = homePage.tabIndex
                 homePage.currentProject = currentTask.project
-                homePage.currentList = currentTask.list
                 goToTask(currentTask)
             } else if (viewing === "settings") {
                 tabs.selectedTabIndex = 2//settingsPage.tabIndex
@@ -206,12 +199,8 @@ MainView {
                 goToProject(currentProject)
             } else if (viewing === "overview") {
                 tabs.selectedTabIndex = homePage.tabIndex
-            } else if (viewing === "list") {
-                tabs.selectedTabIndex = projectsPage.tabIndex
-                goToList(currentList)
             } else if (viewing === "task") {
-               tabs.selectedTabIndex = projectsPage.tabIndex
-                goToList(currentTask.list)
+                tabs.selectedTabIndex = projectsPage.tabIndex
                 goToTask(currentTask)
             } else if (viewing === "settings") {
                 tabs.selectedTabIndex = 4//settingsPage.tabIndex
@@ -248,21 +237,6 @@ MainView {
         }
     }
 
-    function goToList(list) {
-        if (wideAspect) {
-            homePage.currentProject = list.project
-            homePage.currentList = list
-            clearPageStack()
-        } else {
-            if (list.project.special) {
-                tabs.selectedTabIndex = uncategorizedPage.tabIndex
-            } else {
-                tabs.selectedTabIndex = projectsPage.tabIndex
-                pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: list.project, currentList: list})
-            }
-        }
-    }
-
     function goToTask(task) {
         pageStack.push(Qt.resolvedUrl("ui/TaskViewPage.qml"), {task: task})
     }
@@ -281,16 +255,16 @@ MainView {
 
     /* TASK MANAGEMENT */
 
-    TrelloBackend.TrelloBackend {
-        id: trello
-    }
+//    TrelloBackend.TrelloBackend {
+//        id: trello
+//    }
 
     LocalBackend.LocalBackend {
         id: localProjectsModel
     }
 
     property var backendModels: [
-       localProjectsModel, trello
+       localProjectsModel//, trello
     ]
 
     property var allTasks: concat(backendModels, "allTasks")
@@ -777,10 +751,10 @@ MainView {
             onAccepted: {
                 PopupUtils.close(confirmDeleteProjectDialogItem)
 
-                var list = task.list
+                var project = task.project
                 task.remove()
                 clearPageStack()
-                goToList(list)
+                goToProject(project)
             }
         }
     }
