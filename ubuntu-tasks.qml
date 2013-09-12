@@ -101,6 +101,8 @@ MainView {
 
                     property int tabIndex: 2
                 }
+
+                show: !wideAspect
             }
 
             HideableTab {

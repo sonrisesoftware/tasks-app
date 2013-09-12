@@ -33,6 +33,7 @@ Page {
     property string type: "projects"
 
     property bool showArchived: false
+    property bool showingAssignedTasks: false
 
     property var currentProject: null
 

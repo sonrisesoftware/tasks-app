@@ -31,7 +31,7 @@ GenericTask {
     property bool locked: false
 
     nonEditableFields: [
-        "repeat", "tags", "checklist", "priority"
+        "repeat", "tags", "checklist", "priority", "assignedTo"
     ]
 
     invalidActions: ["move"]

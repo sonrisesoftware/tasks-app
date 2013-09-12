@@ -206,6 +206,9 @@ Item {
     property bool hasDueDate: Qt.formatDate(task.dueDate) !== ""
 
     property string tagsString: {
+        if (tags === undefined)
+            return ""
+
         var list = []
         for (var i = 0; i < tags.length; i++) {
             list.push(project.getTag(tags[i]))

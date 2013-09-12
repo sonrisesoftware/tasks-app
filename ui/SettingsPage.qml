@@ -63,6 +63,7 @@ Page {
                         checked = Qt.binding(function() { return trelloIntegration })
                         if (trelloIntegration && getSetting("trelloToken", "") === "")
                             PopupUtils.open(trelloAuthentication, root)
+                        trello.load()
                     }
                 }
             }

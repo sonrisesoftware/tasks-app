@@ -67,6 +67,8 @@ GenericBackend {
         token = getSetting("trelloToken", "")
         print("Trello token:", token, trelloIntegration)
 
+        database.load(json)
+
         if (token != "" && trelloIntegration) {
             loadU1db(json)
             authorized()
@@ -188,7 +190,8 @@ GenericBackend {
         if (options.length > 0)
             address += "&" + options.join("&").replace(" ", "+")
 
-        //print(call, address)
+        if (call === "PUT")
+            print(call, address)
 
         var doc = new XMLHttpRequest();
         doc.onreadystatechange = function() {
