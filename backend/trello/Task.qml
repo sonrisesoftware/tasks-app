@@ -33,7 +33,7 @@ GenericTask {
     property bool locked: false
 
     nonEditableFields: {
-        var fields = ["repeat", "tags", "checklist", "priority", "assignedTo"]
+        var fields = ["repeat", "tags", "checklist", "priority"]
         if (!(project.hasList("To Do") && project.hasList("Done"))) fields.push("completed")
 
         if (!project.hasList("Doing")) fields.push("assignedTo")
@@ -48,18 +48,21 @@ GenericTask {
         "listID": "idList",
         "description": "desc",
         "dueDate": "due",
-        "tags": "labels"
+        "tags": "labels",
+        "assignedTo": "idMembers"
     }
 
     onListNameChanged: {
-        print(task.name, listName)
         if (listName === "Done") {
             document.set("completed", true)
-        } else if (listName === "In Progress") {
+        } else if (listName === "Doing") {
             document.set("completed", false)
+            if (!backend.isMyself(assignedTo))
+                assignToMyself()
         } else {
             document.set("completed", false)
-            document.set("assignedTo", "")
+            if (assignedTo !== "")
+                assignedTo = ""
         }
 
         reloadFields()
@@ -71,7 +74,6 @@ GenericTask {
     }
 
     onListIDChanged: {
-        print("List ID changed to", listID)
         fieldChanged("listID", listID)
     }
 
@@ -82,6 +84,25 @@ GenericTask {
 
     function fieldChanged(name, value) {
         if (!updating) {
+
+            if (name === "assignedTo" || name === "completed") {
+                if (completed === true) {
+                    print("Moving to Done...")
+                    // Move to Done
+                    listID = project.getListByName("Done")
+                } else {
+                    if (assignedTo === "") {
+                        // Move to To Do
+                        print("Moving to TODO...")
+                        listID = project.getListByName("To Do")
+                    } else {
+                        // Move to Doing
+                        print("Moving to Doing...")
+                        listID = project.getListByName("Doing")
+                    }
+                }
+            }
+
             if (trelloFields.hasOwnProperty(name)) {
                 document.lock(name, value)
                 if (name === "dueDate" && Qt.formatDate(value) === "") {
@@ -96,23 +117,6 @@ GenericTask {
                     httpPUT("/cards/" + taskID + "/" + trelloFields[name], ["value=" + JSON.stringify(list)], onFieldPosted, name)
                 } else {
                     httpPUT("/cards/" + taskID + "/" + trelloFields[name], ["value=" + value], onFieldPosted, name)
-                }
-            } else if (name === "completed") {
-                document.lock(name, value)
-                if (value === true) {
-                    print("Moving to Done...")
-                    // Move to Done
-                    listID = project.getListByName("Done")
-                } else {
-                    if (assignedTo === "") {
-                        // Move to To Do
-                        print("Moving to TODO...")
-                        listID = project.getListByName("To Do")
-                    } else {
-                        // Move to Doing
-                        print("Moving to Doing...")
-                        listID = project.getListByName("Doing")
-                    }
                 }
             } else {
                 document.set(name, value)
@@ -130,6 +134,7 @@ GenericTask {
         document.set("taskID", json.id)
         document.set("name", json.name)
         document.set("listID", json.idList)
+        document.set("assignedTo", json.idMembers[0])
         var labels = json.labels
         var list = []
         for (var i = 0; i < labels.length; i++) {

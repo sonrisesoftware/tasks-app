@@ -37,6 +37,15 @@ GenericBackend {
     //editable: false
     supportsStatistics: false
     property bool firstLoad: false
+    supportsMultipleUsers: true
+
+    customReloadFields: function() {
+        userName = database.get("userName", "me")
+    }
+
+    customSaveFields: function() {
+        database.set("userName", userName)
+    }
 
     function newProject(name) {
         var project = createProject({
@@ -91,17 +100,27 @@ GenericBackend {
         return project
     }
 
-    function onBoardsLoaded(response) {
+    function onUserLoaded(response) {
+        var json = JSON.parse(response)
+
+        print("USER AVATAR>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        print(JSON.stringify(json))
+        userName = json.id
+        print(userName)
+    }
+
+    function onLoaded(response) {
         var json = JSON.parse(response)
         print("Boards loaded:", json)
-        for (var i = 0; i < json.length; i++) {
-            var board = getBoard(json[i].id)
+        var boards = json
+        for (var i = 0; i < boards.length; i++) {
+            var board = getBoard(boards[i].id)
             if (board === undefined) {
                 board = internal_newProject()
-                board.loadTrello(json[i])
+                board.loadTrello(boards[i])
                 board.refresh()
             } else {
-                board.loadTrello(json[i])
+                board.loadTrello(boards[i])
             }
         }
         for (var k = 0; k < projects.count; k++) {
@@ -122,11 +141,12 @@ GenericBackend {
     }
 
     function authorized() {
-        httpGET("/members/my/boards", [], onBoardsLoaded)
+        httpGET("/members/my/boards", [], onLoaded)
+        httpGET("/members/me", [], onUserLoaded)
     }
 
     function refresh() {
-        httpGET("/members/my/boards", [], onBoardsLoaded)
+        authorized()
         for (var i = 0; i < length(projects); i++) {
             var board = getItem(projects, i)
             if (board !== undefined)

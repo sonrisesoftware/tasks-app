@@ -36,6 +36,8 @@ Item {
     property bool requiresInternet: false       // Requires the internet to sync?
     property bool supportsStatistics: true      // Supports showing the statistics page?
     property bool supportsLists: true           // Supports multiple tasks lists?
+    property bool updating: false
+
     property var projectComponent: Component {
 
         GenericProject {
@@ -50,6 +52,19 @@ Item {
     property var nonEditableFields: []
     property var invalidActions: []
     property bool supportsMultipleUsers: false
+
+    property var customReloadFields
+    property var customSaveFields
+
+    function reloadFields() {
+        updating = true
+        nextDocId = database.get("nextDocId", 0)
+
+        if (customReloadFields)
+            customReloadFields()
+
+        updating = false
+    }
 
     function supportsAction(name) {
         return editable && invalidActions.indexOf(name) === -1
@@ -157,7 +172,7 @@ Item {
         //print("Loading U1db from", JSON.stringify(json))
         database.load(json)
 
-        nextDocId = database.get("nextDocId", 0)
+        reloadFields()
         var list = database.listDocs()
 
         for (var i = 0; i < list.length; i++) {
@@ -166,6 +181,9 @@ Item {
     }
 
     function saveU1db() {
+        if (customSaveFields)
+            customSaveFields()
+
         database.set("nextDocId", nextDocId)
         return database.save()
     }

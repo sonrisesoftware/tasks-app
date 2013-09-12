@@ -172,3 +172,7 @@ Day 46 - 9/11/2013
  * Removed quick add bar from upcoming page
  * Removed Upcoming and Uncategorized projects from archived page
  * Added Assigned To/In Progress status
+ * Removed lists from Trello backend
+ * Trello: Completed == Done list
+ * Trello: Incomplete == To Do list
+ * Trello: Assigned == Doing list

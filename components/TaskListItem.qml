@@ -137,7 +137,7 @@ Empty {
                 source: icon("toolbarIcon")
             }
 
-            visible: task.assignedTo !== ""
+            visible: task.assignedTo !== "" && task.canEdit("assignedTo")
 
             width: units.gu(4)
             height: width
