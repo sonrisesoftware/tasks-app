@@ -190,12 +190,12 @@ MainView {
                 homePage.currentList = currentTask.list
                 goToTask(currentTask)
             } else if (viewing === "settings") {
-                tabs.selectedTabIndex = settingsPage.tabIndex
+                tabs.selectedTabIndex = 2//settingsPage.tabIndex
             } else if (viewing === "about") {
-                tabs.selectedTabIndex = settingsPage.tabIndex
+                tabs.selectedTabIndex = 2//settingsPage.tabIndex
                 pageStack.push(Qt.resolvedUrl("ui/AboutPage.qml"))
             } else if (viewing === "search") {
-                tabs.selectedTabIndex = searchPage.tabIndex
+                tabs.selectedTabIndex = 1//searchPage.tabIndex
             } else if (viewing === "uncategorized") {
                 tabs.selectedTabIndex = homePage.tabIndex
                 homePage.currentProject = currentProject
@@ -214,12 +214,12 @@ MainView {
                 goToList(currentTask.list)
                 goToTask(currentTask)
             } else if (viewing === "settings") {
-                tabs.selectedTabIndex = settingsPage.tabIndex
+                tabs.selectedTabIndex = 4//settingsPage.tabIndex
             } else if (viewing === "about") {
-                tabs.selectedTabIndex = settingsPage.tabIndex
+                tabs.selectedTabIndex = 4//settingsPage.tabIndex
                 pageStack.push(Qt.resolvedUrl("ui/AboutPage.qml"))
             } else if (viewing === "search") {
-                tabs.selectedTabIndex = searchPage.tabIndex
+                tabs.selectedTabIndex = 3//searchPage.tabIndex
             } else if (viewing === "uncategorized") {
                 tabs.selectedTabIndex = uncategorizedPage.tabIndex
             }

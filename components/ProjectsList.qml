@@ -35,7 +35,7 @@ Column {
 
     ProjectListItem {
         project: uncategorizedProject
-        visible: project !== null && !showArchived
+        visible: project !== null && wideAspect && !showArchived
     }
 
     Repeater {
