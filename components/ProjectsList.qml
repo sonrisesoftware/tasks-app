@@ -29,28 +29,8 @@ Column {
 
     ProjectListItem {
         project: null
-        selected: currentProject === null && !showingAssignedTasks
-        onClicked: {
-            currentProject = null
-            showingAssignedTasks = false
-        }
+        selected: currentProject === null
         visible: wideAspect && !showArchived
-    }
-
-    ProjectListItem {
-        project: null
-        selected: currentProject === null && showingAssignedTasks
-        onClicked: {
-            currentProject = null
-            showingAssignedTasks = true
-        }
-        text: i18n.tr("In Progress")
-        count: length(assignedTasks)
-        visible: wideAspect && !showArchived
-//        onCountChanged: {
-//            if (count === 0)
-//                showingAssignedTasks = false
-//        }
     }
 
     ProjectListItem {

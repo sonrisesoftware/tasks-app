@@ -171,3 +171,4 @@ Day 35 - 9/10/2013
 Day 46 - 9/11/2013
  * Removed quick add bar from upcoming page
  * Removed Upcoming and Uncategorized projects from archived page
+ * Added Assigned To/In Progress status

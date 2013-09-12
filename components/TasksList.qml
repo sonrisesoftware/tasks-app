@@ -33,11 +33,11 @@ Item {
         return !task.completed || showCompletedTasks
     }
 
-    property string noneMessage: showingAssignedTasks && currentProject === null ? i18n.tr("No Assigned Tasks") : i18n.tr("No tasks")
+    property string noneMessage: i18n.tr("No tasks")
     property var model: sort(tasks, sortBy)
     property var project: list ? list.project : null
     property var list
-    property var tasks: currentProject === null && showingAssignedTasks ? assignedTasks : list ? list.tasks : []
+    property var tasks: list ? list.tasks : []
 
     property alias addBarColor: addBar.color
 

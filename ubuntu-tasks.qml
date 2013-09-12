@@ -81,25 +81,12 @@ MainView {
             }
 
             HideableTab {
-                title: i18n.tr("In Progress")
-                page: HomePage {
-                    id: inProgressPage
-                    currentProject: null
-                    showingAssignedTasks: true
-
-                    property int tabIndex: 1
-                }
-
-                show: !wideAspect
-            }
-
-            HideableTab {
                 title: page.title
                 page: HomePage {
                     id: uncategorizedPage
                     currentProject: uncategorizedProject
 
-                    property int tabIndex: 2
+                    property int tabIndex: 1
                 }
 
                 show: !wideAspect
@@ -110,7 +97,7 @@ MainView {
                 page: ProjectsPage {
                     id: projectsPage
 
-                    property int tabIndex: 3
+                    property int tabIndex: 2
                 }
 
                 show: !wideAspect
@@ -121,7 +108,7 @@ MainView {
                 page: SearchPage {
                     id: searchPage
 
-                    property int tabIndex: wideAspect ? 1 : 4
+                    property int tabIndex: wideAspect ? 1 : 3
                 }
             }
 
@@ -130,7 +117,7 @@ MainView {
                 page: SettingsPage {
                     id: settingsPage
 
-                    property int tabIndex: wideAspect ? 2 : 5
+                    property int tabIndex: wideAspect ? 2 : 4
                 }
             }
 
@@ -184,12 +171,11 @@ MainView {
         clearPageStack()
         tabs.modelChanged()
         homePage.currentProject = null
-        homePage.showingAssignedTasks = false
 
         print("Switching to %1 in %2".arg(wideAspect ? "Wide Aspect" : "Phone").arg(viewing))
 
         if (wideAspect) {
-            if (viewing === "projects" || viewing === "upcoming") {
+            if (viewing === "projects" || viewing === "overview") {
                 tabs.selectedTabIndex = homePage.tabIndex
             } else if (viewing === "project") {
                 tabs.selectedTabIndex = homePage.tabIndex
@@ -213,15 +199,12 @@ MainView {
             } else if (viewing === "uncategorized") {
                 tabs.selectedTabIndex = homePage.tabIndex
                 homePage.currentProject = currentProject
-            } else if (viewing === "assigned") {
-                tabs.selectedTabIndex = homePage.tabIndex
-                homePage.showingAssignedTasks = true
             }
         } else {
             if (viewing === "project") {
                 tabs.selectedTabIndex = projectsPage.tabIndex
                 goToProject(currentProject)
-            } else if (viewing === "upcoming") {
+            } else if (viewing === "overview") {
                 tabs.selectedTabIndex = homePage.tabIndex
             } else if (viewing === "list") {
                 tabs.selectedTabIndex = projectsPage.tabIndex
@@ -239,8 +222,6 @@ MainView {
                 tabs.selectedTabIndex = searchPage.tabIndex
             } else if (viewing === "uncategorized") {
                 tabs.selectedTabIndex = uncategorizedPage.tabIndex
-            } else if (viewing === "assigned") {
-                tabs.selectedTabIndex = inProgressPage.tabIndex
             }
         }
 

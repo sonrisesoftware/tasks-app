@@ -31,7 +31,7 @@ SingleValue {
     property var project
 
     property var text: project === null
-                       ? i18n.tr("Upcoming")
+                       ? i18n.tr("Overview")
                        : project.name
 
     Column {
@@ -90,7 +90,11 @@ SingleValue {
                             })
     }
 
-    property int count: project === null ? length(upcomingTasks) : project.uncompletedCount
+    property int count: project === null
+                        ? length(upcomingTasks) + filteredCount(assignedTasks, function(task) {
+                            return !task.upcoming
+                        })
+                        : project.uncompletedCount
 
     value: count === 0 ? "" : count
 }

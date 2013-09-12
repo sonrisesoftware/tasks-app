@@ -31,11 +31,11 @@ Page {
     title: wideAspect ? i18n.tr("Tasks")
                       : projectName
 
-    property string projectName: upcoming ? i18n.tr("Upcoming") : currentProject.name
+    property string projectName: overview ? i18n.tr("Overview") : currentProject.name
 
-    property var type: upcoming ? "upcoming" : showingAssignedTasks ? "assigned" : "project"
+    property var type: overview ? "overview" : "project"
 
-    property bool upcoming: currentProject === null && !showingAssignedTasks
+    property bool overview: currentProject === null
 
     property var currentProject: null
 
@@ -44,7 +44,6 @@ Page {
     }
 
     property var currentList: getList()
-    property bool showingAssignedTasks: false
 
     function getList() {
         var list = null
@@ -93,17 +92,17 @@ Page {
             left: sidebar.right
         }
 
-        UpcomingTasksList {
+        OverviewTasksList {
             id: upcomingTasksList
 
             anchors.fill: parent
-            visible: upcoming
+            visible: overview
         }
 
         Item {
             anchors.fill: parent
 
-            visible: !upcoming
+            visible: !overview
 
             ValueSelector {
                 id: listSelector

@@ -64,7 +64,7 @@ Item {
             }
 
             Header {
-                text: i18n.tr("Today")
+                text: i18n.tr("Due Today")
                 visible: filteredCount(root.model, function(task) {
                     return task.isDueToday()
                 }) > 0
@@ -82,7 +82,7 @@ Item {
             }
 
             Header {
-                text: i18n.tr("Tomorrow")
+                text: i18n.tr("Due Tomorrow")
                 visible: filteredCount(root.model, function(task) {
                     return task.isDueTomorrow()
                 }) > 0
@@ -100,7 +100,7 @@ Item {
             }
 
             Header {
-                text: i18n.tr("This Week")
+                text: i18n.tr("Due This Week")
                 visible: filteredCount(root.model, function(task) {
                     return !task.overdue && !task.isDueToday() && !task.isDueTomorrow() && task.isDueThisWeek()
                 }) > 0
@@ -116,6 +116,25 @@ Item {
                     task: modelData
                 }
             }
+
+            Header {
+                id: assignedToMeHeader
+                text: i18n.tr("Assigned to Me")
+                visible: filteredCount(assignedTasks, function(task) {
+                    return !task.upcoming
+                }) > 0
+            }
+
+            Repeater {
+                id: assignedToMe
+                model: assignedTasks
+                delegate: TaskListItem {
+                    objectName: "assignedTask" + index
+
+                    show: !task.upcoming
+                    task: modelData
+                }
+            }
         }
     }
 
@@ -125,10 +144,10 @@ Item {
 
     Label {
         anchors.centerIn: parent
-        visible: length(upcomingTasks) === 0
+        visible: length(upcomingTasks) === 0 && !assignedToMeHeader.visible
 
         fontSize: "large"
-        text: i18n.tr("No upcoming tasks")
+        text: i18n.tr("No upcoming or assigned tasks")
         horizontalAlignment: Text.AlignRight
 
         opacity: 0.5
