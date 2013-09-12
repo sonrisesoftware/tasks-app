@@ -104,8 +104,8 @@ Item {
                             left: parent.left
                         }
 
-                        visible: !creating && !titleLabel.editing
-                        __acceptEvents: task.canComplete && task.canEdit("completed")
+                        visible: !creating && !titleLabel.editing && task.canEdit("completed")
+                        __acceptEvents: task.canComplete && task.editable
 
 
                         checked: task.completed

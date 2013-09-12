@@ -32,9 +32,14 @@ GenericTask {
     property string listName: project.getList(listID)
     property bool locked: false
 
-    nonEditableFields: [
-        "repeat", "tags", "checklist", "priority", "assignedTo"
-    ]
+    nonEditableFields: {
+        var fields = ["repeat", "tags", "checklist", "priority", "assignedTo"]
+        if (!(project.hasList("To Do") && project.hasList("Done"))) fields.push("completed")
+
+        if (!project.hasList("Doing")) fields.push("assignedTo")
+
+        return fields
+    }
 
     invalidActions: ["move"]
 
@@ -97,25 +102,16 @@ GenericTask {
                 if (value === true) {
                     print("Moving to Done...")
                     // Move to Done
-                    if (project.hasList("Done"))
-                        listID = project.getListByName("Done")
-                    else
-                        print("Error: No list named Done")
+                    listID = project.getListByName("Done")
                 } else {
                     if (assignedTo === "") {
                         // Move to To Do
                         print("Moving to TODO...")
-                        if (project.hasList("To Do"))
-                            listID = project.getListByName("To Do")
-                        else
-                            print("Error: No list named To Do")
+                        listID = project.getListByName("To Do")
                     } else {
                         // Move to Doing
                         print("Moving to Doing...")
-                        if (project.hasList("Doing"))
-                            listID = project.getListByName("Doing")
-                        else
-                            print("Error: No list named Doing")
+                        listID = project.getListByName("Doing")
                     }
                 }
             } else {

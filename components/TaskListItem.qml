@@ -58,7 +58,8 @@ Empty {
         }
 
         checked: task.completed
-        __acceptEvents: task.canComplete && task.canEdit("completed")
+        __acceptEvents: task.canComplete && task.editable
+        visible: task.canEdit("completed")
 
         onCheckedChanged: task.completed = checked
         style: SuruCheckBoxStyle {}
@@ -77,8 +78,8 @@ Empty {
 
         anchors {
             verticalCenter: parent.verticalCenter
-            left: doneCheckBox.right
-            leftMargin: units.gu(1)
+            left: doneCheckBox.visible ? doneCheckBox.right : parent.left
+            leftMargin: doneCheckBox.visible ? units.gu(1) : units.gu(2)
             rightMargin: units.gu(1)
             right: taskOptions.left
         }
