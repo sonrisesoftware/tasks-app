@@ -77,10 +77,9 @@ Item {
 
                         anchors.verticalCenter: parent.verticalCenter
                         anchors {
-                            right: completedCheckBox.visible ? completedCheckBox.left : parent.right
-                            rightMargin: completedCheckBox.visible ? units.gu(2) : 0
-                            left: priorityShape.visible ? priorityShape.right : parent.left
-                            leftMargin: priorityShape.visible ? units.gu(2) : 0
+                            left: completedCheckBox.visible ? completedCheckBox.right : parent.left
+                            leftMargin: completedCheckBox.visible ? units.gu(2) : 0
+                            right: parent.right
                         }
 
                         inlineEdit: false
@@ -102,7 +101,7 @@ Item {
                         id: completedCheckBox
                         anchors {
                             verticalCenter: parent.verticalCenter
-                            right: parent.right
+                            left: parent.left
                         }
 
                         visible: !creating && !titleLabel.editing
@@ -120,17 +119,17 @@ Item {
                         visible: !task.canComplete && !task.completed && completedCheckBox.visible
                     }
 
-                    UbuntuShape {
-                        id: priorityShape
-                        anchors {
-                            left: parent.left
-                            verticalCenter: headerItem.verticalCenter
-                        }
-                        visible: !creating && !titleLabel.editing// && task.priority !== "low"
-                        width: units.gu(3)
-                        height: width
-                        color: priorityColor(task.priority)
-                    }
+//                    UbuntuShape {
+//                        id: priorityShape
+//                        anchors {
+//                            left: parent.left
+//                            verticalCenter: headerItem.verticalCenter
+//                        }
+//                        visible: !creating && !titleLabel.editing// && task.priority !== "low"
+//                        width: units.gu(3)
+//                        height: width
+//                        color: priorityColor(task.priority)
+//                    }
                 }
 
                 TextArea {

@@ -58,6 +58,7 @@ Item {
     property var tags
     property var comments
     property bool createdRepeat
+    property string assignedTo
 
     Component.onCompleted: {
         creationDate = document.get("creationDate", new Date())
@@ -77,6 +78,7 @@ Item {
     onPriorityChanged: fieldChanged("priority", priority)
     onTagsChanged: fieldChanged("tags", tags)
     onCommentsChanged: fieldChanged("comments", comments)
+    onAssignedToChanged: fieldChanged("assignedTo", assignedTo)
     //TODO: Add others...
 
     property bool updating: false       // Used to prevent sending changes to remote backend
@@ -110,7 +112,8 @@ Item {
             completionDate: completionDate,
             priority: priority,
             tags: tags,
-            checklist: checklist.save()
+            checklist: checklist.save(),
+            assignedTo: assignedTo
         }
     }
 
@@ -174,6 +177,7 @@ Item {
         completionDate = document.get("completionDate", new Date(""))
         priority = document.get("priority", "low")
         tags = document.get("tags", [])
+        assignedTo = document.get("assignedTo", "")
         checklist.load(document.get("checklist", {}))
 
         if (customUploadFields)
@@ -223,6 +227,15 @@ Item {
                                    : task.overdue
                                      ? i18n.tr("Overdue (due %1)").arg(formattedDate(task.dueDate))
                                      : formattedDate(task.dueDate)
+
+    function isAssignedToMe() {
+        return project.backend.isMyself(task.assignedTo)
+    }
+
+    function assignToMyself() {
+        print("Claiming...")
+        assignedTo = project.backend.userName
+    }
 
     function completedBy(date) {
         return (completed && dateIsBeforeOrSame(completionDate, date)) && existedBy(date)

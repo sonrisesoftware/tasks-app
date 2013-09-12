@@ -54,8 +54,8 @@ Empty {
 
         anchors {
             verticalCenter: parent.verticalCenter
-            right: parent.right
-            rightMargin: units.gu(2)
+            left: parent.left
+            leftMargin: units.gu(2)
         }
 
         checked: task.completed
@@ -78,10 +78,10 @@ Empty {
 
         anchors {
             verticalCenter: parent.verticalCenter
-            left: priorityShape.visible ? priorityShape.right : parent.left
-            leftMargin: priorityShape.visible ? units.gu(1) : units.gu(2)
+            left: doneCheckBox.right
+            leftMargin: units.gu(1)
             rightMargin: units.gu(1)
-            right: doneCheckBox.left//taskOptions.left
+            right: taskOptions.left
         }
 
         Label {
@@ -110,18 +110,38 @@ Empty {
         }
     }
 
-    UbuntuShape {
-        id: priorityShape
+    Row {
+        id: taskOptions
+        spacing: units.gu(1)
+
         anchors {
             verticalCenter: parent.verticalCenter
-            left: parent.left
-            leftMargin: units.gu(2)
+            right: parent.right
+            rightMargin: units.gu(2)
         }
-        width: units.gu(3)
-        height: width
-        color: priorityColor(task.priority)
-        //visible: task.priority !== "low"
-        //visible: false
+
+        UbuntuShape {
+            id: priorityShape
+            anchors.verticalCenter: parent.verticalCenter
+
+            width: units.gu(4)
+            height: width
+
+            color: priorityColor(task.priority)
+            visible: task.priority !== "low"
+            //visible: false
+        }
+
+        UbuntuShape {
+            image: Image {
+                source: icon("toolbarIcon")
+            }
+
+            visible: task.assignedTo !== ""
+
+            width: units.gu(4)
+            height: width
+        }
     }
 
     onClicked: {

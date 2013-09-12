@@ -45,6 +45,28 @@ Column {
         }
     }
 
+    Standard {
+        id: assignedTo
+
+        text: "Assigned To"
+        UbuntuShape {
+            anchors {
+                verticalCenter: parent.verticalCenter
+                right: parent.right
+                rightMargin: units.gu(2)
+            }
+
+            image: Image {
+                source: icon("toolbarIcon")
+            }
+            visible: task.assignedTo !== ""
+
+            width: units.gu(4)
+            height: width
+        }
+        onClicked: PopupUtils.open(Qt.resolvedUrl("UserPopover.qml"), assignedTo, {task: task})
+    }
+
     ValueSelector {
         id: prioritySelector
 

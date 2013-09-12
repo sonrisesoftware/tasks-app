@@ -29,6 +29,7 @@ Item {
 
     property string name
     property string newName
+    property string userName: "me"
     property string databaseName                // The database filename
     enabled: true                               // Is this backend enabled?
     property bool editable: true                // Can projects/lists/tasks be edited/created/deleted?
@@ -160,5 +161,9 @@ Item {
     function saveU1db() {
         database.set("nextDocId", nextDocId)
         return database.save()
+    }
+
+    function isMyself(name) {
+        return name === userName
     }
 }
