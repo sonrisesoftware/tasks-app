@@ -231,6 +231,29 @@ Item {
                                      ? i18n.tr("Overdue (due %1)").arg(formattedDate(task.dueDate))
                                      : formattedDate(task.dueDate)
 
+    function hasTag(name) {
+        if (tags === undefined) return false
+        else return tags.indexOf(name) !== -1
+    }
+
+    function addTag(name) {
+        if (task.tags === undefined) task.tags = []
+
+        var tags = task.tags
+        tags.push(name)
+        task.tags = tags.sort()
+    }
+
+    function removeTag(name) {
+        if (task.tags === undefined) task.tags = []
+
+        if (!hasTag(name)) return
+
+        var tags = task.tags
+        tags.splice(task.tags.indexOf(modelData), 1)
+        task.tags = tags
+    }
+
     function isAssignedToMe() {
         return project.backend.isMyself(task.assignedTo)
     }

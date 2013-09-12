@@ -203,25 +203,20 @@ Column {
             control: CheckBox {
                 height: units.gu(3.5)
                 width: height
-                checked: task.tags.indexOf(modelData) !== -1
+                checked: task.hasTag(modelData)
                 style: SuruCheckBoxStyle {}
 
                 //__acceptEvents: task.canEdit("tags")
 
                 onClicked: {
-                    var selected = task.tags.indexOf(modelData) !== -1
-                    if (selected) {
-                        var tags = task.tags
-                        tags.splice(task.tags.indexOf(modelData), 1)
-                        task.tags = tags
+                    if (task.hasTag(modelData)) {
+                        task.removeTag(modelData)
                     } else {
-                        var tags = task.tags
-                        tags.push(modelData)
-                        task.tags = tags.sort()
+                        task.addTag(modelData)
                     }
 
                     checked = Qt.binding(function() {
-                        return task.tags.indexOf(modelData) !== -1
+                        return task.hasTag(modelData)
                     })
                 }
             }
