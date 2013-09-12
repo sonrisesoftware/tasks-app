@@ -33,7 +33,7 @@ Item {
         return !task.completed || showCompletedTasks
     }
 
-    property string noneMessage: i18n.tr("No tasks")
+    property string noneMessage: showingAssignedTasks && currentProject === null ? i18n.tr("No Assigned Tasks") : i18n.tr("No tasks")
     property var model: sort(tasks, sortBy)
     property var project: list ? list.project : null
     property var list

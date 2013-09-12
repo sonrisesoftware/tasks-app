@@ -47,10 +47,10 @@ Column {
         text: i18n.tr("In Progress")
         count: length(assignedTasks)
         visible: wideAspect && !showArchived
-        onCountChanged: {
-            if (count === 0)
-                showingAssignedTasks = false
-        }
+//        onCountChanged: {
+//            if (count === 0)
+//                showingAssignedTasks = false
+//        }
     }
 
     ProjectListItem {

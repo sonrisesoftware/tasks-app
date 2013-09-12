@@ -95,10 +95,20 @@ MainView {
 
             HideableTab {
                 title: page.title
+                page: HomePage {
+                    id: uncategorizedPage
+                    currentProject: uncategorizedProject
+
+                    property int tabIndex: 2
+                }
+            }
+
+            HideableTab {
+                title: page.title
                 page: ProjectsPage {
                     id: projectsPage
 
-                    property int tabIndex: 2
+                    property int tabIndex: 3
                 }
 
                 show: !wideAspect
@@ -109,7 +119,7 @@ MainView {
                 page: SearchPage {
                     id: searchPage
 
-                    property int tabIndex: wideAspect ? 1 : 3
+                    property int tabIndex: wideAspect ? 1 : 4
                 }
             }
 
@@ -118,7 +128,7 @@ MainView {
                 page: SettingsPage {
                     id: settingsPage
 
-                    property int tabIndex: wideAspect ? 2 : 4
+                    property int tabIndex: wideAspect ? 2 : 5
                 }
             }
 
@@ -172,6 +182,7 @@ MainView {
         clearPageStack()
         tabs.modelChanged()
         homePage.currentProject = null
+        homePage.showingAssignedTasks = false
 
         print("Switching to %1 in %2".arg(wideAspect ? "Wide Aspect" : "Phone").arg(viewing))
 
@@ -198,7 +209,11 @@ MainView {
             } else if (viewing === "search") {
                 tabs.selectedTabIndex = searchPage.tabIndex
             } else if (viewing === "uncategorized") {
-                tabs.selectedTabIndex = uncategorizedPage.tabIndex
+                tabs.selectedTabIndex = homePage.tabIndex
+                homePage.currentProject = currentProject
+            } else if (viewing === "assigned") {
+                tabs.selectedTabIndex = homePage.tabIndex
+                homePage.showingAssignedTasks = true
             }
         } else {
             if (viewing === "project") {
@@ -222,6 +237,8 @@ MainView {
                 tabs.selectedTabIndex = searchPage.tabIndex
             } else if (viewing === "uncategorized") {
                 tabs.selectedTabIndex = uncategorizedPage.tabIndex
+            } else if (viewing === "assigned") {
+                tabs.selectedTabIndex = inProgressPage.tabIndex
             }
         }
 

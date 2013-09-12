@@ -49,6 +49,10 @@ Page {
             id: column
             width: parent.width
 
+//            Header {
+//                text: i18n.tr("Plugins")
+//            }
+
             Standard {
                 text: i18n.tr("Connect to Trello")
 
@@ -62,6 +66,10 @@ Page {
                     }
                 }
             }
+
+//            Header {
+//                text: i18n.tr("Help & About")
+//            }
 
             Standard {
                 text: i18n.tr("About Ubuntu Tasks")
