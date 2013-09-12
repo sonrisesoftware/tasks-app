@@ -58,7 +58,7 @@ Empty {
         }
 
         checked: task.completed
-        __acceptEvents: task.canComplete && task.editable
+        __acceptEvents: task.canComplete && task.canEdit("completed")
 
         onCheckedChanged: task.completed = checked
         style: SuruCheckBoxStyle {}

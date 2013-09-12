@@ -255,16 +255,16 @@ MainView {
 
     /* TASK MANAGEMENT */
 
-//    TrelloBackend.TrelloBackend {
-//        id: trello
-//    }
+    TrelloBackend.TrelloBackend {
+        id: trello
+    }
 
     LocalBackend.LocalBackend {
         id: localProjectsModel
     }
 
     property var backendModels: [
-       localProjectsModel//, trello
+       localProjectsModel, trello
     ]
 
     property var allTasks: concat(backendModels, "allTasks")

@@ -28,6 +28,8 @@ GenericTask {
     editable: true
     property string checklistID: ""
     property string taskID
+    property string listID
+    property string listName: project.getList(listID)
     property bool locked: false
 
     nonEditableFields: [
@@ -38,10 +40,24 @@ GenericTask {
 
     property var trelloFields: {
         "name": "name",
+        "listID": "idList",
         "description": "desc",
-        "completed": "closed",
         "dueDate": "due",
         "tags": "labels"
+    }
+
+    onListNameChanged: {
+        print(task.name, listName)
+        if (listName === "Done") {
+            document.set("completed", true)
+        } else if (listName === "In Progress") {
+            document.set("completed", false)
+        } else {
+            document.set("completed", false)
+            document.set("assignedTo", "")
+        }
+
+        reloadFields()
     }
 
     onTaskIDChanged: {
@@ -49,8 +65,14 @@ GenericTask {
             document.set("taskID", taskID)
     }
 
+    onListIDChanged: {
+        print("List ID changed to", listID)
+        fieldChanged("listID", listID)
+    }
+
     customUploadFields: function() {
         taskID = document.get("taskID", "")
+        listID = document.get("listID", "")
     }
 
     function fieldChanged(name, value) {
@@ -70,6 +92,32 @@ GenericTask {
                 } else {
                     httpPUT("/cards/" + taskID + "/" + trelloFields[name], ["value=" + value], onFieldPosted, name)
                 }
+            } else if (name === "completed") {
+                document.lock(name, value)
+                if (value === true) {
+                    print("Moving to Done...")
+                    // Move to Done
+                    if (project.hasList("Done"))
+                        listID = project.getListByName("Done")
+                    else
+                        print("Error: No list named Done")
+                } else {
+                    if (assignedTo === "") {
+                        // Move to To Do
+                        print("Moving to TODO...")
+                        if (project.hasList("To Do"))
+                            listID = project.getListByName("To Do")
+                        else
+                            print("Error: No list named To Do")
+                    } else {
+                        // Move to Doing
+                        print("Moving to Doing...")
+                        if (project.hasList("Doing"))
+                            listID = project.getListByName("Doing")
+                        else
+                            print("Error: No list named Doing")
+                    }
+                }
             } else {
                 document.set(name, value)
             }
@@ -78,13 +126,14 @@ GenericTask {
 
     function onFieldPosted(response, name) {
         print(response)
+        print("Unlocked", name)
         document.unlock(name)
     }
 
     function loadTrello(json) {
         document.set("taskID", json.id)
         document.set("name", json.name)
-        document.set("completed", json.closed)
+        document.set("listID", json.idList)
         var labels = json.labels
         var list = []
         for (var i = 0; i < labels.length; i++) {

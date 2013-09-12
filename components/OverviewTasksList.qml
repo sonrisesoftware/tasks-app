@@ -30,6 +30,8 @@ Item {
 
     property var model: upcomingTasks
 
+    property Flickable flickable: flickable
+
     Flickable {
         id: flickable
         anchors.fill: parent

@@ -48,8 +48,14 @@ Page {
             id: projectsList
         }
 
+        //anchors.topMargin: units.gu(9.5)
+
         expanded: wideAspect
     }
+
+//    flickable: wideAspect ? undefined
+//                          : overview ? overviewTasksList.flickable
+//                                     : list.flickable
 
 
     Item {
@@ -61,7 +67,7 @@ Page {
         }
 
         OverviewTasksList {
-            id: upcomingTasksList
+            id: overviewTasksList
 
             anchors.fill: parent
             visible: overview

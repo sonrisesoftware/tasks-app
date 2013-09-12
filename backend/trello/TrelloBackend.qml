@@ -53,6 +53,7 @@ GenericBackend {
     function onNewProject(response, project) {
         var json = JSON.parse(response)
         project.boardID = json.id
+        httpGET("/boards/" + project.boardID + "/lists", [], project.loadLists)
         project.locked = false
     }
 
