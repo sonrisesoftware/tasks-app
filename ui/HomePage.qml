@@ -33,9 +33,9 @@ Page {
 
     property string projectName: upcoming ? i18n.tr("Upcoming") : currentProject.name
 
-    property var type: upcoming ? "upcoming" : "project"
+    property var type: upcoming ? "upcoming" : showingAssignedTasks ? "assigned" : "project"
 
-    property bool upcoming: currentProject === null
+    property bool upcoming: currentProject === null && !showingAssignedTasks
 
     property var currentProject: null
 
@@ -44,6 +44,7 @@ Page {
     }
 
     property var currentList: getList()
+    property bool showingAssignedTasks: false
 
     function getList() {
         var list = null
@@ -117,7 +118,7 @@ Page {
                     color: Qt.rgba(0.2,0.2,0.2,0.2)
                 }
 
-                selectedIndex: values.indexOf(currentList.name)
+                selectedIndex: currentList === null ? -1 : values.indexOf(currentList.name)
                 text: i18n.tr("List")
                 values: {
                     var list = subList(currentProject === null ? [] : currentProject.lists, "name")
@@ -243,6 +244,14 @@ Page {
             onTriggered: {
                 PopupUtils.open(optionsPopover, optionsButton)
             }
+        }
+    }
+
+    Component {
+        id: optionsPopover
+
+        OptionsPopover {
+
         }
     }
 }

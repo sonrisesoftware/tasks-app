@@ -38,10 +38,9 @@ Empty {
         UbuntuNumberAnimation {}
     }
 
-    //onHeightChanged: print("HEIGHT CHANGED:", height)
+    opacity: show ? 1 : 0
 
     clip: true
-    opacity: show ? 1 : 0
 
     property bool show: true
 

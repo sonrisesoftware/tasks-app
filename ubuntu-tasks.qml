@@ -81,12 +81,11 @@ MainView {
             }
 
             HideableTab {
-                title: page.title
+                title: i18n.tr("In Progress")
                 page: HomePage {
-                    id: uncategorizedPage
-                    currentProject: uncategorizedProject
-
-                    type: "uncategorized"
+                    id: inProgressPage
+                    currentProject: null
+                    showingAssignedTasks: true
 
                     property int tabIndex: 1
                 }
@@ -296,6 +295,7 @@ MainView {
 
     property var allTasks: concat(backendModels, "allTasks")
     property var upcomingTasks: concat(backendModels, "upcomingTasks")
+    property var assignedTasks: concat(backendModels, "assignedTasks")
 
     onUpcomingTasksChanged: {
         //print("Upcoming tasks:", length(upcomingTasks))
@@ -502,7 +502,7 @@ MainView {
         return list
     }
 
-    function count(model, func, name) {
+    function filteredCount(model, func, name) {
         return filter(model, func, name).length
     }
 
@@ -511,7 +511,7 @@ MainView {
 
         for (var i = 0; i < length(list); i++) {
             var item = getItem(list, i)
-            value += count(item[prop], func, name)
+            value += filteredCount(item[prop], func, name)
         }
 
         return value
@@ -613,7 +613,7 @@ MainView {
     }
 
     function newProject(caller, task) {
-        if (count(backendModels, function(backend) { return backend.enabled }) > 1)
+        if (filteredCount(backendModels, function(backend) { return backend.enabled }) > 1)
             PopupUtils.open(newProjectPopover, caller, {task: task})
         else
             PopupUtils.open(newProjectDialog, root, {
@@ -663,14 +663,6 @@ MainView {
     }
 
     /* COMPONENTS */
-
-    Component {
-        id: optionsPopover
-
-        OptionsPopover {
-
-        }
-    }
 
     Component {
         id: newProjectDialog

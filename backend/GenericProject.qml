@@ -37,6 +37,7 @@ Item {
     property bool editable: backend.editable
     property bool supportsLists: backend.supportsLists
     property var backend
+    property var assignedTasks: concat(lists, "assignedTasks")
     property var upcomingTasks: concat(lists, "upcomingTasks")
     property var allTasks: concat(lists, "tasks")
     property int uncompletedCount: sum(lists, "uncompletedCount")

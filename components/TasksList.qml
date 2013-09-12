@@ -37,7 +37,7 @@ Item {
     property var model: sort(tasks, sortBy)
     property var project: list ? list.project : null
     property var list
-    property var tasks: list ? list.tasks : []
+    property var tasks: currentProject === null && showingAssignedTasks ? assignedTasks : list ? list.tasks : []
 
     property alias addBarColor: addBar.color
 
@@ -91,7 +91,7 @@ Item {
 
             anchors.centerIn: parent
 
-            visible: count(model, filter) === 0
+            visible: filteredCount(model, filter) === 0
             opacity: 0.5
 
             fontSize: "large"

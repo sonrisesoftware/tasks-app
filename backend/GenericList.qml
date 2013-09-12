@@ -44,10 +44,13 @@ Item {
         return editable && nonEditableFields.indexOf(name) === -1
     }
 
+    property var assignedTasks: filter(tasks, function(task) {
+        return task.isAssignedToMe() && !task.completed
+    }, "Upcoming tasks")
     property var upcomingTasks: filter(tasks, function(task) {
         return task.upcoming
     }, "Upcoming tasks")
-    property int uncompletedCount: name === "Done" ? 0 : count(tasks, function(task) {
+    property int uncompletedCount: name === "Done" ? 0 : filteredCount(tasks, function(task) {
         return !task.completed
     })
 

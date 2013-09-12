@@ -46,9 +46,34 @@ Column {
     }
 
     Standard {
+        id: inProgress
+
+        text: i18n.tr("In Progress")
+        enabled: task.editable
+        visible: task.supportsField("assignedTo") && !task.project.backend.supportsMultipleUsers
+        control: CheckBox {
+            checked: task.isAssignedToMe()
+            style: SuruCheckBoxStyle {}
+
+            onCheckedChanged: {
+                if (checked) {
+                    task.assignToMyself()
+                } else {
+                    task.assignedTo = ""
+                }
+
+                checked = Qt.binding(function() { return task.isAssignedToMe() })
+            }
+        }
+    }
+
+    Standard {
         id: assignedTo
 
-        text: "Assigned To"
+        enabled: task.editable
+        visible: task.supportsField("assignedTo") && task.project.backend.supportsMultipleUsers
+
+        text: i18n.tr("Assigned To")
         UbuntuShape {
             anchors {
                 verticalCenter: parent.verticalCenter

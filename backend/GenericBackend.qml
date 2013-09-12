@@ -39,10 +39,12 @@ Item {
     property var projectComponent
     property var allTasks: concat(projects, "allTasks")
     property var upcomingTasks: concat(projects, "upcomingTasks", function(project) { return !project.archived })
+    property var assignedTasks: concat(projects, "assignedTasks", function(project) { return !project.archived })
     property int loading: 0
     property int totalLoading: 0
     property var nonEditableFields: []
     property var invalidActions: []
+    property bool supportsMultipleUsers: false
 
     function supportsAction(name) {
         return editable && invalidActions.indexOf(name) === -1
@@ -52,8 +54,8 @@ Item {
         return editable && nonEditableFields.indexOf(name) === -1
     }
 
-    property int archivedProjectsCount: count(projects, function(project) { return project.archived && !project.special })
-    property int openProjectsCount: count(projects, function(project) { return !project.archived && !project.special })
+    property int archivedProjectsCount: filteredCount(projects, function(project) { return project.archived && !project.special })
+    property int openProjectsCount: filteredCount(projects, function(project) { return !project.archived && !project.special })
 
     property int nextDocId: 0
 

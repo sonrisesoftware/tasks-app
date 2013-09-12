@@ -47,7 +47,7 @@ Item {
 
             Header {
                 text: i18n.tr("Overdue")
-                visible: count(root.model, function(task) {
+                visible: filteredCount(root.model, function(task) {
                     return task.overdue
                 }) > 0
             }
@@ -65,7 +65,7 @@ Item {
 
             Header {
                 text: i18n.tr("Today")
-                visible: count(root.model, function(task) {
+                visible: filteredCount(root.model, function(task) {
                     return task.isDueToday()
                 }) > 0
             }
@@ -83,7 +83,7 @@ Item {
 
             Header {
                 text: i18n.tr("Tomorrow")
-                visible: count(root.model, function(task) {
+                visible: filteredCount(root.model, function(task) {
                     return task.isDueTomorrow()
                 }) > 0
             }
@@ -101,7 +101,7 @@ Item {
 
             Header {
                 text: i18n.tr("This Week")
-                visible: count(root.model, function(task) {
+                visible: filteredCount(root.model, function(task) {
                     return !task.overdue && !task.isDueToday() && !task.isDueTomorrow() && task.isDueThisWeek()
                 }) > 0
             }
