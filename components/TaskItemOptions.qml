@@ -163,7 +163,7 @@ Column {
     }
 
     Header {
-        text: i18n.tr("Tags")
+        text: i18n.tr("Labels")
         //visible: task.supportsField("tags")
     }
 
@@ -179,7 +179,7 @@ Column {
             UbuntuShape {
                 id: colorShape
                 height: units.gu(3)
-                width: height
+                width: height//task.project.getTag(modelData) === modelData ? units.gu(15) : height
                 anchors {
                     verticalCenter: parent.verticalCenter
                     left: parent.left
@@ -198,6 +198,7 @@ Column {
                 width: parent.width - units.gu(9)
 
                 text: task.project.getTag(modelData)
+                //visible: task.project.getTag(modelData) !== modelData
             }
 
             control: CheckBox {

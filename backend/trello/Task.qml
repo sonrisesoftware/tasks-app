@@ -54,7 +54,7 @@ GenericTask {
 
     onListNameChanged: {
         if (!updating) {
-            print(name, "LIST NAME", listName, updating)
+            debug("task", name + " LIST NAME CHANGED TO " + listName)
             if (listName === "Done") {
                 completed = true
             } else if (listName != ""){
@@ -75,7 +75,7 @@ GenericTask {
 
     onCompletedChanged: {
         if (!updating) {
-            print(name, "LIST NAME", completed)
+            debug("task", name + " COMPLETED CHANGED TO " + completed)
             if (completed) {
                 if (listName !== "Done") listID = project.getListByName("Done")
             } else {
@@ -94,19 +94,16 @@ GenericTask {
     }
 
     onListIDChanged: {
-        print(name, "ID Changed", updating)
         fieldChanged("listID", listID)
     }
 
     customUploadFields: function() {
         taskID = document.get("taskID", "")
         listID = document.get("listID", "")
-        print(name, "List ID =", project.getList(listID), updating)
     }
 
     function fieldChanged(name, value) {
         if (!updating) {
-            print(task.name, "Field CHANGED",name,value)
             if (trelloFields.hasOwnProperty(name)) {
                 document.lock(name, value)
                 if (name === "dueDate" && Qt.formatDate(value) === "") {
@@ -154,7 +151,7 @@ GenericTask {
             checklistID = ""
         document.set("description", json.badges.description ? json.desc : "")
 
-        print("RELOADING TRELLO>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        debug("task", "Reloading Trello!")
         reloadFields()
     }
 

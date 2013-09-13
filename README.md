@@ -176,3 +176,8 @@ Day 46 - 9/11/2013
  * Trello: Completed == Done list
  * Trello: Incomplete == To Do list
  * Trello: Assigned == Doing list
+
+Day 47 - 9/12/2013
+ * Added labels to task list item
+
+**Released version 0.5**
