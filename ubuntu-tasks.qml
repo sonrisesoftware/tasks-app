@@ -86,8 +86,6 @@ MainView {
                     id: uncategorizedPage
                     currentProject: uncategorizedProject
 
-                    type: "uncategorized"
-
                     property int tabIndex: 1
                 }
 
@@ -161,13 +159,11 @@ MainView {
     property var viewing: currentPage && currentPage.hasOwnProperty("type") ? currentPage.type : "unknown"
 
     property var currentProject: currentPage && currentPage.hasOwnProperty("currentProject") ? currentPage.currentProject : null
-    property var currentList: currentPage && currentPage.hasOwnProperty("currentList") ? currentPage.currentList : null
     property var currentTask: currentPage && currentPage.hasOwnProperty("task") ? currentPage.task : null
 
     onWideAspectChanged: {
         var viewing = root.viewing
         var currentProject = root.currentProject
-        var currentList = root.currentList
         var currentTask = root.currentTask
 
         clearPageStack()
@@ -177,50 +173,42 @@ MainView {
         print("Switching to %1 in %2".arg(wideAspect ? "Wide Aspect" : "Phone").arg(viewing))
 
         if (wideAspect) {
-            if (viewing === "projects" || viewing === "upcoming") {
+            if (viewing === "projects" || viewing === "overview") {
                 tabs.selectedTabIndex = homePage.tabIndex
             } else if (viewing === "project") {
                 tabs.selectedTabIndex = homePage.tabIndex
                 homePage.currentProject = currentProject
-            } else if (viewing === "list") {
-                tabs.selectedTabIndex = homePage.tabIndex
-                homePage.currentProject = currentProject
-                homePage.currentList = currentList
             } else if (viewing === "task") {
                 tabs.selectedTabIndex = homePage.tabIndex
                 homePage.currentProject = currentTask.project
-                homePage.currentList = currentTask.list
                 goToTask(currentTask)
             } else if (viewing === "settings") {
-                tabs.selectedTabIndex = settingsPage.tabIndex
+                tabs.selectedTabIndex = 2//settingsPage.tabIndex
             } else if (viewing === "about") {
-                tabs.selectedTabIndex = settingsPage.tabIndex
+                tabs.selectedTabIndex = 2//settingsPage.tabIndex
                 pageStack.push(Qt.resolvedUrl("ui/AboutPage.qml"))
             } else if (viewing === "search") {
-                tabs.selectedTabIndex = searchPage.tabIndex
+                tabs.selectedTabIndex = 1//searchPage.tabIndex
             } else if (viewing === "uncategorized") {
-                tabs.selectedTabIndex = uncategorizedPage.tabIndex
+                tabs.selectedTabIndex = homePage.tabIndex
+                homePage.currentProject = currentProject
             }
         } else {
             if (viewing === "project") {
                 tabs.selectedTabIndex = projectsPage.tabIndex
                 goToProject(currentProject)
-            } else if (viewing === "upcoming") {
+            } else if (viewing === "overview") {
                 tabs.selectedTabIndex = homePage.tabIndex
-            } else if (viewing === "list") {
-                tabs.selectedTabIndex = projectsPage.tabIndex
-                goToList(currentList)
             } else if (viewing === "task") {
-               tabs.selectedTabIndex = projectsPage.tabIndex
-                goToList(currentTask.list)
+                tabs.selectedTabIndex = projectsPage.tabIndex
                 goToTask(currentTask)
             } else if (viewing === "settings") {
-                tabs.selectedTabIndex = settingsPage.tabIndex
+                tabs.selectedTabIndex = 4//settingsPage.tabIndex
             } else if (viewing === "about") {
-                tabs.selectedTabIndex = settingsPage.tabIndex
+                tabs.selectedTabIndex = 4//settingsPage.tabIndex
                 pageStack.push(Qt.resolvedUrl("ui/AboutPage.qml"))
             } else if (viewing === "search") {
-                tabs.selectedTabIndex = searchPage.tabIndex
+                tabs.selectedTabIndex = 3//searchPage.tabIndex
             } else if (viewing === "uncategorized") {
                 tabs.selectedTabIndex = uncategorizedPage.tabIndex
             }
@@ -245,21 +233,6 @@ MainView {
             } else {
                 tabs.selectedTabIndex = projectsPage.tabIndex
                 pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: project})
-            }
-        }
-    }
-
-    function goToList(list) {
-        if (wideAspect) {
-            homePage.currentProject = list.project
-            homePage.currentList = list
-            clearPageStack()
-        } else {
-            if (list.project.special) {
-                tabs.selectedTabIndex = uncategorizedPage.tabIndex
-            } else {
-                tabs.selectedTabIndex = projectsPage.tabIndex
-                pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: list.project, currentList: list})
             }
         }
     }
@@ -296,6 +269,7 @@ MainView {
 
     property var allTasks: concat(backendModels, "allTasks")
     property var upcomingTasks: concat(backendModels, "upcomingTasks")
+    property var assignedTasks: concat(backendModels, "assignedTasks")
 
     onUpcomingTasksChanged: {
         //print("Upcoming tasks:", length(upcomingTasks))
@@ -406,7 +380,9 @@ MainView {
         reloadSettings()
 
         for (var i = 0; i < backendModels.length; i++) {
-            var json = JSON.parse(getSetting("backend-" + backendModels[i].databaseName, "{}"))
+            var text = getSetting("backend-" + backendModels[i].databaseName, "{}")
+            print(text)
+            var json = JSON.parse(text)
             backendModels[i].load(json)
         }
 
@@ -502,7 +478,7 @@ MainView {
         return list
     }
 
-    function count(model, func, name) {
+    function filteredCount(model, func, name) {
         return filter(model, func, name).length
     }
 
@@ -511,7 +487,7 @@ MainView {
 
         for (var i = 0; i < length(list); i++) {
             var item = getItem(list, i)
-            value += count(item[prop], func, name)
+            value += filteredCount(item[prop], func, name)
         }
 
         return value
@@ -613,7 +589,7 @@ MainView {
     }
 
     function newProject(caller, task) {
-        if (count(backendModels, function(backend) { return backend.enabled }) > 1)
+        if (filteredCount(backendModels, function(backend) { return backend.enabled }) > 1)
             PopupUtils.open(newProjectPopover, caller, {task: task})
         else
             PopupUtils.open(newProjectDialog, root, {
@@ -663,14 +639,6 @@ MainView {
     }
 
     /* COMPONENTS */
-
-    Component {
-        id: optionsPopover
-
-        OptionsPopover {
-
-        }
-    }
 
     Component {
         id: newProjectDialog
@@ -767,6 +735,7 @@ MainView {
                 //clearPageStack()
                 while (pageStack.depth > 1)
                     pageStack.clear()
+                goToProject(null)
                 project.remove()
             }
         }
@@ -785,10 +754,10 @@ MainView {
             onAccepted: {
                 PopupUtils.close(confirmDeleteProjectDialogItem)
 
-                var list = task.list
+                var project = task.project
                 task.remove()
                 clearPageStack()
-                goToList(list)
+                goToProject(project)
             }
         }
     }
@@ -853,6 +822,8 @@ MainView {
                             notification.show(i18n.tr("Archived %1").arg(project.name), icon("back"), function(project) {
                                 project.archived = false
                             }, project)
+                        if (project.archived)
+                            goToProject(null)
                     }
                 }
 

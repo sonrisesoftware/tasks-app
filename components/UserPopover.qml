@@ -20,8 +20,45 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.    *
  ***************************************************************************/
 import QtQuick 2.0
-import ".."
+import Ubuntu.Components 0.1
+import Ubuntu.Components.ListItems 0.1
+import Ubuntu.Components.Popups 0.1
+import "../ubuntu-ui-extras" as Extra
 
-GenericTask {
-    id: task
+Popover {
+    id: root
+
+    property var task
+
+    Column {
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: parent.top
+        }
+
+        Extra.OverlayStandard {
+            text: i18n.tr("Myself")
+            selected: task.isAssignedToMe()
+            onClicked: {
+                task.assignToMyself()
+                PopupUtils.close(root)
+            }
+            icon: Qt.resolvedUrl("../icons/toolbarIcon.png")
+
+            showDivider: false
+        }
+
+        Divider { }
+
+        Extra.OverlayStandard {
+            text: i18n.tr("Remove Assignee")
+            onClicked: {
+                task.assignedTo = ""
+                PopupUtils.close(root)
+            }
+
+            showDivider: false
+        }
+    }
 }

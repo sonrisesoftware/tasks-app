@@ -28,20 +28,64 @@ GenericTask {
     editable: true
     property string checklistID: ""
     property string taskID
+    property string listID
+    property string listName: project.getList(listID)
     property bool locked: false
 
-    nonEditableFields: [
-        "repeat", "tags", "checklist", "priority"
-    ]
+    nonEditableFields: {
+        var fields = ["repeat", "tags", "checklist", "priority"]
+        if (!(project.hasList("To Do") && project.hasList("Done"))) fields.push("completed")
+
+        if (!project.hasList("Doing")) fields.push("assignedTo")
+
+        return fields
+    }
 
     invalidActions: ["move"]
 
     property var trelloFields: {
         "name": "name",
+        "listID": "idList",
         "description": "desc",
-        "completed": "closed",
         "dueDate": "due",
-        "tags": "labels"
+        "tags": "labels",
+        "assignedTo": "idMembers"
+    }
+
+    onListNameChanged: {
+        if (!updating) {
+            debug("task", name + " LIST NAME CHANGED TO " + listName)
+            if (listName === "Done") {
+                completed = true
+            } else if (listName != ""){
+                completed = false
+            }
+        }
+    }
+
+    onAssignedToChanged: {
+        if (!updating) {
+            if (assignedTo === "") {
+                if (listName !== "To Do") listID = project.getListByName("To Do")
+            } else {
+                if (listName !== "Doing") listID = project.getListByName("Doing")
+            }
+        }
+    }
+
+    onCompletedChanged: {
+        if (!updating) {
+            debug("task", name + " COMPLETED CHANGED TO " + completed)
+            if (completed) {
+                if (listName !== "Done") listID = project.getListByName("Done")
+            } else {
+                if (assignedTo === "") {
+                    if (listName !== "To Do") listID = project.getListByName("To Do")
+                } else {
+                    if (listName !== "Doing") listID = project.getListByName("Doing")
+                }
+            }
+        }
     }
 
     onTaskIDChanged: {
@@ -49,8 +93,13 @@ GenericTask {
             document.set("taskID", taskID)
     }
 
+    onListIDChanged: {
+        fieldChanged("listID", listID)
+    }
+
     customUploadFields: function() {
         taskID = document.get("taskID", "")
+        listID = document.get("listID", "")
     }
 
     function fieldChanged(name, value) {
@@ -78,13 +127,15 @@ GenericTask {
 
     function onFieldPosted(response, name) {
         print(response)
+        print("Unlocked", name)
         document.unlock(name)
     }
 
     function loadTrello(json) {
         document.set("taskID", json.id)
         document.set("name", json.name)
-        document.set("completed", json.closed)
+        document.set("listID", json.idList)
+        document.set("assignedTo", json.idMembers[0])
         var labels = json.labels
         var list = []
         for (var i = 0; i < labels.length; i++) {
@@ -100,6 +151,7 @@ GenericTask {
             checklistID = ""
         document.set("description", json.badges.description ? json.desc : "")
 
+        debug("task", "Reloading Trello!")
         reloadFields()
     }
 
@@ -113,13 +165,22 @@ GenericTask {
         }
     }
 
+    updateChecklistStatus: function() {
+        var json = []
+
+        //httpPUT()
+    }
+
     function loadChecklist(response) {
         var json = JSON.parse(response)
+
+        updating = true
 
         var items = json.checkItems
         checklist.clear()
         for (var i = 0; i < items.length; i++) {
             checklist.add(items[i].name, items[i].state === "complete")
         }
+        updating = false
     }
 }

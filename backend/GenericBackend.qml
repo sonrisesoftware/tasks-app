@@ -29,19 +29,42 @@ Item {
 
     property string name
     property string newName
+    property string userName: "me"
     property string databaseName                // The database filename
     enabled: true                               // Is this backend enabled?
     property bool editable: true                // Can projects/lists/tasks be edited/created/deleted?
     property bool requiresInternet: false       // Requires the internet to sync?
     property bool supportsStatistics: true      // Supports showing the statistics page?
     property bool supportsLists: true           // Supports multiple tasks lists?
-    property var projectComponent
-    property var allTasks: concat(projects, "allTasks")
+    property bool updating: false
+
+    property var projectComponent: Component {
+
+        GenericProject {
+
+        }
+    }
+    property var allTasks: concat(projects, "tasks")
     property var upcomingTasks: concat(projects, "upcomingTasks", function(project) { return !project.archived })
+    property var assignedTasks: concat(projects, "assignedTasks", function(project) { return !project.archived })
     property int loading: 0
     property int totalLoading: 0
     property var nonEditableFields: []
     property var invalidActions: []
+    property bool supportsMultipleUsers: false
+
+    property var customReloadFields
+    property var customSaveFields
+
+    function reloadFields() {
+        updating = true
+        nextDocId = database.get("nextDocId", 0)
+
+        if (customReloadFields)
+            customReloadFields()
+
+        updating = false
+    }
 
     function supportsAction(name) {
         return editable && invalidActions.indexOf(name) === -1
@@ -51,8 +74,8 @@ Item {
         return editable && nonEditableFields.indexOf(name) === -1
     }
 
-    property int archivedProjectsCount: count(projects, function(project) { return project.archived && !project.special })
-    property int openProjectsCount: count(projects, function(project) { return !project.archived && !project.special })
+    property int archivedProjectsCount: filteredCount(projects, function(project) { return project.archived && !project.special })
+    property int openProjectsCount: filteredCount(projects, function(project) { return !project.archived && !project.special })
 
     property int nextDocId: 0
 
@@ -149,7 +172,7 @@ Item {
         //print("Loading U1db from", JSON.stringify(json))
         database.load(json)
 
-        nextDocId = database.get("nextDocId", 0)
+        reloadFields()
         var list = database.listDocs()
 
         for (var i = 0; i < list.length; i++) {
@@ -158,7 +181,14 @@ Item {
     }
 
     function saveU1db() {
+        if (customSaveFields)
+            customSaveFields()
+
         database.set("nextDocId", nextDocId)
         return database.save()
+    }
+
+    function isMyself(name) {
+        return name === userName
     }
 }

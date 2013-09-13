@@ -26,8 +26,7 @@ Item {
     id: task
 
     property string docId
-    property var project: list.project
-    property var list
+    property var project
     property bool editable: project.editable
     property var customUploadFields
     property var nonEditableFields: []
@@ -58,6 +57,7 @@ Item {
     property var tags
     property var comments
     property bool createdRepeat
+    property string assignedTo
 
     Component.onCompleted: {
         creationDate = document.get("creationDate", new Date())
@@ -77,6 +77,7 @@ Item {
     onPriorityChanged: fieldChanged("priority", priority)
     onTagsChanged: fieldChanged("tags", tags)
     onCommentsChanged: fieldChanged("comments", comments)
+    onAssignedToChanged: fieldChanged("assignedTo", assignedTo)
     //TODO: Add others...
 
     property bool updating: false       // Used to prevent sending changes to remote backend
@@ -92,6 +93,8 @@ Item {
     property Checklist checklist: Checklist {
 
     }
+
+    property var updateChecklistStatus
 
     property int relevence: priority === "low" ? 0 : priority === "medium" ? 1 : 2
 
@@ -110,7 +113,8 @@ Item {
             completionDate: completionDate,
             priority: priority,
             tags: tags,
-            checklist: checklist.save()
+            checklist: checklist.save(),
+            assignedTo: assignedTo
         }
     }
 
@@ -158,7 +162,7 @@ Item {
         id: document
         name: "Task"
         docId: task.docId
-        parent: list.document
+        parent: project.document
     }
 
     function reloadFields() {
@@ -174,6 +178,7 @@ Item {
         completionDate = document.get("completionDate", new Date(""))
         priority = document.get("priority", "low")
         tags = document.get("tags", [])
+        assignedTo = document.get("assignedTo", "")
         checklist.load(document.get("checklist", {}))
 
         if (customUploadFields)
@@ -202,6 +207,9 @@ Item {
     property bool hasDueDate: Qt.formatDate(task.dueDate) !== ""
 
     property string tagsString: {
+        if (tags === undefined)
+            return ""
+
         var list = []
         for (var i = 0; i < tags.length; i++) {
             list.push(project.getTag(tags[i]))
@@ -223,6 +231,38 @@ Item {
                                    : task.overdue
                                      ? i18n.tr("Overdue (due %1)").arg(formattedDate(task.dueDate))
                                      : formattedDate(task.dueDate)
+
+    function hasTag(name) {
+        if (tags === undefined) return false
+        else return tags.indexOf(name) !== -1
+    }
+
+    function addTag(name) {
+        if (task.tags === undefined) task.tags = []
+
+        var tags = task.tags
+        tags.push(name)
+        task.tags = tags.sort()
+    }
+
+    function removeTag(name) {
+        if (task.tags === undefined) task.tags = []
+
+        if (!hasTag(name)) return
+
+        var tags = task.tags
+        tags.splice(task.tags.indexOf(modelData), 1)
+        task.tags = tags
+    }
+
+    function isAssignedToMe() {
+        return project.backend.isMyself(task.assignedTo)
+    }
+
+    function assignToMyself() {
+        print("Claiming...")
+        assignedTo = project.backend.userName
+    }
 
     function completedBy(date) {
         return (completed && dateIsBeforeOrSame(completionDate, date)) && existedBy(date)
@@ -265,32 +305,21 @@ Item {
     }
 
     function remove() {
-        list.removeTask(task)
+        project.removeTask(task)
         docId = ""
     }
 
     function canMoveToProject(project) {
-        return project.lists.count > 0 && task.supportsAction("delete") && getItem(project.lists, 0).supportsAction("addTask")
+        return task.supportsAction("delete") && task.project.supportsAction("addTask")
     }
 
     function moveToProject(project) {
         if (project === task.project) return
 
         remove()
-        print(JSON.stringify(database.save()))
-        project.lists.get(0).modelData.addTask(task)
-        print(JSON.stringify(database.save()))
-    }
-
-    function canMoveToList(list) {
-        return task.supportsAction("delete") && task.list.supportsAction("addTask")
-    }
-
-    function moveToList(list) {
-        if (list === task.list) return
-
-        remove()
-        list.addTask(task)
+        //print(JSON.stringify(database.save()))
+        project.addTask(task)
+        //print(JSON.stringify(database.save()))
     }
 
     function matches(text) {

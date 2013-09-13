@@ -49,6 +49,10 @@ Page {
             id: column
             width: parent.width
 
+//            Header {
+//                text: i18n.tr("Plugins")
+//            }
+
             Standard {
                 text: i18n.tr("Connect to Trello")
 
@@ -59,9 +63,14 @@ Page {
                         checked = Qt.binding(function() { return trelloIntegration })
                         if (trelloIntegration && getSetting("trelloToken", "") === "")
                             PopupUtils.open(trelloAuthentication, root)
+                        trello.load()
                     }
                 }
             }
+
+//            Header {
+//                text: i18n.tr("Help & About")
+//            }
 
             Standard {
                 text: i18n.tr("About Ubuntu Tasks")

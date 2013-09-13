@@ -17,6 +17,9 @@ QtObject {
     property string name: i18n.tr("Checklist")
 
     function updateChecklistStatus() {
+        if (task.updateChecklistStatus)
+            task.updateChecklistStatus()
+
         if (length > 0) {
             progress = 0
             for (var i = 0; i < length; i++) {
@@ -24,10 +27,14 @@ QtObject {
                     progress += 1
             }
 
-            if (progress === length)
-                completed = true
-            else
-                completed = false
+            if (!updating) {
+                if (progress === length) {
+                    print(">>>>>>>>>>>>MARKING AS COMPLETED BY CHECKLIST")
+                    completed = true
+                } else {
+                    completed = false
+                }
+            }
         }
     }
 

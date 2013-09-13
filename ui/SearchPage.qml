@@ -110,4 +110,40 @@ Page {
             return result
         }
     }
+
+//    tools: ToolbarItems {
+//        ToolbarButton {
+//            id: filterButton
+//            text: i18n.tr("Filter")
+//            iconSource: getIcon("filter")
+//            visible: !wideAspect
+//            onTriggered: PopupUtils.open(filterOptions, filterButton)
+//        }
+//    }
+
+    Component {
+        id: filterOptions
+
+        Popover {
+            Column {
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: parent.top
+                }
+
+                ValueSelector {
+                    id: completedSelector
+                    text: i18n.tr("Completed")
+                    values: [
+                        i18n.tr("Yes"),
+                        i18n.tr("No"),
+                        i18n.tr("Maybe")
+                    ]
+
+                    selectedIndex: 2
+                }
+            }
+        }
+    }
 }

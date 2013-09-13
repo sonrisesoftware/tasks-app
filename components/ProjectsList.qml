@@ -29,6 +29,7 @@ Column {
 
     ProjectListItem {
         project: null
+        selected: currentProject === null
         visible: wideAspect && !showArchived
     }
 
@@ -42,7 +43,10 @@ Column {
 
         delegate: Column {
             width: parent.width
-            visible: modelData.enabled && (showArchived ? modelData.archivedProjectsCount : modelData.openProjectsCount) > 0
+            visible: modelData.enabled && (
+                         (showArchived ? modelData.archivedProjectsCount : modelData.openProjectsCount) > 0 ||
+                         (modelData.loading > 0)
+                     )
             Header {
                 text: modelData.name
 

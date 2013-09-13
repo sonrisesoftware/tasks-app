@@ -24,14 +24,44 @@ import U1db 1.0 as U1db
 import ".."
 
 GenericProject {
-    id: root
+    id: project
 
     property var boardID
     editable: true
     enabled: true
     property bool locked: false
 
-    invalidActions: ["delete"]
+    invalidActions: {
+        var actions = ["delete"]
+        if (getListByName("") === "") actions.push("addTask")
+        return actions
+    }
+
+    property var lists
+
+    function getList(name) { return lists && lists[name] || ""}
+
+    function getListByName(name) {
+        if (lists === undefined) return ""
+
+        var defaultKey = ""
+        for (var key in lists) {
+            if (defaultKey === "")
+                defaultKey = key
+            if (lists[key] === name) return key
+        }
+        return defaultKey
+    }
+
+    function hasList(name) {
+        if (lists === undefined) return false
+
+        for (var key in lists) {
+            if (lists[key] === name) return true
+        }
+
+        return false
+    }
 
     property var trelloFields: {
         "name": "name",
@@ -44,10 +74,18 @@ GenericProject {
             document.set("boardID", boardID)
     }
 
+    onListsChanged: {
+        if (!updating)
+            document.set("lists", lists)
+    }
+
+    property var deleteList: []
+
     /* To be called after the document changes,
        either after loading from U1db or after loading from a remote model */
     customUploadFields: function() {
         boardID = document.get("boardID", "")
+        lists = document.get("lists", {})
     }
 
     function fieldChanged(name, value) {
@@ -72,7 +110,7 @@ GenericProject {
         document.set("description", json.desc)
 
         var labels = json.labelNames
-        print("Loading Trello labels:", JSON.stringify(labels))
+        //print("Loading Trello labels:", JSON.stringify(labels))
         var colors = ["yellow", "red", "purple", "orange", "green", "blue"]
         var tags = {}
         for (var i = 0; i < colors.length; i++) {
@@ -84,76 +122,116 @@ GenericProject {
     }
 
     function refresh() {
+        httpGET("/boards/" + boardID + "/cards", [], loadTasks)
         httpGET("/boards/" + boardID + "/lists", [], loadLists)
     }
 
-    function internal_newList() {
-        if (!supportsLists) {
-            console.log("FATAL: Creating lists is unsupported for", backend.name)
-            Qt.quit()
-        }
-        //print("Adding new list...")
-        var list = createList({
-                          docId: nextDocId++
-                      })
-        internal_addList(list)
-        list.loadU1db()
-        return list
-    }
-
-    // For loading a project from U1db
-    function loadListU1db(docId) {
-        var list = createList({
-                                        docId: docId
-                                    })
-        internal_addList(list)
-        list.loadU1db()
-        list.refresh()
-        return list
-    }
-
     function loadLists(response) {
-        print("Loading lists...")
+        //print("Loading lists...")
+        var json = JSON.parse(response)
+
+        var list = {}
+        for (var i = 0; i < json.length; i++) {
+            list[json[i].id] = json[i].name
+        }
+        //print(JSON.stringify(list))
+
+        lists = list
+    }
+
+    function loadTasks(response) {
         var json = JSON.parse(response)
 
         for (var i = 0; i < json.length; i++) {
-            var list = getList(json[i].id)
-            if (list === undefined) {
-                list = internal_newList()
-                list.loadTrello(json[i])
-                list.refresh()
+            if (deleteList.indexOf(json[i].id) !== -1) continue
+
+            var task = getTask(json[i].id)
+            if (task === undefined) {
+                task = internal_newTask()
+                task.loadTrello(json[i])
+                task.refresh()
             } else {
-                list.loadTrello(json[i])
+                task.loadTrello(json[i])
             }
         }
 
-        for (var k = 0; k < lists.count; k++) {
+        for (var k = 0; k < tasks.count; k++) {
             var found = false
-            var list2 = lists.get(k).modelData
-            if (list2.locked) return
+            var task = tasks.get(k).modelData
+            if (task.locked) return
 
             for (var j = 0; j < json.length; j++) {
-                if (list2.listID === json[j].id) {
+                if (task.taskID === json[j].id) {
                     found = true
                     break
                 }
             }
 
             if (!found)
-                internal_removeList(list2)
+                internal_removeTask(task)
         }
     }
 
-    function getList(listID) {
-        for (var i = 0; i < lists.count; i++) {
-            if (lists.get(i).modelData.listID === listID)
-                return lists.get(i).modelData
+    function getTask(taskID) {
+        for (var i = 0; i < tasks.count; i++) {
+            if (tasks.get(i).modelData.taskID === taskID)
+                return tasks.get(i).modelData
         }
     }
 
-    listComponent: Component {
+    function internal_newTask() {
+        //print("Adding new task...")
+        var task = createTask({
+                          docId: nextDocId++
+                      })
+        internal_addTask(task)
+        task.loadU1db()
+        return task
+    }
 
-        List {
+    function newTask(name) {
+        //print("Adding new task...")
+        var task = createTask({
+                          docId: nextDocId++
+                      })
+        task.name = name
+        task.locked = true
+        addTask(task)
+        return task
+    }
+
+    function addTask(task) {
+        if (task.project !== project)
+            task.project = project
+        if (task.docId === "")
+            task.docId = nextDocId++
+        print("Adding task:", task.name)
+        httpPOST("/lists/" + getListByName("To Do") + "/cards", ["name=" + task.name], onNewTask, task)
+        tasks.append({modelData: task})
+        //print("TASKS", tasks.count)
+    }
+
+    function onNewTask(response, task) {
+        print("Response:", response)
+        var json = JSON.parse(response)
+        task.taskID = json.id
+        task.locked = false
+    }
+
+    function removeTask(task) {
+        // For implementation by backend...
+        httpDELETE("/cards/" + task.taskID, [], onRemoveTask, task)
+        deleteList.push(task.taskID)
+        internal_removeTask(task)
+    }
+
+    function onRemoveTask(response, task) {
+        deleteList.splice(deleteList.indexOf(task), 1)
+    }
+
+    taskComponent: Component {
+
+        Task {
 
         }
     }

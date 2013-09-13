@@ -30,6 +30,10 @@ SingleValue {
 
     property var project
 
+    property var text: project === null
+                       ? i18n.tr("Overview")
+                       : project.name
+
     Column {
         id: labels
 
@@ -46,9 +50,7 @@ SingleValue {
 
             width: parent.width
             elide: Text.ElideRight
-            text: project === null
-                  ? i18n.tr("Upcoming")
-                  : project.name
+            text: root.text
 
             color: selected ? UbuntuColors.orange : Theme.palette.selected.backgroundText
             fontSize: "medium"
@@ -67,10 +69,6 @@ SingleValue {
             elide: Text.ElideRight
         }
     }
-
-//    text: project === null
-//          ? i18n.tr("Upcoming")
-//          : project.name
 
     onClicked: {
         if (project !== null)
@@ -92,7 +90,11 @@ SingleValue {
                             })
     }
 
-    property int count: project === null ? length(upcomingTasks) : project.uncompletedCount
+    property int count: project === null
+                        ? length(upcomingTasks) + filteredCount(assignedTasks, function(task) {
+                            return !task.upcoming
+                        })
+                        : project.uncompletedCount
 
     value: count === 0 ? "" : count
 }

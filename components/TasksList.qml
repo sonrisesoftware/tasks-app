@@ -35,9 +35,8 @@ Item {
 
     property string noneMessage: i18n.tr("No tasks")
     property var model: sort(tasks, sortBy)
-    property var project: list ? list.project : null
-    property var list
-    property var tasks: list ? list.tasks : []
+    property var project
+    property var tasks: project ? project.tasks : []
 
     property alias addBarColor: addBar.color
 
@@ -54,6 +53,8 @@ Item {
             right: parent.right
             bottom: addBar.top
         }
+
+        header: ThinDivider {}
 
         clip: true
 
@@ -91,7 +92,7 @@ Item {
 
             anchors.centerIn: parent
 
-            visible: count(model, filter) === 0
+            visible: filteredCount(model, filter) === 0
             opacity: 0.5
 
             fontSize: "large"

@@ -45,6 +45,53 @@ Column {
         }
     }
 
+    Standard {
+        id: inProgress
+
+        text: i18n.tr("In Progress")
+        enabled: task.editable
+        visible: task.supportsField("assignedTo") && !task.project.backend.supportsMultipleUsers
+        control: CheckBox {
+            checked: task.isAssignedToMe()
+            style: SuruCheckBoxStyle {}
+
+            onCheckedChanged: {
+                if (checked) {
+                    task.assignToMyself()
+                } else {
+                    task.assignedTo = ""
+                }
+
+                checked = Qt.binding(function() { return task.isAssignedToMe() })
+            }
+        }
+    }
+
+    Standard {
+        id: assignedTo
+
+        enabled: task.editable
+        visible: task.supportsField("assignedTo") && task.project.backend.supportsMultipleUsers
+
+        text: i18n.tr("Assigned To")
+        UbuntuShape {
+            anchors {
+                verticalCenter: parent.verticalCenter
+                right: parent.right
+                rightMargin: units.gu(2)
+            }
+
+            image: Image {
+                source: icon("toolbarIcon")
+            }
+            visible: task.assignedTo !== ""
+
+            width: units.gu(4)
+            height: width
+        }
+        onClicked: PopupUtils.open(Qt.resolvedUrl("UserPopover.qml"), assignedTo, {task: task})
+    }
+
     ValueSelector {
         id: prioritySelector
 
@@ -116,7 +163,7 @@ Column {
     }
 
     Header {
-        text: i18n.tr("Tags")
+        text: i18n.tr("Labels")
         //visible: task.supportsField("tags")
     }
 
@@ -132,7 +179,7 @@ Column {
             UbuntuShape {
                 id: colorShape
                 height: units.gu(3)
-                width: height
+                width: height//task.project.getTag(modelData) === modelData ? units.gu(15) : height
                 anchors {
                     verticalCenter: parent.verticalCenter
                     left: parent.left
@@ -151,30 +198,26 @@ Column {
                 width: parent.width - units.gu(9)
 
                 text: task.project.getTag(modelData)
+                //visible: task.project.getTag(modelData) !== modelData
             }
 
             control: CheckBox {
                 height: units.gu(3.5)
                 width: height
-                checked: task.tags.indexOf(modelData) !== -1
+                checked: task.hasTag(modelData)
                 style: SuruCheckBoxStyle {}
 
                 //__acceptEvents: task.canEdit("tags")
 
                 onClicked: {
-                    var selected = task.tags.indexOf(modelData) !== -1
-                    if (selected) {
-                        var tags = task.tags
-                        tags.splice(task.tags.indexOf(modelData), 1)
-                        task.tags = tags
+                    if (task.hasTag(modelData)) {
+                        task.removeTag(modelData)
                     } else {
-                        var tags = task.tags
-                        tags.push(modelData)
-                        task.tags = tags.sort()
+                        task.addTag(modelData)
                     }
 
                     checked = Qt.binding(function() {
-                        return task.tags.indexOf(modelData) !== -1
+                        return task.hasTag(modelData)
                     })
                 }
             }

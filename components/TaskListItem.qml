@@ -38,10 +38,9 @@ Empty {
         UbuntuNumberAnimation {}
     }
 
-    //onHeightChanged: print("HEIGHT CHANGED:", height)
+    opacity: show ? 1 : 0
 
     clip: true
-    opacity: show ? 1 : 0
 
     property bool show: true
 
@@ -54,14 +53,18 @@ Empty {
 
         anchors {
             verticalCenter: parent.verticalCenter
-            right: parent.right
-            rightMargin: units.gu(2)
+            left: parent.left
+            leftMargin: units.gu(2)
         }
 
         checked: task.completed
         __acceptEvents: task.canComplete && task.editable
+        visible: task.canEdit("completed")
 
-        onCheckedChanged: task.completed = checked
+        onCheckedChanged: {
+            task.completed = checked
+            checked = Qt.binding(function() {return task.completed})
+        }
         style: SuruCheckBoxStyle {}
     }
 
@@ -78,10 +81,10 @@ Empty {
 
         anchors {
             verticalCenter: parent.verticalCenter
-            left: priorityShape.visible ? priorityShape.right : parent.left
-            leftMargin: priorityShape.visible ? units.gu(1) : units.gu(2)
+            left: doneCheckBox.visible ? doneCheckBox.right : parent.left
+            leftMargin: doneCheckBox.visible ? units.gu(1) : units.gu(2)
             rightMargin: units.gu(1)
-            right: doneCheckBox.left//taskOptions.left
+            right: taskOptions.left
         }
 
         Label {
@@ -110,18 +113,71 @@ Empty {
         }
     }
 
-    UbuntuShape {
-        id: priorityShape
+    Row {
+        id: tags
+
+        spacing: units.gu(0.7)
+        clip: true
+
+        anchors {
+            top: parent.top
+            left: doneCheckBox.visible ? doneCheckBox.right : parent.left
+            leftMargin: doneCheckBox.visible ? units.gu(1) : units.gu(2)
+            rightMargin: units.gu(2)
+            right: parent.right
+        }
+
+        Repeater {
+            model: task.tags
+
+            delegate: Rectangle {
+                anchors {
+                    top: parent.top
+                    topMargin: -units.gu(0.4)
+                }
+
+                width: units.gu(4)
+                height: units.gu(1)
+
+                color: labelColor(modelData)
+                radius: units.gu(0.4)
+                antialiasing: true
+            }
+        }
+    }
+
+    Row {
+        id: taskOptions
+        spacing: units.gu(1)
+
         anchors {
             verticalCenter: parent.verticalCenter
-            left: parent.left
-            leftMargin: units.gu(2)
+            right: parent.right
+            rightMargin: units.gu(2)
         }
-        width: units.gu(3)
-        height: width
-        color: priorityColor(task.priority)
-        //visible: task.priority !== "low"
-        //visible: false
+
+        UbuntuShape {
+            id: priorityShape
+            anchors.verticalCenter: parent.verticalCenter
+
+            width: units.gu(4)
+            height: width
+
+            color: priorityColor(task.priority)
+            visible: task.priority !== "low"
+            //visible: false
+        }
+
+        UbuntuShape {
+            image: Image {
+                source: icon("toolbarIcon")
+            }
+
+            visible: task.assignedTo !== "" && task.canEdit("assignedTo")
+
+            width: units.gu(4)
+            height: width
+        }
     }
 
     onClicked: {
