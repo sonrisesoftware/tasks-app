@@ -153,3 +153,6 @@ Day 47 - 9/12/2013
  * Added labels to task list item
 
 **Released version 0.5**
+
+Day 47 - 9/13/2013
+ * Some small bug fixes

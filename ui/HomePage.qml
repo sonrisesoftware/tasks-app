@@ -123,7 +123,7 @@ Page {
             onTriggered: {
                 if (currentProject === null)
                     tabs.selectedTabIndex = uncategorizedPage.tabIndex
-                pageStack.push(Qt.resolvedUrl("AddTaskPage.qml"), {project: currentProject})
+                pageStack.push(Qt.resolvedUrl("AddTaskPage.qml"), {project: currentProject === null ? uncategorizedProject : currentProject})
             }
         }
 

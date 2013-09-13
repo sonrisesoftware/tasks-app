@@ -24,6 +24,6 @@ NOTE: To help the packaging process, I have an automaticed script that does seve
 
 To package the app, run
 
-../clickpkg <version number, such as 1.2.3>
+    ../clickpkg <version number, such as 1.2.3>
 
 This will create a package in ../releases/ubuntu-tasks/
