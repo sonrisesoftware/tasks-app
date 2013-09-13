@@ -27,6 +27,8 @@ Column {
     id: root
     width: parent.width
 
+    ThinDivider { visible: hasProjects }
+
     ProjectListItem {
         project: null
         selected: currentProject === null

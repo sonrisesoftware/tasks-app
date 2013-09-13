@@ -141,7 +141,7 @@ GenericBackend {
     }
 
     function authorized() {
-        httpGET("/members/my/boards", [], onLoaded)
+        httpGET("/members/my/boards", ["filter=pinned"], onLoaded)
         httpGET("/members/me", [], onUserLoaded)
     }
 
