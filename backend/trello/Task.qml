@@ -181,6 +181,13 @@ GenericTask {
         for (var i = 0; i < items.length; i++) {
             checklist.add(items[i].name, items[i].state === "complete")
         }
+
         updating = false
+
+        if (checklist.progress === checklist.length) {
+            completed = true
+        } else {
+            completed = false
+        }
     }
 }
