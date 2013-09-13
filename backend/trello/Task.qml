@@ -168,6 +168,12 @@ GenericTask {
         }
     }
 
+    updateChecklistStatus: function() {
+        var json = []
+
+        //httpPUT()
+    }
+
     function loadChecklist(response) {
         var json = JSON.parse(response)
 

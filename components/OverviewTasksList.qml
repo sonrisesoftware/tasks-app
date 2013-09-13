@@ -47,6 +47,8 @@ Item {
                 right: parent.right
             }
 
+            ThinDivider {}
+
             Header {
                 text: i18n.tr("Overdue")
                 visible: filteredCount(root.model, function(task) {

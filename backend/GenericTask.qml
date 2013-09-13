@@ -94,6 +94,8 @@ Item {
 
     }
 
+    property var updateChecklistStatus
+
     property int relevence: priority === "low" ? 0 : priority === "medium" ? 1 : 2
 
     property bool hasChecklist: checklist.length > 0

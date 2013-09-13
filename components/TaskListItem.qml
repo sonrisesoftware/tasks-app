@@ -114,6 +114,39 @@ Empty {
     }
 
     Row {
+        id: tags
+
+        spacing: units.gu(0.7)
+        clip: true
+
+        anchors {
+            top: parent.top
+            left: doneCheckBox.visible ? doneCheckBox.right : parent.left
+            leftMargin: doneCheckBox.visible ? units.gu(1) : units.gu(2)
+            rightMargin: units.gu(2)
+            right: parent.right
+        }
+
+        Repeater {
+            model: task.tags
+
+            delegate: Rectangle {
+                anchors {
+                    top: parent.top
+                    topMargin: -units.gu(0.4)
+                }
+
+                width: units.gu(4)
+                height: units.gu(1)
+
+                color: labelColor(modelData)
+                radius: units.gu(0.4)
+                antialiasing: true
+            }
+        }
+    }
+
+    Row {
         id: taskOptions
         spacing: units.gu(1)
 

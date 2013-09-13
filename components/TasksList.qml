@@ -54,6 +54,8 @@ Item {
             bottom: addBar.top
         }
 
+        header: ThinDivider {}
+
         clip: true
 
         model: root.model
