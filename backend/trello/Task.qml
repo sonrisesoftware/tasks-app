@@ -65,6 +65,7 @@ GenericTask {
 
     onAssignedToChanged: {
         if (!updating) {
+            if (completed) return
             if (assignedTo === "") {
                 if (listName !== "To Do") listID = project.getListByName("To Do")
             } else {
@@ -78,6 +79,7 @@ GenericTask {
             debug("task", name + " COMPLETED CHANGED TO " + completed)
             if (completed) {
                 if (listName !== "Done") listID = project.getListByName("Done")
+                assignedTo = ""
             } else {
                 if (assignedTo === "") {
                     if (listName !== "To Do") listID = project.getListByName("To Do")
