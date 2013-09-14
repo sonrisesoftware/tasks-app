@@ -71,7 +71,7 @@ Empty {
     Label {
         anchors.centerIn: doneCheckBox
         text: task.checklist.percent + "%"
-        visible: !task.canComplete && !task.completed
+        visible: doneCheckBox.visible && !task.canComplete && !task.completed
     }
 
     Column {

@@ -53,14 +53,14 @@ GenericTask {
     }
 
     onListNameChanged: {
-        if (!updating) {
-            debug("task", name + " LIST NAME CHANGED TO " + listName)
-            if (listName === "Done") {
-                completed = true
-            } else if (listName != ""){
-                completed = false
-            }
+        debug("task", name + " LIST NAME CHANGED TO " + listName)
+        if (listName === "Done") {
+            document.set("completed", true)
+        } else if (listName != ""){
+            document.set("completed", false)
         }
+
+        completed = document.get("completed")
     }
 
     onAssignedToChanged: {

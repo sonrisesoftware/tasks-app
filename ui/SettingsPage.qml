@@ -66,7 +66,8 @@ Page {
                                 PopupUtils.open(trelloAuthentication, root)
                             } else {
                                 goToProjects()
-                                trello.load()
+                                if (!trello.loaded)
+                                    trello.load()
                             }
                         }
                     }

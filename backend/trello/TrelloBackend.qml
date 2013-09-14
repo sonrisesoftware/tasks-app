@@ -77,13 +77,19 @@ GenericBackend {
         token = getSetting("trelloToken", "")
         print("Trello token:", token, trelloIntegration)
 
+        print(">>>>>LOADING>>>>>>>>>>>>>>>")
+
         database.load(json)
 
         if (token != "" && trelloIntegration) {
             loadU1db(json)
             authorized()
         }
+
+        loaded = true
     }
+
+    property bool loaded: false
 
     function connect() {
         firstLoad = true

@@ -254,6 +254,7 @@ MainView {
     property var debugList: [
         //"database",
         //"document"
+        //"task"
     ]
 
     function debug(name, text) {
@@ -275,9 +276,11 @@ MainView {
        localProjectsModel, trello
     ]
 
-    property var allTasks: concat(backendModels, "allTasks")
-    property var upcomingTasks: concat(backendModels, "upcomingTasks")
-    property var assignedTasks: concat(backendModels, "assignedTasks")
+    property var enabledTasks: function(backend) { return backend.enabled }
+
+    property var allTasks: concat(backendModels, "allTasks", enabledTasks)
+    property var upcomingTasks: concat(backendModels, "upcomingTasks", enabledTasks)
+    property var assignedTasks: concat(backendModels, "assignedTasks", enabledTasks)
 
     onUpcomingTasksChanged: {
         //print("Upcoming tasks:", length(upcomingTasks))
@@ -303,7 +306,7 @@ MainView {
 
     U1db.Database {
         id: storage
-        path: "ubuntu-tasks.db"
+        path: "~/.local/share/com.ubuntu.developer.mdspencer.ubuntu-tasks/ubuntu-tasks.db"
     }
 
     U1db.Document {
