@@ -306,7 +306,7 @@ MainView {
 
     U1db.Database {
         id: storage
-        path: "~/.local/share/com.ubuntu.developer.mdspencer.ubuntu-tasks/ubuntu-tasks.db"
+        path: "ubuntu-tasks.db"
     }
 
     U1db.Document {
