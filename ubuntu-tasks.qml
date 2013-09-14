@@ -378,7 +378,7 @@ MainView {
     }
 
     Timer {
-        interval: 60000 // 60 seconds
+        interval: 5000 // 5 seconds
         repeat: true
         running: true
         onTriggered: saveProjects()
