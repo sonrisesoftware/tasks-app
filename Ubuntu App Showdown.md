@@ -161,3 +161,11 @@ Day 47 - 9/12/2013
  * Added support for editing Trello card labels
 
 **Released version 0.5.2**
+
+Day 48 - 9/13/2013
+
+ * Fixed percent from appearing without checkbox
+ * Fixed Trello tasks from showing when integration is disabled
+ * Fixed completed not being assigned at startup
+
+**Released version 0.5.3**
