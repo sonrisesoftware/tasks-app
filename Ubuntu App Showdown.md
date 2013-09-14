@@ -154,7 +154,10 @@ Day 47 - 9/12/2013
 
 **Released version 0.5**
 
-Day 47 - 9/13/2013
  * Some small bug fixes
 
 **Released version 0.5.1**
+
+ * Added support for editing Trello card labels
+
+**Released version 0.5.2**
