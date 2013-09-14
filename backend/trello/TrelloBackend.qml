@@ -81,7 +81,7 @@ GenericBackend {
 
         database.load(json)
 
-        if (token != "" && trelloIntegration) {
+        if (token != "") {
             loadU1db(json)
             authorized()
         }
