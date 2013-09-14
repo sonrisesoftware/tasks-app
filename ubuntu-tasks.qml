@@ -223,6 +223,14 @@ MainView {
         pageStack.push(Qt.resolvedUrl("ui/StatisticsPage.qml"), {project: project})
     }
 
+    function goToProjects() {
+        if (wideAspect) {
+            tabs.selectedTabIndex = homePage.tabIndex
+        } else {
+            tabs.selectedTabIndex = projectsPage.tabIndex
+        }
+    }
+
     function goToProject(project) {
         if (wideAspect) {
             homePage.currentProject = project

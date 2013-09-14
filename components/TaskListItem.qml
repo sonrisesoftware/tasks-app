@@ -40,13 +40,13 @@ Empty {
 
     opacity: show ? 1 : 0
 
-    clip: true
-
-    property bool show: true
-
     Behavior on opacity {
         UbuntuNumberAnimation {}
     }
+
+    property bool show: true
+
+    clip: true
 
     CheckBox {
         id: doneCheckBox
