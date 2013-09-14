@@ -33,7 +33,7 @@ GenericTask {
     property bool locked: false
 
     nonEditableFields: {
-        var fields = ["repeat", "tags", "checklist", "priority"]
+        var fields = ["repeat", "checklist", "priority"]
         if (!(project.hasList("To Do") && project.hasList("Done"))) fields.push("completed")
 
         if (!project.hasList("Doing")) fields.push("assignedTo")
@@ -113,11 +113,13 @@ GenericTask {
                 } else if (name === "tags") {
                     var list = []
                     for (var i = 0; i < value.length; i++) {
-                        list.push({color: tags[i], name: project.getTag(tags[i])})
+                        list.push(tags[i])
                     }
 
-                    print("Setting labels as", JSON.stringify(list))
-                    httpPUT("/cards/" + taskID + "/" + trelloFields[name], ["value=" + JSON.stringify(list)], onFieldPosted, name)
+                    list = list.join(",")
+
+                    print("Setting labels as", list)
+                    httpPUT("/cards/" + taskID + "/" + trelloFields[name], ["value=" + list], onFieldPosted, name)
                 } else {
                     httpPUT("/cards/" + taskID + "/" + trelloFields[name], ["value=" + value], onFieldPosted, name)
                 }
