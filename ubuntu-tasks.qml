@@ -453,7 +453,7 @@ MainView {
         } else if (label === "red") {
             return "#FF4141"
         } else if (label === "orange") {
-            return UbuntuColors.orange
+            return "#FF7A0D"
         } else if (label === "purple") {
             return "#9933CC"
         } else if (label === "blue") {
