@@ -3,6 +3,8 @@ Ubuntu Tasks
 
 Ubuntu Tasks is a task management app written for Ubuntu Touch as part of the Ubuntu App Showdown.
 
+For more on progress made during the Ubuntu App Showdown see the `Ubuntu App Showdown.md` file included in the source code.
+
 **Trello Integration Limitations**
 
 Below is a list of limitions in Trello support in Ubuntu Tasks. Expect these to go away in future versions!

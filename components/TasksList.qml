@@ -54,7 +54,9 @@ Item {
             bottom: addBar.top
         }
 
-        header: ThinDivider {}
+        header: ThinDivider {
+            visible: !noTasksLabel.visible
+        }
 
         clip: true
 

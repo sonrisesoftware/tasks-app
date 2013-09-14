@@ -95,6 +95,7 @@ Page {
             bottom: parent.bottom
             right: parent.right
             left: sidebar.right
+            topMargin: units.gu(-0.2)
         }
 
         noneMessage: i18n.tr("No items match your search")

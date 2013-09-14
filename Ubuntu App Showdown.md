@@ -156,3 +156,5 @@ Day 47 - 9/12/2013
 
 Day 47 - 9/13/2013
  * Some small bug fixes
+
+**Released version 0.5.1**
