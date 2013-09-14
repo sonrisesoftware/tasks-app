@@ -169,3 +169,8 @@ Day 48 - 9/13/2013
  * Fixed completed not being assigned at startup
 
 **Released version 0.5.3**
+
+ * Improved orangle color
+ * Saving every 5 seconds instead of 60
+
+**Released version 0.5.4**
