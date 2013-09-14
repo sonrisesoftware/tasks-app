@@ -53,10 +53,25 @@ Page {
         expanded: wideAspect
     }
 
-//    flickable: wideAspect ? undefined
-//                          : overview ? overviewTasksList.flickable
-//                                     : list.flickable
+    flickable: wideAspect ? null
+                          : overview ? overviewTasksList.flickable
+                                     : list.flickable
 
+    onFlickableChanged: {
+        if (flickable === null) {
+            overviewTasksList.flickable.topMargin = 0
+            overviewTasksList.flickable.contentY = 0
+
+            list.flickable.topMargin = 0
+            list.flickable.contentY = 0
+        } else {
+            overviewTasksList.flickable.topMargin = units.gu(9.5)
+            overviewTasksList.flickable.contentY = -units.gu(9.5)
+
+            list.flickable.topMargin = units.gu(9.5)
+            list.flickable.contentY = -units.gu(9.5)
+        }
+    }
 
     Item {
         anchors {
