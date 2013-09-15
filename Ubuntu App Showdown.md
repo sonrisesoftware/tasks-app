@@ -174,3 +174,7 @@ Day 48 - 9/13/2013
  * Saving every 5 seconds instead of 60
 
 **Released version 0.5.4**
+
+ * Fixed statistics page
+
+**Released version 0.5.5**
