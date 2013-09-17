@@ -377,11 +377,19 @@ MainView {
         }
     }
 
+    property bool dbChanged: false
+
     Timer {
         interval: 5000 // 5 seconds
         repeat: true
         running: true
-        onTriggered: saveProjects()
+        onTriggered: {
+            if (dbChanged) {
+                print("Saving database...")
+                saveProjects()
+                dbChanged = false
+            }
+        }
     }
 
     property var uncategorizedProject: getItemByFilter(localProjectsModel.projects, function(project) { return project.special })

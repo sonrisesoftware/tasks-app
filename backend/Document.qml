@@ -44,6 +44,8 @@ Object {
             if (parent.children.hasOwnProperty(docId)) {
                 load(parent.children[docId])
             }
+
+            dbChanged = true
         }
     }
 
@@ -86,6 +88,8 @@ Object {
 
             if (reload !== undefined)
                 reload()
+
+            dbChanged = true
         } else {
             print("WARNING>>>>>>>>>>>>>>>>>>>>> FIELD IS LOCKED!!!!", name, value)
         }
@@ -153,6 +157,8 @@ Object {
                 childrenDocs.splice(i, 1)
             }
         }
+
+        dbChanged = true
     }
 
     function listDocs() {
