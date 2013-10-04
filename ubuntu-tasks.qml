@@ -38,8 +38,11 @@ MainView {
     // objectName for functional testing purposes (autopilot-qt5)
     objectName: "mainView"
     
-    // Note! applicationName needs to match the .desktop filename
-    applicationName: "Tasks"
+    /*
+     * Note: applicationName needs to match the "name" field of
+     * the click manifest
+     */
+    applicationName: "com.ubuntu.developer.mdspencer.ubuntu-tasks"
     
     /* 
      This property enables the application to change orientation 
