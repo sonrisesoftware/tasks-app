@@ -50,6 +50,10 @@ GenericProject {
                 defaultKey = key
             if (lists[key] === name) return key
         }
+
+        if (name === "Doing")
+            return getListByName("In Progress")
+
         return defaultKey
     }
 
@@ -59,6 +63,9 @@ GenericProject {
         for (var key in lists) {
             if (lists[key] === name) return true
         }
+
+        if (name === "Doing")
+            return hasList("In Progress")
 
         return false
     }
