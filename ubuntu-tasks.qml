@@ -38,7 +38,7 @@ MainView {
     // objectName for functional testing purposes (autopilot-qt5)
     objectName: "mainView"
     
-    // Note! applicationName needs to match the .desktop filename 
+    // Note! applicationName needs to match the .desktop filename
     applicationName: "Tasks"
     
     /* 
@@ -370,26 +370,28 @@ MainView {
     }
 
     function saveProjects() {
+        if (!dbChanged) return
+
         for (var i = 0; i < backendModels.length; i++) {
             var json = backendModels[i].save()
             debug("database", JSON.stringify(json))
             saveSetting("backend-" + backendModels[i].databaseName, JSON.stringify(json))
         }
+
+        dbChanged = false
     }
 
     property bool dbChanged: false
 
+    property bool activeState: Qt.application.active
+
+    onActiveStateChanged: saveProjects()
+
     Timer {
-        interval: 5000 // 5 seconds
+        interval: 120000 // 2 minutes
         repeat: true
         running: true
-        onTriggered: {
-            if (dbChanged) {
-                print("Saving database...")
-                saveProjects()
-                dbChanged = false
-            }
-        }
+        onTriggered: saveProjects()
     }
 
     property var uncategorizedProject: getItemByFilter(localProjectsModel.projects, function(project) { return project.special })
@@ -416,9 +418,7 @@ MainView {
         }
     }
 
-    Component.onDestruction: {
-        saveProjects()
-    }
+    Component.onDestruction: saveProjects()
 
     /* INITIAL WELCOME PROJECT */
 
@@ -586,10 +586,15 @@ MainView {
     }
 
     function getIcon(name) {
+        var root = /*"/usr/share/icons/ubuntu-mobile/actions/scalable/"*/ "../icons/"
+        var ext = ".png"
+
+        //return "image://theme/" + name
+
         if (name.indexOf(".") === -1)
-            return "../icons/" + name + ".png"
+            return root + name + ext
         else
-            return "../icons/" + name
+            return root + name
     }
 
     function getItem(model, index) {
