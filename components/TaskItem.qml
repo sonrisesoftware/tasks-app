@@ -119,7 +119,7 @@ Item {
                     Label {
                         anchors.centerIn: completedCheckBox
                         text: task.checklist.percent + "%"
-                        visible: !task.canComplete && !task.completed && completedCheckBox.visible
+                        visible: !task.completed && task.hasChecklist && completedCheckBox.visible
                     }
 
 //                    UbuntuShape {

@@ -146,7 +146,7 @@ MainView {
 
     states: [
         State {
-            when: showToolbar && toolbar.tools.opened && toolbar.tools.locked
+            when: toolbar.tools.opened && toolbar.tools.locked
 
             PropertyChanges {
                 target: pageStack

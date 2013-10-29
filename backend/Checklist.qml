@@ -26,15 +26,6 @@ QtObject {
                 if (items.get(i).modelData.completed)
                     progress += 1
             }
-
-            if (!updating) {
-                if (progress === length) {
-                    print(">>>>>>>>>>>>MARKING AS COMPLETED BY CHECKLIST")
-                    completed = true
-                } else {
-                    completed = false
-                }
-            }
         }
     }
 

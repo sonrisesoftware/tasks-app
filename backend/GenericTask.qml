@@ -100,7 +100,7 @@ Item {
 
     property bool hasChecklist: checklist.length > 0
 
-    property bool canComplete: !hasChecklist
+    property bool canComplete: true//!hasChecklist
 
     function toJSON() {
         return {
