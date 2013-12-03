@@ -138,14 +138,14 @@ Item {
                 } while (dateIsBeforeOrSame(json.dueDate, today))
 
                 if (repeat !== "never") {
-                    if (list === undefined)
+                    if (project === undefined)
                         console.log("Unable to create repeating task!")
                     else {
                         print("Adding new REPEAT task...")
                         json.completed = false
-                        var docId = String(list.nextDocId++)
-                        list.document.children[docId] = json
-                        list.loadTaskU1db(docId)
+                        var docId = String(project.nextDocId++)
+                        project.document.children[docId] = json
+                        project.loadTaskU1db(docId)
                     }
 
                     createdRepeat = true

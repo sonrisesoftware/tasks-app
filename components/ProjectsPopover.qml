@@ -38,47 +38,74 @@ Popover {
             top: parent.top
         }
 
-        Repeater {
-            id: modelRepeater
-            model: [localProjectsModel]
+        Column {
+            id: projectsListColumn
 
-            delegate: Column {
-                width: parent.width
-                visible: modelData.enabled && (modelData.openProjectsCount) > 0
-                Header {
-                    text: modelData.name
-                }
+            anchors {
+                left: parent.left
+                right: parent.right
+            }
 
-                Repeater {
-                    id: repeater
-                    model: modelData.projects
+            Repeater {
+                id: modelRepeater
+                model: [localProjectsModel]
 
-                    delegate: Standard {
-                        //FIXME: Hack because of Suru theme!
-                        Label {
-                            anchors {
-                                verticalCenter: parent.verticalCenter
-                                left: parent.left
-                                margins: units.gu(2)
+                delegate: Column {
+                    width: parent.width
+                    visible: modelData.enabled && (modelData.openProjectsCount) > 0
+                    Header {
+                        text: modelData.name
+                    }
+
+                    Repeater {
+                        id: repeater
+                        model: modelData.projects
+
+                        delegate: Standard {
+                            //FIXME: Hack because of Suru theme!
+                            Label {
+                                anchors {
+                                    verticalCenter: parent.verticalCenter
+                                    left: parent.left
+                                    margins: units.gu(2)
+                                }
+
+                                text: modelData.name
+                                fontSize: "medium"
+                                color: selected ? UbuntuColors.orange : Theme.palette.normal.overlayText
                             }
 
-                            text: modelData.name
-                            fontSize: "medium"
-                            color: selected ? UbuntuColors.orange : Theme.palette.normal.overlayText
+                            selected: task.project === modelData
+                            enabled: task.canMoveToProject(modelData)
+                            visible: !(modelData.special || modelData.archived)
+
+                            onClicked: {
+                                task.moveToProject(modelData)
+                                PopupUtils.close(root)
+                            }
+
+                            showDivider: index < repeater.count - 1
                         }
-
-                        selected: task.project === modelData
-                        enabled: task.canMoveToProject(modelData)
-                        visible: !(modelData.special || modelData.archived)
-
-                        onClicked: {
-                            task.moveToProject(modelData)
-                            PopupUtils.close(root)
-                        }
-
-                        showDivider: index < repeater.count - 1
                     }
                 }
+            }
+        }
+
+        Item {
+            anchors {
+                left: parent.left
+                right: parent.right
+            }
+
+            height: visible ? label.height + units.gu(6) : 0
+            visible: projectsListColumn.height === 0
+
+            Label {
+                id: label
+                anchors.centerIn: parent
+                text: i18n.tr("No projects")
+                opacity: 0.5
+                color: Theme.palette.normal.overlayText
             }
         }
 
