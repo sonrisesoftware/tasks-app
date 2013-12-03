@@ -24,7 +24,8 @@ icon:
 	inkscape --export-png=icons/$(ICON).png --export-dpi=32 --export-background-opacity=0 --without-gui /usr/share/icons/ubuntu-mobile/actions/scalable/$(ICON).svg
 
 clean:
-	rm ~/.local/share/Qt\ Project/QtQmlViewer/ubuntu-tasks.db
+	rm ~/.local/share/com.ubuntu.developer.mdspencer.ubuntu-tasks/ubuntu-tasks.db 
+ 
 
 package:
 	./clickpkg $(VERSION)
