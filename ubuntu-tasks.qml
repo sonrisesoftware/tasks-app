@@ -55,7 +55,7 @@ MainView {
     width: units.gu(100)
     height: units.gu(75)
 
-    property bool wideAspect: width > units.gu(80)
+    property bool wideAspect: true;//width > units.gu(80)
     property bool extraWideAspect: width > units.gu(120)
 
     // Colors from Calculator app
@@ -83,28 +83,28 @@ MainView {
                 }
             }
 
-            HideableTab {
-                title: page.title
-                page: HomePage {
-                    id: uncategorizedPage
-                    currentProject: uncategorizedProject
+//            HideableTab {
+//                title: page.title
+//                page: HomePage {
+//                    id: uncategorizedPage
+//                    currentProject: uncategorizedProject
 
-                    property int tabIndex: 1
-                }
+//                    property int tabIndex: 1
+//                }
 
-                show: !wideAspect
-            }
+//                show: !wideAspect
+//            }
 
-            HideableTab {
-                title: page.title
-                page: ProjectsPage {
-                    id: projectsPage
+//            HideableTab {
+//                title: page.title
+//                page: ProjectsPage {
+//                    id: projectsPage
 
-                    property int tabIndex: 2
-                }
+//                    property int tabIndex: 2
+//                }
 
-                show: !wideAspect
-            }
+//                show: !wideAspect
+//            }
 
             Tab {
                 title: page.title
