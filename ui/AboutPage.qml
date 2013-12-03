@@ -45,7 +45,7 @@ Page {
                 source: "../icons/ubuntu-tasks-128.png"
             }
 
-            width: 128
+            width: units.gu(16)
             height: width
             radius: "medium"
             anchors.horizontalCenter: parent.horizontalCenter
@@ -97,7 +97,7 @@ Page {
         }
 
         Label {
-            text: i18n.tr("Version <b>%1</b>").arg("$APP_VERSION")
+            text: i18n.tr("Version <b>%1</b>").arg("@APP_VERSION@")
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
@@ -105,5 +105,12 @@ Page {
             text: i18n.tr("Copyright (C) 2013 Michael Spencer")
             anchors.horizontalCenter: parent.horizontalCenter
         }
+    }
+
+    tools: ToolbarItems {
+        locked: showToolbar
+        opened: showToolbar
+
+        onLockedChanged: opened = locked
     }
 }

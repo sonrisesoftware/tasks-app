@@ -9,6 +9,6 @@
     },
     "maintainer": "Michael Spencer <sonrisesoftware@gmail.com>",
     "name": "com.ubuntu.developer.mdspencer.ubuntu-tasks",
-    "title": "Ubuntu Tasks",
-    "version": "$APP_VERSION"
+    "title": "Tasks",
+    "version": "@APP_VERSION@"
 }
