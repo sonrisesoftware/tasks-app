@@ -1,0 +1,12 @@
+VERSION=$1
+RELEASE_DIR=../releases/ubuntu-tasks/tar-v$VERSION
+
+cp . $RELEASE_DIR -r
+cd $RELEASE_DIR
+replace '@APP_VERSION@' $VERSION manifest.json
+replace '@APP_VERSION@' $VERSION ui/AboutPage.qml
+sudo rm .git* -r
+rm ubuntu-ui-extras -r
+cp ../../../ubuntu-ui-extras . -r
+sudo rm ubuntu-ui-extras/.git* -r
+tar -czf ../ubuntu-tasks-$VERSION.tar.gz *
