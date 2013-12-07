@@ -41,4 +41,8 @@ Version 0.6	2013-12-07	Michael Spencer <sonrisesoftware@gmail.com>
   * Renamed app to just Tasks
   * Improved the tabs implementation
   * Fixed tabs not hiding in wide aspect
-  * Moved the settings and search tabs into the toolbar 
+  * Moved the settings and search tabs into the toolbar
+
+NEXT VERSION
+
+  * Fixed a problem with the toolbar not openning

@@ -49,6 +49,9 @@ Project {
         filter: "COPYING"
     }
     Files {
+        filter: "CHANGELOG"
+    }
+    Files {
         filter: "*.md"
     }
     Files {
