@@ -61,11 +61,11 @@ Page {
         }
     }
 
-    onActiveChanged: tools.opened = wideAspect
-
     tools: ToolbarItems {
         locked: wideAspect
         opened: wideAspect
+
+        onLockedChanged: opened = locked
 
         ToolbarButton {
             id: moveButton
