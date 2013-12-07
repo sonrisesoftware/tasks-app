@@ -112,7 +112,7 @@ Item {
             completed: completed,
             completionDate: completionDate,
             priority: priority,
-            tags: tags,
+            tags: tags ? tags.slice() : undefined,
             checklist: checklist.save(),
             assignedTo: assignedTo
         }
@@ -143,7 +143,7 @@ Item {
                     else {
                         print("Adding new REPEAT task...")
                         json.completed = false
-                        var docId = String(project.nextDocId++)
+                        var docId = project.nextDocId++
                         project.document.children[docId] = json
                         project.loadTaskU1db(docId)
                     }
@@ -251,7 +251,7 @@ Item {
         if (!hasTag(name)) return
 
         var tags = task.tags
-        tags.splice(task.tags.indexOf(modelData), 1)
+        tags.splice(task.tags.indexOf(name), 1)
         task.tags = tags
     }
 
