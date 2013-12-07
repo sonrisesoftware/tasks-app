@@ -36,6 +36,14 @@ Page {
 
     property var currentProject: null
 
+    property bool wide: wideAspect
+
+    onWideChanged: {
+        if (wide && root === currentPage) {
+            tabs.selectedTabIndex = homePage.tabIndex
+        }
+    }
+
     Flickable {
         id: flickable
         anchors.fill: parent

@@ -63,64 +63,69 @@ MainView {
     backgroundColor: "#6A6AA1"
     footerColor: "#6899D7"
 
+    actions: [
+        Action {
+            id: settingsAction
+            text: i18n.tr("Settings")
+            iconSource: getIcon("settings")
+            onTriggered: {
+                pageStack.push(Qt.resolvedUrl("ui/SettingsPage.qml"))
+            }
+        }
+
+    ]
+
     property var pageStack: pageStack
+
+    onWideAspectChanged: {
+        if (wideAspect && tabs.selectedTabIndex == 3)
+            tabs.selectedTabIndex = 1
+
+        if (!wideAspect && tabs.selectedTabIndex == 1)
+            tabs.selectedTabIndex = 3
+    }
 
     PageStack {
         id: pageStack
 
+        HomePage {
+            id: homePage
+
+            property int tabIndex: 0
+            visible: false
+        }
+
+        HomePage {
+            id: uncategorizedPage
+            currentProject: uncategorizedProject
+
+            property int tabIndex: 1
+            visible: false
+        }
+
+        ProjectsPage {
+            id: projectsPage
+
+            property int tabIndex: 2
+            visible: false
+        }
+
+        SearchPage {
+            id: searchPage
+
+            property int tabIndex: wideAspect ? 1 : 3
+            visible: false
+        }
+
         Tabs {
             id: tabs
 
-            //FIXME: Needs to be disabled for Autopilot tests
-            Tab {
-                objectName: "homeTab"
-
-                title: page.title
-                page: HomePage {
-                    id: homePage
-
-                    property int tabIndex: 0
-                }
-            }
-
-//            HideableTab {
-//                title: page.title
-//                page: HomePage {
-//                    id: uncategorizedPage
-//                    currentProject: uncategorizedProject
-
-//                    property int tabIndex: 1
-//                }
-
-//                show: !wideAspect
-//            }
-
-//            HideableTab {
-//                title: page.title
-//                page: ProjectsPage {
-//                    id: projectsPage
-
-//                    property int tabIndex: 2
-//                }
-
-//                show: !wideAspect
-//            }
-
-            Tab {
-                title: page.title
-                page: SearchPage {
-                    id: searchPage
-
-                    property int tabIndex: wideAspect ? 1 : 3
-                }
-            }
-
-            Tab {
-                title: page.title
-                page: SettingsPage {
-                    id: settingsPage
-
-                    property int tabIndex: wideAspect ? 2 : 4
+            Repeater {
+                model: root.wideAspect ? [homePage, searchPage] : [homePage, uncategorizedPage, projectsPage, searchPage]
+                delegate: Tab {
+                    title: page.title
+                    page: modelData
+                    Component.onCompleted: page.visible = true
                 }
             }
 
@@ -131,6 +136,17 @@ MainView {
             clearPageStack()
         }
     }
+
+    property bool topPageHidden: currentPage && currentPage.hasOwnProperty("hidden") ? currentPage.hidden : false
+
+    onTopPageHiddenChanged: {
+        if (topPageHidden && poppingEnabled) {
+            print("Top page hidden, popping. Wide aspect:", wideAspect)
+            pageStack.pop()
+        }
+    }
+
+    property var poppingEnabled
 
     function clearPageStack() {
         while (pageStack.depth > 0)
@@ -164,66 +180,69 @@ MainView {
     property var currentProject: currentPage && currentPage.hasOwnProperty("currentProject") ? currentPage.currentProject : null
     property var currentTask: currentPage && currentPage.hasOwnProperty("task") ? currentPage.task : null
 
-    onWideAspectChanged: {
-        var viewing = root.viewing
-        var currentProject = root.currentProject
-        var currentTask = root.currentTask
+//    onWideAspectChanged: {
+//        var viewing = root.viewing
+//        var currentProject = root.currentProject
+//        var currentTask = root.currentTask
 
-        clearPageStack()
-        tabs.modelChanged()
-        homePage.currentProject = null
+//        clearPageStack()
+//        tabs.modelChanged()
+//        homePage.currentProject = null
 
-        print("Switching to %1 in %2".arg(wideAspect ? "Wide Aspect" : "Phone").arg(viewing))
+//        print("Switching to %1 in %2".arg(wideAspect ? "Wide Aspect" : "Phone").arg(viewing))
 
-        if (wideAspect) {
-            if (viewing === "projects" || viewing === "overview") {
-                tabs.selectedTabIndex = homePage.tabIndex
-            } else if (viewing === "project") {
-                tabs.selectedTabIndex = homePage.tabIndex
-                homePage.currentProject = currentProject
-            } else if (viewing === "task") {
-                tabs.selectedTabIndex = homePage.tabIndex
-                homePage.currentProject = currentTask.project
-                goToTask(currentTask)
-            } else if (viewing === "settings") {
-                tabs.selectedTabIndex = 2//settingsPage.tabIndex
-            } else if (viewing === "about") {
-                tabs.selectedTabIndex = 2//settingsPage.tabIndex
-                pageStack.push(Qt.resolvedUrl("ui/AboutPage.qml"))
-            } else if (viewing === "search") {
-                tabs.selectedTabIndex = 1//searchPage.tabIndex
-            } else if (viewing === "uncategorized") {
-                tabs.selectedTabIndex = homePage.tabIndex
-                homePage.currentProject = currentProject
-            }
-        } else {
-            if (viewing === "project") {
-                tabs.selectedTabIndex = projectsPage.tabIndex
-                goToProject(currentProject)
-            } else if (viewing === "overview") {
-                tabs.selectedTabIndex = homePage.tabIndex
-            } else if (viewing === "task") {
-                tabs.selectedTabIndex = projectsPage.tabIndex
-                goToTask(currentTask)
-            } else if (viewing === "settings") {
-                tabs.selectedTabIndex = 4//settingsPage.tabIndex
-            } else if (viewing === "about") {
-                tabs.selectedTabIndex = 4//settingsPage.tabIndex
-                pageStack.push(Qt.resolvedUrl("ui/AboutPage.qml"))
-            } else if (viewing === "search") {
-                tabs.selectedTabIndex = 3//searchPage.tabIndex
-            } else if (viewing === "uncategorized") {
-                tabs.selectedTabIndex = uncategorizedPage.tabIndex
-            }
-        }
+//        if (wideAspect) {
+//            if (viewing === "projects" || viewing === "overview") {
+//                tabs.selectedTabIndex = homePage.tabIndex
+//            } else if (viewing === "project") {
+//                tabs.selectedTabIndex = homePage.tabIndex
+//                homePage.currentProject = currentProject
+//            } else if (viewing === "task") {
+//                tabs.selectedTabIndex = homePage.tabIndex
+//                homePage.currentProject = currentTask.project
+//                goToTask(currentTask)
+//            } else if (viewing === "settings") {
+//                tabs.selectedTabIndex = 2//settingsPage.tabIndex
+//            } else if (viewing === "about") {
+//                tabs.selectedTabIndex = 2//settingsPage.tabIndex
+//                pageStack.push(Qt.resolvedUrl("ui/AboutPage.qml"))
+//            } else if (viewing === "search") {
+//                tabs.selectedTabIndex = 1//searchPage.tabIndex
+//            } else if (viewing === "uncategorized") {
+//                tabs.selectedTabIndex = homePage.tabIndex
+//                homePage.currentProject = currentProject
+//            }
+//        } else {
+//            if (viewing === "project") {
+//                tabs.selectedTabIndex = projectsPage.tabIndex
+//                goToProject(currentProject)
+//            } else if (viewing === "overview") {
+//                tabs.selectedTabIndex = homePage.tabIndex
+//            } else if (viewing === "task") {
+//                tabs.selectedTabIndex = projectsPage.tabIndex
+//                goToTask(currentTask)
+//            } else if (viewing === "settings") {
+//                tabs.selectedTabIndex = 4//settingsPage.tabIndex
+//            } else if (viewing === "about") {
+//                tabs.selectedTabIndex = 4//settingsPage.tabIndex
+//                pageStack.push(Qt.resolvedUrl("ui/AboutPage.qml"))
+//            } else if (viewing === "search") {
+//                tabs.selectedTabIndex = 3//searchPage.tabIndex
+//            } else if (viewing === "uncategorized") {
+//                tabs.selectedTabIndex = uncategorizedPage.tabIndex
+//            }
+//        }
 
-        tabs.modelChanged()
-    }
+//        tabs.modelChanged()
+//    }
 
     /* NAVIGATION */
 
     function showStatistics(project) {
+        poppingEnabled = false
+        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: project, pushedProject: true})
         pageStack.push(Qt.resolvedUrl("ui/StatisticsPage.qml"), {project: project})
+        poppingEnabled = true
     }
 
     function goToProjects() {
@@ -239,17 +258,20 @@ MainView {
             homePage.currentProject = project
             clearPageStack()
         } else {
-            if (project.special) {
+            if (project === uncategorizedProject) {
                 tabs.selectedTabIndex = uncategorizedPage.tabIndex
             } else {
                 tabs.selectedTabIndex = projectsPage.tabIndex
-                pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: project})
+                pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: project, pushedProject: true})
             }
         }
     }
 
     function goToTask(task) {
+        poppingEnabled = false
+        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: task.project, pushedProject: true})
         pageStack.push(Qt.resolvedUrl("ui/TaskViewPage.qml"), {task: task})
+        poppingEnabled = true
     }
 
     /* DEBUGGING */
@@ -589,15 +611,19 @@ MainView {
     }
 
     function getIcon(name) {
-        var root = /*"/usr/share/icons/ubuntu-mobile/actions/scalable/"*/ "../icons/"
+        var root = "icons/"
         var ext = ".png"
 
         //return "image://theme/" + name
 
+        var name
+
         if (name.indexOf(".") === -1)
-            return root + name + ext
+            name = root + name + ext
         else
-            return root + name
+            name = root + name
+
+        return Qt.resolvedUrl(name)
     }
 
     function getItem(model, index) {

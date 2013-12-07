@@ -41,6 +41,71 @@ Page {
 
     property bool showArchived: false
 
+    property bool wide: wideAspect
+
+    property bool hidden: wideAspect && pushedProject
+    property bool pushedProject
+
+    onWideChanged: {
+        if (pushedProject) {
+            if (wide) {
+                tabs.selectedTabIndex = homePage.tabIndex
+            } else {
+                tabs.selectedTabIndex = projectsPage.tabIndex
+            }
+
+            return
+        }
+
+        if (!wide) {
+            if (currentPage === root) {
+                if (currentProject === uncategorizedProject) {
+                    tabs.selectedTabIndex = uncategorizedPage.tabIndex
+                } else if (currentProject !== null) {
+                    tabs.selectedTabIndex = projectsPage.tabIndex
+                    pageStack.push(Qt.resolvedUrl("HomePage.qml"), {
+                                       currentProject: currentProject,
+                                       pushedProject: true
+                                   })
+                }
+            }
+
+            if (root == homePage) {
+                currentProject = null
+            } else {
+                currentProject = uncategorizedProject
+            }
+        } else {
+            if (currentPage === root && tabs.selectedTabIndex !== homePage.tabIndex) {
+                tabs.selectedTabIndex = homePage.tabIndex
+            }
+        }
+    }
+
+    actions: [
+        Action {
+            id: viewAction
+            text: i18n.tr("View")
+            iconSource: icon("properties")
+            enabled: wideAspect || currentProject !== null
+
+            onTriggered: {
+                PopupUtils.open(optionsPopover, optionsButton)
+            }
+        },
+
+        Action {
+            id: statisticsAction
+            text: i18n.tr("View Statistics")
+            iconSource: icon("graphs")
+            enabled: currentProject != null && currentProject.backend.supportsStatistics
+
+            onTriggered: {
+                showStatistics(currentProject)
+            }
+        }
+    ]
+
     Sidebar {
         id: sidebar
 
@@ -106,11 +171,11 @@ Page {
         anchors.left: sidebar.right
     }
 
-    onActiveChanged: tools.opened = wideAspect
-
     tools: ToolbarItems {
         locked: wideAspect
         opened: wideAspect
+
+        onLockedChanged: opened = locked
 
         ToolbarButton {
             id: newProjectButton
@@ -168,24 +233,15 @@ Page {
         }
 
         ToolbarButton {
-            text: i18n.tr("Statistics")
-            iconSource: icon("graphs")
-            visible: currentProject != null && currentProject.backend.supportsStatistics
-
-            onTriggered: {
-                showStatistics(currentProject)
-            }
+            id: optionsButton
+            action: viewAction
+            visible: enabled
         }
 
         ToolbarButton {
-            id: optionsButton
-            text: i18n.tr("Options")
-            iconSource: icon("settings")
-            visible: wideAspect || currentProject !== null
-
-            onTriggered: {
-                PopupUtils.open(optionsPopover, optionsButton)
-            }
+            id: settingsButton
+            visible: wideAspect
+            action: settingsAction
         }
     }
 
