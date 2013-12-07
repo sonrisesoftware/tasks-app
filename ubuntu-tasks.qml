@@ -55,7 +55,7 @@ MainView {
     width: units.gu(100)
     height: units.gu(75)
 
-    property bool wideAspect: true;//width > units.gu(80)
+    property bool wideAspect: width > units.gu(80)
     property bool extraWideAspect: width > units.gu(120)
 
     // Colors from Calculator app
