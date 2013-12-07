@@ -211,8 +211,8 @@ Page {
             iconSource: icon("add")
             text: i18n.tr("Add Task")
 
-            enabled: currentProject === null ? true : currentProject.supportsAction("addTask")
-            visible: !wideAspect || currentProject !== null
+            enabled: currentProject === null ? !wideAspect : currentProject.supportsAction("addTask")
+            //visible: !wideAspect || currentProject !== null
 
             onTriggered: {
                 if (currentProject === null)
@@ -231,7 +231,7 @@ Page {
             text: i18n.tr("Actions")
             iconSource: getIcon("navigation-menu")
             enabled: statisticsAction.enabled || archiveAction.enabled || editAction.enabled
-            visible: currentProject !== null && enabled
+            visible: (currentProject !== null && enabled) || wideAspect
             onTriggered: {
                 PopupUtils.open(actionsPopover, actionsButton)
             }
