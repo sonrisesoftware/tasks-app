@@ -84,17 +84,6 @@ Page {
 
     actions: [
         Action {
-            id: viewAction
-            text: i18n.tr("View")
-            iconSource: icon("properties")
-            enabled: wideAspect || currentProject !== null
-
-            onTriggered: {
-                PopupUtils.open(optionsPopover, optionsButton)
-            }
-        },
-
-        Action {
             id: statisticsAction
             text: i18n.tr("View Statistics")
             iconSource: icon("graphs")
@@ -102,6 +91,31 @@ Page {
 
             onTriggered: {
                 showStatistics(currentProject)
+            }
+        },
+
+        Action {
+            id: editAction
+            iconSource: icon("edit")
+            text: i18n.tr("Edit Name & Description")
+            enabled:  currentProject !== null && !currentProject.special
+
+            onTriggered: {
+                PopupUtils.open(editProjectDialog, actionsButton, {project: currentProject})
+            }
+        },
+
+        Action {
+            id: archiveAction
+            iconSource: icon("save")
+            text: i18n.tr("Archive")
+            enabled:  currentProject !== null && !currentProject.special
+
+            onTriggered: {
+                undoStack.setProperty(i18n.tr("Archive %1").arg(currentProject.name), currentProject, "archived", true)
+                currentProject = null
+                if (!wideAspect)
+                    pageStack.pop()
             }
         }
     ]
@@ -207,35 +221,27 @@ Page {
             }
         }
 
-        ToolbarButton {
-            id: projectButton
-            iconSource: icon("edit")
-            text: i18n.tr("Edit")
-            visible:  currentProject !== null && !currentProject.special
 
-            onTriggered: {
-                PopupUtils.open(editProjectDialog, projectButton, {project: currentProject})
-            }
-        }
 
         ToolbarButton {
-            id: archiveButton
-            iconSource: icon("save")
-            text: i18n.tr("Archive")
-            visible:  currentProject !== null && !currentProject.special
-
+            id: actionsButton
+            text: i18n.tr("Actions")
+            iconSource: getIcon("edit")
+            enabled: archiveAction.enabled || editAction.enabled
+            visible: currentProject !== null && enabled
             onTriggered: {
-                if (!wideAspect)
-                    pageStack.pop()
-                undoStack.setProperty(i18n.tr("Archive %1").arg(currentProject.name), currentProject, "archived", true)
-                currentProject = null
+                PopupUtils.open(actionsPopover, actionsButton)
             }
         }
 
         ToolbarButton {
             id: optionsButton
-            action: viewAction
-            visible: enabled
+            text: i18n.tr("View")
+            iconSource: icon("properties")
+            visible: wideAspect || currentProject !== null
+            onTriggered: {
+                PopupUtils.open(optionsPopover, optionsButton)
+            }
         }
 
         ToolbarButton {
@@ -250,6 +256,17 @@ Page {
 
         OptionsPopover {
 
+        }
+    }
+
+    Component {
+        id: actionsPopover
+
+        ActionSelectionPopover {
+            actions: [
+                editAction,
+                archiveAction
+            ]
         }
     }
 }

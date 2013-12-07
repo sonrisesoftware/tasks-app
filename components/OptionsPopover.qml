@@ -68,6 +68,8 @@ Popover {
                 statisticsAction.triggered(value)
             }
 
+            visible: statisticsAction.enabled
+
             //FIXME: Hack because of Suru theme!
             Label {
                 anchors {
