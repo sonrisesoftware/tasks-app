@@ -127,7 +127,9 @@ MainView {
         }
 
         Component.onCompleted: {
-            clearPageStack()
+            pageStack.push(tabs)
+            root.toolbar.tools = homePage.tools
+            root.toolbar.open()
         }
     }
 
