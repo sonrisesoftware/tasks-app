@@ -112,15 +112,20 @@ Page {
         }
     }
 
-//    tools: ToolbarItems {
-//        ToolbarButton {
-//            id: filterButton
-//            text: i18n.tr("Filter")
-//            iconSource: getIcon("filter")
-//            visible: !wideAspect
-//            onTriggered: PopupUtils.open(filterOptions, filterButton)
-//        }
-//    }
+    tools: ToolbarItems {
+        locked: wideAspect
+        opened: wideAspect
+
+        onLockedChanged: opened = locked
+
+        //        ToolbarButton {
+        //            id: filterButton
+        //            text: i18n.tr("Filter")
+        //            iconSource: getIcon("filter")
+        //            visible: !wideAspect
+        //            onTriggered: PopupUtils.open(filterOptions, filterButton)
+        //        }
+    }
 
     Component {
         id: filterOptions
