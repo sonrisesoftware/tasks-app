@@ -71,19 +71,20 @@ MainView {
             onTriggered: {
                 pageStack.push(Qt.resolvedUrl("ui/SettingsPage.qml"))
             }
-        }
+        },
 
+        Action {
+            id: searchAction
+            iconSource: icon("search")
+            text: i18n.tr("Search")
+
+            onTriggered: {
+                showSearchPage(currentProject)
+            }
+        }
     ]
 
     property var pageStack: pageStack
-
-    onWideAspectChanged: {
-        if (wideAspect && tabs.selectedTabIndex == 3)
-            tabs.selectedTabIndex = 1
-
-        if (!wideAspect && tabs.selectedTabIndex == 1)
-            tabs.selectedTabIndex = 3
-    }
 
     PageStack {
         id: pageStack
@@ -110,18 +111,11 @@ MainView {
             visible: false
         }
 
-        SearchPage {
-            id: searchPage
-
-            property int tabIndex: wideAspect ? 1 : 3
-            visible: false
-        }
-
         Tabs {
             id: tabs
 
             Repeater {
-                model: root.wideAspect ? [homePage, searchPage] : [homePage, uncategorizedPage, projectsPage, searchPage]
+                model: root.wideAspect ? [homePage] : [homePage, uncategorizedPage, projectsPage]
                 delegate: Tab {
                     title: page.title
                     page: modelData
@@ -180,63 +174,14 @@ MainView {
     property var currentProject: currentPage && currentPage.hasOwnProperty("currentProject") ? currentPage.currentProject : null
     property var currentTask: currentPage && currentPage.hasOwnProperty("task") ? currentPage.task : null
 
-//    onWideAspectChanged: {
-//        var viewing = root.viewing
-//        var currentProject = root.currentProject
-//        var currentTask = root.currentTask
-
-//        clearPageStack()
-//        tabs.modelChanged()
-//        homePage.currentProject = null
-
-//        print("Switching to %1 in %2".arg(wideAspect ? "Wide Aspect" : "Phone").arg(viewing))
-
-//        if (wideAspect) {
-//            if (viewing === "projects" || viewing === "overview") {
-//                tabs.selectedTabIndex = homePage.tabIndex
-//            } else if (viewing === "project") {
-//                tabs.selectedTabIndex = homePage.tabIndex
-//                homePage.currentProject = currentProject
-//            } else if (viewing === "task") {
-//                tabs.selectedTabIndex = homePage.tabIndex
-//                homePage.currentProject = currentTask.project
-//                goToTask(currentTask)
-//            } else if (viewing === "settings") {
-//                tabs.selectedTabIndex = 2//settingsPage.tabIndex
-//            } else if (viewing === "about") {
-//                tabs.selectedTabIndex = 2//settingsPage.tabIndex
-//                pageStack.push(Qt.resolvedUrl("ui/AboutPage.qml"))
-//            } else if (viewing === "search") {
-//                tabs.selectedTabIndex = 1//searchPage.tabIndex
-//            } else if (viewing === "uncategorized") {
-//                tabs.selectedTabIndex = homePage.tabIndex
-//                homePage.currentProject = currentProject
-//            }
-//        } else {
-//            if (viewing === "project") {
-//                tabs.selectedTabIndex = projectsPage.tabIndex
-//                goToProject(currentProject)
-//            } else if (viewing === "overview") {
-//                tabs.selectedTabIndex = homePage.tabIndex
-//            } else if (viewing === "task") {
-//                tabs.selectedTabIndex = projectsPage.tabIndex
-//                goToTask(currentTask)
-//            } else if (viewing === "settings") {
-//                tabs.selectedTabIndex = 4//settingsPage.tabIndex
-//            } else if (viewing === "about") {
-//                tabs.selectedTabIndex = 4//settingsPage.tabIndex
-//                pageStack.push(Qt.resolvedUrl("ui/AboutPage.qml"))
-//            } else if (viewing === "search") {
-//                tabs.selectedTabIndex = 3//searchPage.tabIndex
-//            } else if (viewing === "uncategorized") {
-//                tabs.selectedTabIndex = uncategorizedPage.tabIndex
-//            }
-//        }
-
-//        tabs.modelChanged()
-//    }
-
     /* NAVIGATION */
+
+    function showSearchPage(project) {
+        poppingEnabled = false
+        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: project, pushedProject: true})
+        pageStack.push(Qt.resolvedUrl("ui/SearchPage.qml"), {project: project})
+        poppingEnabled = true
+    }
 
     function showStatistics(project) {
         poppingEnabled = false

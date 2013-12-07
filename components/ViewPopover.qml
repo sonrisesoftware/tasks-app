@@ -61,30 +61,6 @@ Popover {
         }
 
         Standard {
-
-            onTriggered: {
-                __makeInvisible()
-                PopupUtils.close(optionsPopover)
-                statisticsAction.triggered(value)
-            }
-
-            visible: statisticsAction.enabled
-
-            //FIXME: Hack because of Suru theme!
-            Label {
-                anchors {
-                    verticalCenter: parent.verticalCenter
-                    left: parent.left
-                    margins: units.gu(2)
-                }
-
-                text: statisticsAction.text
-                fontSize: "medium"
-                color: Theme.palette.normal.overlayText
-            }
-        }
-
-        Standard {
             id: showArchivedProjectsAction
             //FIXME: Hack because of Suru theme!
             Label {

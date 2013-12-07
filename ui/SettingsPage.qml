@@ -100,4 +100,11 @@ Page {
             onRejected: trelloIntegration = false
         }
     }
+
+    tools: ToolbarItems {
+        locked: wideAspect
+        opened: wideAspect
+
+        onLockedChanged: opened = locked
+    }
 }

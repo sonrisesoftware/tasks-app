@@ -221,13 +221,16 @@ Page {
             }
         }
 
-
+        ToolbarButton {
+            id: searchButton
+            action: searchAction
+        }
 
         ToolbarButton {
             id: actionsButton
             text: i18n.tr("Actions")
-            iconSource: getIcon("edit")
-            enabled: archiveAction.enabled || editAction.enabled
+            iconSource: getIcon("navigation-menu")
+            enabled: statisticsAction.enabled || archiveAction.enabled || editAction.enabled
             visible: currentProject !== null && enabled
             onTriggered: {
                 PopupUtils.open(actionsPopover, actionsButton)
@@ -254,7 +257,7 @@ Page {
     Component {
         id: optionsPopover
 
-        OptionsPopover {
+        ViewPopover {
 
         }
     }
@@ -264,6 +267,7 @@ Page {
 
         ActionSelectionPopover {
             actions: [
+                statisticsAction,
                 editAction,
                 archiveAction
             ]
