@@ -77,53 +77,55 @@ MainView {
 
     property var pageStack: pageStack
 
+    onWideAspectChanged: {
+        if (wideAspect && tabs.selectedTabIndex == 3)
+            tabs.selectedTabIndex = 1
+
+        if (!wideAspect && tabs.selectedTabIndex == 1)
+            tabs.selectedTabIndex = 3
+    }
+
     PageStack {
         id: pageStack
+
+        HomePage {
+            id: homePage
+
+            property int tabIndex: 0
+            visible: false
+        }
+
+        HomePage {
+            id: uncategorizedPage
+            currentProject: uncategorizedProject
+
+            property int tabIndex: 1
+            visible: false
+        }
+
+        ProjectsPage {
+            id: projectsPage
+
+            property int tabIndex: 2
+            visible: false
+        }
+
+        SearchPage {
+            id: searchPage
+
+            property int tabIndex: wideAspect ? 1 : 3
+            visible: false
+        }
 
         Tabs {
             id: tabs
 
-            //FIXME: Needs to be disabled for Autopilot tests
-            Tab {
-                objectName: "homeTab"
-
-                title: page.title
-                page: HomePage {
-                    id: homePage
-
-                    property int tabIndex: 0
-                }
-            }
-
-            HideableTab {
-                title: page.title
-                page: HomePage {
-                    id: uncategorizedPage
-                    currentProject: uncategorizedProject
-
-                    property int tabIndex: 1
-                }
-
-                show: !wideAspect
-            }
-
-            HideableTab {
-                title: page.title
-                page: ProjectsPage {
-                    id: projectsPage
-
-                    property int tabIndex: 2
-                }
-
-                show: !wideAspect
-            }
-
-            Tab {
-                title: page.title
-                page: SearchPage {
-                    id: searchPage
-
-                    property int tabIndex: wideAspect ? 1 : 3
+            Repeater {
+                model: root.wideAspect ? [homePage, searchPage] : [homePage, uncategorizedPage, projectsPage, searchPage]
+                delegate: Tab {
+                    title: page.title
+                    page: modelData
+                    Component.onCompleted: page.visible = true
                 }
             }
 
