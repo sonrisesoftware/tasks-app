@@ -1,0 +1,44 @@
+Version 0.1	2013-08-19	Michael Spencer <sonrisesoftware@gmail.com>
+
+  + Initial working release of Tasks!
+
+Version 0.2	2013-09-02	Michael Spencer <sonrisesoftware@gmail.com>
+
+  + Initial read-only Trello backend
+  * Improved checklists
+  + Some UI animations
+  + Icon
+  + Some autopilot tests
+  * And lots of bug fixes!
+
+Version 0.3	2013-09-05	Michael Spencer <sonrisesoftware@gmail.com>
+
+  + About page
+  + Search page
+  + Tags
+  + Uncategorized tasks
+  + Click package available in the App Store
+  * And lots of bug fixes!
+
+Version 0.4	2013-09-06	Michael Spencer <sonrisesoftware@gmail.com>
+
+  + Editable Trello tasks
+  + Trello tasks can be deleted
+  + Trello tasks can be added
+  + Trello projects can be renamed or archived
+  * Fixed Trello refresh
+  * Fixed task name label size in the tasks list on a phone
+  * And lots of other bug fixes!
+
+Version 0.5	2013-09-12	Michael Spencer <sonrisesoftware@gmail.com>
+
+  + In Progress/Assigned To status
+  * Better Trello lists integration
+  + Colored tags
+
+Version 0.6	2013-12-07	Michael Spencer <sonrisesoftware@gmail.com>
+
+  * Renamed app to just Tasks
+  * Improved the tabs implementation
+  * Fixed tabs not hiding in wide aspect
+  * Moved the settings and search tabs into the toolbar 
