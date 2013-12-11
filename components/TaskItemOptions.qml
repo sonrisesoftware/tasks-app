@@ -25,6 +25,7 @@ import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
 import "../components"
 import "../ubuntu-ui-extras"
+import "../ui"
 
 Column {
     id: root
@@ -130,37 +131,37 @@ Column {
 
         value: task.dueDateInfo
 
-        onClicked: PopupUtils.open(Qt.resolvedUrl("DatePicker.qml"), dueDateField, {
-                                       task: task
-                                   })
+        onClicked: PopupUtils.open(dueDatePicker, dueDateField, {task: root.task})
     }
 
-    ValueSelector {
-        id: repeatSelector
-        text: i18n.tr("Repeat")
-        visible: task.supportsField("repeat")
-        enabled: task.editable && task.hasDueDate
+//    ValueSelector {
+//        id: repeatSelector
+//        text: i18n.tr("Repeat")
+//        visible: task.supportsField("repeat")
+//        enabled: task.editable && task.hasDueDate
 
-        values: [i18n.tr("Never"), i18n.tr("Daily"), i18n.tr("Weekly"), i18n.tr("Monthly"), i18n.tr("Yearly")]
-        selectedIndex: getSelectedIndex()
+//        values: [i18n.tr("Never"), i18n.tr("Daily"), i18n.tr("Weekly"), i18n.tr("Bi-weekly"), i18n.tr("Monthly"), i18n.tr("Yearly")]
+//        selectedIndex: getSelectedIndex()
 
-        function getSelectedIndex() {
-            if (task.repeat === "never") return 0
-            else if (task.repeat === "daily") return 1
-            else if (task.repeat === "weekly") return 2
-            else if (task.repeat === "monthly") return 3
-            else if (task.repeat === "yearly") return 4
-        }
+//        function getSelectedIndex() {
+//            if (task.repeat === "never") return 0
+//            else if (task.repeat === "daily") return 1
+//            else if (task.repeat === "weekly") return 2
+//            else if (task.repeat === "biweekly") return 3
+//            else if (task.repeat === "monthly") return 4
+//            else if (task.repeat === "yearly") return 5
+//        }
 
-        onSelectedIndexChanged: {
-            if (selectedIndex === 0) task.repeat = "never"
-            else if (selectedIndex === 1) task.repeat = "daily"
-            else if (selectedIndex === 2) task.repeat = "weekly"
-            else if (selectedIndex === 3) task.repeat = "monthly"
-            else if (selectedIndex === 4) task.repeat = "yearly"
-            selectedIndex = Qt.binding(getSelectedIndex)
-        }
-    }
+//        onSelectedIndexChanged: {
+//            if (selectedIndex === 0) task.repeat = "never"
+//            else if (selectedIndex === 1) task.repeat = "daily"
+//            else if (selectedIndex === 2) task.repeat = "weekly"
+//            else if (selectedIndex === 3) task.repeat = "biweekly"
+//            else if (selectedIndex === 4) task.repeat = "monthly"
+//            else if (selectedIndex === 5) task.repeat = "yearly"
+//            selectedIndex = Qt.binding(getSelectedIndex)
+//        }
+//    }
 
     Header {
         text: i18n.tr("Labels")
@@ -234,4 +235,15 @@ Column {
 //        //onClicked: PopupUtils.open(tagsPopover, tagsSelector, {task: task})
 //        //visible: false
 //    }
+
+    Component {
+        id: dueDatePicker
+        DateSheet {
+            property var task
+
+            onConfirmClicked: {
+                task.dueDate = date.dueNext()
+            }
+        }
+    }
 }

@@ -50,4 +50,9 @@ Version 0.6.1	2013-12-07	Michael Spencer <sonrisesoftware@gmail.com>
 
 Version 0.6.2	2013-12-09	Michael Spencer <sonrisesoftware@gmail.com>
 
-  * Removed an used file (to fix checks for the app store)
+  * Removed an used file (to fix checks for the app store).
+
+NEXT VERSION
+
+  * Changed date format to long format (to show days of the week)
+  + Added bi-weekly repeating tasks

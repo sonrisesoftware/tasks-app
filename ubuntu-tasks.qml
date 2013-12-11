@@ -602,7 +602,7 @@ MainView {
         if (isToday(date)) {
             return i18n.tr("Today")
         } else {
-            return Qt.formatDate(date)
+            return date.toLocaleDateString(Qt.locale())
         }
     }
 
