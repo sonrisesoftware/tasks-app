@@ -47,3 +47,7 @@ Version 0.6.1	2013-12-07	Michael Spencer <sonrisesoftware@gmail.com>
 
   * Fixed a problem with the toolbar not opening
   * Fixed a problem with the tags not working on repeating tasks
+
+Version 0.6.2	2013-12-09	Michael Spencer <sonrisesoftware@gmail.com>
+
+  * Removed an used file (to fix checks for the app store)
