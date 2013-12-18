@@ -55,7 +55,7 @@ MainView {
     width: units.gu(100)
     height: units.gu(75)
 
-    property bool wideAspect: width > units.gu(80)
+    property bool wideAspect: true//width > units.gu(80)
     property bool extraWideAspect: width > units.gu(120)
 
     // Colors from Calculator app
@@ -89,37 +89,15 @@ MainView {
     PageStack {
         id: pageStack
 
-        HomePage {
-            id: homePage
-
-            property int tabIndex: 0
-            visible: false
-        }
-
-        HomePage {
-            id: uncategorizedPage
-            currentProject: uncategorizedProject
-
-            property int tabIndex: 1
-            visible: false
-        }
-
-        ProjectsPage {
-            id: projectsPage
-
-            property int tabIndex: 2
-            visible: false
-        }
-
         Tabs {
             id: tabs
 
-            Repeater {
-                model: root.wideAspect ? [homePage] : [homePage, uncategorizedPage, projectsPage]
-                delegate: Tab {
-                    title: page.title
-                    page: modelData
-                    Component.onCompleted: page.visible = true
+            Tab {
+                title: page.title
+                page: HomePage {
+                    id: homePage
+
+                    property int tabIndex: 0
                 }
             }
 
