@@ -71,7 +71,7 @@ Page {
 
             Label {
                 font.bold: true
-                text: "Lucas Romero Di Benedetto"
+                text: "Sam Hewitt"
             }
 
             Label {
