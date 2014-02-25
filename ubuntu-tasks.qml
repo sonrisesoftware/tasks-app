@@ -274,12 +274,6 @@ MainView {
         id: undoStack
     }
 
-    Label {
-        anchors.centerIn: parent
-        fontSize: "large"
-        text: pageStack.depth
-    }
-
     /* SETTINGS STORAGE */
 
     U1db.Database {
