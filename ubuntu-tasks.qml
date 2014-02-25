@@ -71,7 +71,7 @@ MainView {
             text: i18n.tr("Settings")
             iconSource: getIcon("settings")
             onTriggered: {
-                pageStack.push(Qt.resolvedUrl("ui/SettingsPage.qml"))
+                showSettings()
             }
         },
 
@@ -212,9 +212,13 @@ MainView {
 
     function goToTask(task) {
         poppingEnabled = false
-        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: task.project, pushedProject: true})
+        if (wideAspect && pageStack.depth === 1 && tabs.selectedTabIndex == homePage.tabIndex) {
+            print("Adding page")
+            pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: task.project, pushedProject: true})
+        }
         pageStack.push(Qt.resolvedUrl("ui/TaskViewPage.qml"), {task: task})
         poppingEnabled = true
+        print("Done.")
     }
 
     /* DEBUGGING */
@@ -270,6 +274,12 @@ MainView {
         id: undoStack
     }
 
+    Label {
+        anchors.centerIn: parent
+        fontSize: "large"
+        text: pageStack.depth
+    }
+
     /* SETTINGS STORAGE */
 
     U1db.Database {
@@ -303,7 +313,8 @@ MainView {
     }
 
     function showSettings() {
-        PopupUtils.open(settingsSheet)
+        pageStack.push(Qt.resolvedUrl("ui/SettingsPage.qml"))
+        //PopupUtils.open(Qt.resolvedUrl("ui/SettingsSheet.qml"), root)
     }
 
     function getSetting(name, def) {
