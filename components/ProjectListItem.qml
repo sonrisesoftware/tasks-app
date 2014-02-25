@@ -74,7 +74,6 @@ SingleValue {
         if (project !== null)
             project.archived = false
 
-        pageStack.pop()
         goToProject(project)
     }
 

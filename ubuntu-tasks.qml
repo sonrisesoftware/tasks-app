@@ -58,6 +58,8 @@ MainView {
     property bool wideAspect: true//width > units.gu(80)
     property bool extraWideAspect: width > units.gu(120)
 
+    property bool loaded
+
     // Colors from Calculator app
     headerColor: "#323A5D"
     backgroundColor: "#6A6AA1"
@@ -69,7 +71,7 @@ MainView {
             text: i18n.tr("Settings")
             iconSource: getIcon("settings")
             onTriggered: {
-                pageStack.push(Qt.resolvedUrl("ui/SettingsPage.qml"))
+                showSettings()
             }
         },
 
@@ -100,8 +102,6 @@ MainView {
                     property int tabIndex: 0
                 }
             }
-
-            visible: false
         }
 
         Component.onCompleted: {
@@ -194,9 +194,13 @@ MainView {
 
     function goToTask(task) {
         poppingEnabled = false
-        pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: task.project, pushedProject: true})
+        if (wideAspect && pageStack.depth === 1 && tabs.selectedTabIndex == homePage.tabIndex) {
+            print("Adding page")
+            pageStack.push(Qt.resolvedUrl("ui/HomePage.qml"), {currentProject: task.project, pushedProject: true})
+        }
         pageStack.push(Qt.resolvedUrl("ui/TaskViewPage.qml"), {task: task})
         poppingEnabled = true
+        print("Done.")
     }
 
     /* DEBUGGING */
@@ -285,7 +289,8 @@ MainView {
     }
 
     function showSettings() {
-        PopupUtils.open(settingsSheet)
+        pageStack.push(Qt.resolvedUrl("ui/SettingsPage.qml"))
+        //PopupUtils.open(Qt.resolvedUrl("ui/SettingsSheet.qml"), root)
     }
 
     function getSetting(name, def) {
@@ -366,6 +371,8 @@ MainView {
             saveSetting("runBefore", "true")
             firstRun()
         }
+
+        loaded = true
     }
 
     Component.onDestruction: saveProjects()
@@ -435,6 +442,8 @@ MainView {
         //print("Running filter:", name)
         var list = []
 
+        if (!loaded) return list
+
         for (var i = 0; i < length(tasks); i++) {
             var task = getItem(tasks, i)
             //print("Filtering:", task.name)
@@ -454,6 +463,8 @@ MainView {
     function filteredSum(list, prop, func, name) {
         var value = 0
 
+        if (!loaded) return value
+
         for (var i = 0; i < length(list); i++) {
             var item = getItem(list, i)
             value += filteredCount(item[prop], func, name)
@@ -465,6 +476,8 @@ MainView {
     function sum(list, prop) {
         var value = 0
 
+        if (!loaded) return value
+
         for (var i = 0; i < length(list); i++) {
             var item = getItem(list, i)
             value += item[prop]
@@ -475,6 +488,8 @@ MainView {
 
     function subList(list, prop) {
         var value = []
+
+        if (!loaded) return value
 
         //print("Concat:", prop, length(list))
 
@@ -489,6 +504,8 @@ MainView {
 
     function toList(model) {
         var list = []
+
+        if (!loaded) return list
 
         for (var i = 0; i < model.count; i++) {
             list.push(getItem(model, i))
@@ -510,6 +527,8 @@ MainView {
 
     function concat(list, prop, filter) {
         var value = []
+
+        if (!loaded) return value
 
         //print("Concat:", prop, length(list))
 

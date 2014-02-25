@@ -50,6 +50,10 @@ Page {
         if (pushedProject) {
             if (wide) {
                 tabs.selectedTabIndex = homePage.tabIndex
+                if (!currentPage.hasOwnProperty("task") && poppingEnabled) {
+                    print("Popping...")
+                    pageStack.pop()
+                }
             } else {
                 tabs.selectedTabIndex = projectsPage.tabIndex
             }
@@ -79,6 +83,12 @@ Page {
             if (currentPage === root && tabs.selectedTabIndex !== homePage.tabIndex) {
                 tabs.selectedTabIndex = homePage.tabIndex
             }
+
+            if (currentPage.hasOwnProperty("currentProject"))
+                homePage.currentProject = currentPage.currentProject
+
+            if (currentPage.hasOwnProperty("task"))
+                homePage.currentProject = currentPage.task.project
         }
     }
 
